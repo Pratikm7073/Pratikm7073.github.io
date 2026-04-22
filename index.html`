@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratik More | Cybersecurity Analyst</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         /* Base Theme */
         :root {
@@ -13,6 +13,7 @@
             --text-light: #ffffff;
             --text-gray: #aaaaaa;
             --bar-bg: #222222;
+            --card-bg: #111111;
         }
         body {
             margin: 0;
@@ -22,6 +23,19 @@
             overflow-x: hidden;
         }
         a { text-decoration: none; }
+        
+        /* Typography & Layout */
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
 
         /* Hero Section */
         .hero {
@@ -31,32 +45,15 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
             padding: 20px;
         }
-        .hero h3 {
-            color: var(--accent-yellow);
-            letter-spacing: 2px;
-            font-size: 1.2rem;
-            margin-bottom: 0;
-        }
-        .hero h1 {
-            font-size: 3.5rem;
-            margin: 10px 0;
-            font-weight: 700;
-        }
-        .hero h1 span {
-            color: var(--accent-yellow);
-        }
-        .hero h2 {
-            font-size: 1.5rem;
-            font-weight: 400;
-            margin-bottom: 30px;
-        }
-        .btn-group {
-            display: flex;
-            gap: 15px;
-        }
+        .hero h3 { color: var(--accent-yellow); letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 0; }
+        .hero h1 { font-size: 3.5rem; margin: 10px 0; font-weight: 700; }
+        .hero h1 span { color: var(--accent-yellow); }
+        .hero h2 { font-size: 1.5rem; font-weight: 400; margin-bottom: 30px; color: var(--text-gray); }
+        
+        .btn-group { display: flex; gap: 15px; }
         .btn {
             padding: 12px 30px;
             border: 2px solid var(--text-light);
@@ -67,78 +64,52 @@
             font-size: 0.9rem;
             transition: 0.3s;
         }
-        .btn:hover, .btn.active {
-            background-color: var(--text-light);
-            color: var(--bg-dark);
-        }
+        .btn:hover, .btn.active { background-color: var(--accent-yellow); border-color: var(--accent-yellow); color: var(--bg-dark); }
 
-        /* Profile & Skills Section */
-        .profile-section {
-            padding: 60px 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .avatar-container {
-            text-align: center;
-            margin-bottom: 40px;
-        }
+        /* Profile & Skills */
+        .avatar-container { text-align: center; margin-bottom: 40px; }
         .avatar-bg {
-            width: 250px;
-            height: 250px;
-            background-color: var(--accent-yellow);
-            border-radius: 50%;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
+            width: 200px; height: 200px; background-color: var(--accent-yellow);
+            border-radius: 50%; margin: 0 auto; overflow: hidden; border: 5px solid var(--bg-dark);
+        }
+        .avatar-bg img { width: 100%; height: 100%; object-fit: cover; }
+        .info-grid p { margin: 10px 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .info-grid span { color: var(--text-gray); display: inline-block; width: 120px; }
+
+        /* Progress Bars */
+        .skill-box { margin-bottom: 20px; margin-top: 30px; }
+        .skill-name { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; }
+        .progress-bar { background-color: var(--bar-bg); height: 6px; border-radius: 4px; width: 100%; }
+        .progress { background-color: var(--accent-yellow); height: 100%; border-radius: 4px; }
+
+        /* Work Experience Timeline */
+        .exp-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-top: 3px solid var(--accent-yellow);
+        }
+        .exp-date { color: var(--accent-yellow); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }
+        .exp-title { font-size: 1.5rem; font-weight: 600; margin: 0 0 5px 0; }
+        .exp-company { color: var(--text-gray); font-size: 1.1rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .exp-desc { color: #cccccc; font-weight: 300; line-height: 1.7; }
+        .exp-desc ul { padding-left: 20px; }
+        .exp-desc li { margin-bottom: 10px; }
+
+        /* Projects Section */
+        .project-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
             overflow: hidden;
-        }
-        /* Replace src with your actual photo URL later */
-        .avatar-bg img {
-            width: 90%;
-            object-fit: cover;
-        }
-        .info-grid {
             margin-bottom: 40px;
-            font-size: 1.1rem;
         }
-        .info-grid p {
-            margin: 10px 0;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-        .info-grid span {
-            color: var(--text-gray);
-            display: inline-block;
-            width: 120px;
-        }
-
-        /* Skill Bars */
-        .skills h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-        .skill-box {
-            margin-bottom: 20px;
-        }
-        .skill-name {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .progress-bar {
-            background-color: var(--bar-bg);
-            height: 8px;
-            border-radius: 4px;
-            width: 100%;
-        }
-        .progress {
-            background-color: var(--accent-yellow);
-            height: 100%;
-            border-radius: 4px;
-        }
-
+        .project-img { width: 100%; height: 250px; object-fit: cover; }
+        .project-content { padding: 30px; }
+        .project-content h3 { font-size: 1.5rem; margin-top: 0; color: var(--accent-yellow); }
+        
+        /* Footer */
+        footer { text-align: center; padding: 40px 20px; background-color: var(--card-bg); }
     </style>
 </head>
 <body>
@@ -146,17 +117,17 @@
     <section class="hero">
         <h3>HELLO!</h3>
         <h1>I'm <span>Pratik More</span></h1>
-        <h2>Cybersecurity & Data Analyst</h2>
+        <h2>Data Analyst & SecOps Architect</h2>
         <div class="btn-group">
-            <a href="#works" class="btn">My Works</a>
+            <a href="#projects" class="btn">My Projects</a>
             <a href="mailto:morepratik77@gmail.com" class="btn active">Hire Me</a>
         </div>
     </section>
 
-    <section class="profile-section">
+    <section class="container" id="about">
         <div class="avatar-container">
             <div class="avatar-bg">
-                <img src="https://via.placeholder.com/250x300.png?text=Your+Photo" alt="Pratik More">
+                <img src="https://via.placeholder.com/250.png?text=Pratik+More" alt="Pratik More">
             </div>
         </div>
 
@@ -167,25 +138,83 @@
             <p><span>Address:</span> Coventry, UK</p>
         </div>
 
-        <div class="skills">
-            <div class="skill-box">
-                <div class="skill-name"><span>Python & SQL</span><span>90%</span></div>
-                <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+        <div style="margin-top: 50px;">
+            <h2 style="margin-bottom: 30px;">Core Skills</h2>
+            <div class="skill-box"><div class="skill-name"><span>Python & SQL</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
+            <div class="skill-box"><div class="skill-name"><span>Threat Analysis (SOAR)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
+            <div class="skill-box"><div class="skill-name"><span>Data Visualization (PowerBI)</span><span>85%</span></div><div class="progress-bar"><div class="progress" style="width: 85%;"></div></div></div>
+            <div class="skill-box"><div class="skill-name"><span>Policy Enforcement (T&S)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
+        </div>
+    </section>
+
+    <section class="container" id="experience">
+        <h2 class="section-title">Work Experience</h2>
+        
+        <div class="exp-card">
+            <div class="exp-date">June 2022 - Nov 2024</div>
+            <h3 class="exp-title">Lead Workforce Management Analyst</h3>
+            <div class="exp-company">Concentrix Daksh Pvt Ltd</div>
+            <div class="exp-desc">
+                <ul>
+                    <li>Conducted research and data analysis across 4 global sites, identifying operational trends and opportunities that drove a 15% increase in resource utilisation.</li>
+                    <li>Documented workflows and prepared detailed root cause analysis summaries, helping stakeholders design and test operational improvements.</li>
+                    <li>Collaborated with a cross-functional team of 20+ analysts, managing projects and building Python/Excel dashboards to communicate insights to senior leadership.</li>
+                </ul>
             </div>
-            <div class="skill-box">
-                <div class="skill-name"><span>Threat Analysis (SOAR)</span><span>95%</span></div>
-                <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
-            </div>
-            <div class="skill-box">
-                <div class="skill-name"><span>Data Visualization</span><span>85%</span></div>
-                <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
-            </div>
-            <div class="skill-box">
-                <div class="skill-name"><span>Policy Enforcement (T&S)</span><span>95%</span></div>
-                <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+        </div>
+
+        <div class="exp-card">
+            <div class="exp-date">Dec 2019 - June 2022</div>
+            <h3 class="exp-title">Content Moderator & AI Policy Evaluator</h3>
+            <div class="exp-company">Concentrix - ByteDance (TikTok Project)</div>
+            <div class="exp-desc">
+                <ul>
+                    <li>Supported internet governance and protected user experience by reviewing high volumes of content across EU, MENA, and Bangladesh markets.</li>
+                    <li>Analysed platform data and processed queues via Task Crowdsourcing (TCS) tool to identify risks and policy violations, maintaining a 95% accuracy rate.</li>
+                    <li>Collaborated with global moderation teams to share feedback, document risk trends, and improve detection accuracy.</li>
+                </ul>
             </div>
         </div>
     </section>
+
+    <section class="container" id="projects">
+        <h2 class="section-title">Key Projects</h2>
+
+        <div class="project-card">
+            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Cybersecurity SOAR" class="project-img">
+            <div class="project-content">
+                <h3>Cloud-Native SOAR & Incident Response Architecture</h3>
+                <div class="exp-desc">
+                    <p><strong>MSc Dissertation (2026)</strong></p>
+                    <ul>
+                        <li>Engineered a "Zero-Touch" automated containment workflow using Microsoft Sentinel and Azure Logic Apps to mitigate high-velocity ransomware.</li>
+                        <li>Designed a quantitative experimental simulation, benchmarking automated SOAR responses against manual triage.</li>
+                        <li><strong>Impact:</strong> Reduced the Mean Time to Contain (MTTC) from ~380 seconds to 41 seconds, achieving an 89% reduction in containment time and halting lateral movement.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card">
+            <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Secure Web App" class="project-img">
+            <div class="project-content">
+                <h3>Secure Web Application Architecture</h3>
+                <div class="exp-desc">
+                    <p><strong>Academic Build (2026)</strong></p>
+                    <ul>
+                        <li>Built a secure website demonstrating strict role-based access control (RBAC), coding custom privilege levels and dashboards for admin, developer, and client accounts.</li>
+                        <li>Developed a secure login portal requiring multi-factor authentication (MFA) integrated with Microsoft Authenticator to prevent unauthorised access.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <h2>Have a Question?</h2>
+        <a href="mailto:morepratik77@gmail.com" class="btn active" style="margin-top: 20px; display: inline-block;">Click Here</a>
+        <p style="margin-top: 40px; color: var(--text-gray); font-size: 0.8rem;">&copy; 2026 Pratik More. All rights reserved.</p>
+    </footer>
 
 </body>
 </html>
