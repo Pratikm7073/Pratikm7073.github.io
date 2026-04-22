@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pratik More | Cybersecurity Analyst</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Theme */
+        :root {
+            --bg-dark: #000000;
+            --accent-yellow: #ffc107;
+            --text-light: #ffffff;
+            --text-gray: #aaaaaa;
+            --bar-bg: #222222;
+        }
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            padding: 20px;
+        }
+        .hero h3 {
+            color: var(--accent-yellow);
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            margin-bottom: 0;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin: 10px 0;
+            font-weight: 700;
+        }
+        .hero h1 span {
+            color: var(--accent-yellow);
+        }
+        .hero h2 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid var(--text-light);
+            border-radius: 30px;
+            color: var(--text-light);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn:hover, .btn.active {
+            background-color: var(--text-light);
+            color: var(--bg-dark);
+        }
+
+        /* Profile & Skills Section */
+        .profile-section {
+            padding: 60px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .avatar-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .avatar-bg {
+            width: 250px;
+            height: 250px;
+            background-color: var(--accent-yellow);
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        /* Replace src with your actual photo URL later */
+        .avatar-bg img {
+            width: 90%;
+            object-fit: cover;
+        }
+        .info-grid {
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .info-grid p {
+            margin: 10px 0;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .info-grid span {
+            color: var(--text-gray);
+            display: inline-block;
+            width: 120px;
+        }
+
+        /* Skill Bars */
+        .skills h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .skill-box {
+            margin-bottom: 20px;
+        }
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .progress-bar {
+            background-color: var(--bar-bg);
+            height: 8px;
+            border-radius: 4px;
+            width: 100%;
+        }
+        .progress {
+            background-color: var(--accent-yellow);
+            height: 100%;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <h3>HELLO!</h3>
+        <h1>I'm <span>Pratik More</span></h1>
+        <h2>Cybersecurity & Data Analyst</h2>
+        <div class="btn-group">
+            <a href="#works" class="btn">My Works</a>
+            <a href="mailto:morepratik77@gmail.com" class="btn active">Hire Me</a>
+        </div>
+    </section>
+
+    <section class="profile-section">
+        <div class="avatar-container">
+            <div class="avatar-bg">
+                <img src="https://via.placeholder.com/250x300.png?text=Your+Photo" alt="Pratik More">
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <p><span>Name:</span> Pratik More</p>
+            <p><span>Job Role:</span> Trust & Safety / SecOps</p>
+            <p><span>Experience:</span> 4+ Years</p>
+            <p><span>Address:</span> Coventry, UK</p>
+        </div>
+
+        <div class="skills">
+            <div class="skill-box">
+                <div class="skill-name"><span>Python & SQL</span><span>90%</span></div>
+                <div class="progress-bar"><div class="progress" style="width: 90%;"></div></div>
+            </div>
+            <div class="skill-box">
+                <div class="skill-name"><span>Threat Analysis (SOAR)</span><span>95%</span></div>
+                <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+            </div>
+            <div class="skill-box">
+                <div class="skill-name"><span>Data Visualization</span><span>85%</span></div>
+                <div class="progress-bar"><div class="progress" style="width: 85%;"></div></div>
+            </div>
+            <div class="skill-box">
+                <div class="skill-name"><span>Policy Enforcement (T&S)</span><span>95%</span></div>
+                <div class="progress-bar"><div class="progress" style="width: 95%;"></div></div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
