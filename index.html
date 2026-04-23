@@ -9,15 +9,17 @@
         /* Base Theme */
         :root {
             --bg-dark: #000000;
-            --accent-yellow: #ffc107;
+            --accent-color: #00b4d8; /* Modern Cybersecurity Blue */
             --text-light: #ffffff;
             --text-gray: #aaaaaa;
             --bar-bg: #222222;
             --card-bg: #111111;
         }
+        
         html {
             scroll-behavior: smooth;
         }
+        
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -25,19 +27,46 @@
             color: var(--text-light);
             overflow-x: hidden;
         }
+        
         a { text-decoration: none; }
         
+        /* Scroll Animations (The "Pop Up" Effect) */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Typography & Layout */
         .section-title {
             font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
             font-weight: 700;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
         }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 3px;
+            background-color: var(--accent-color);
+            bottom: -10px;
+            left: 25%;
+            border-radius: 2px;
+        }
+        
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 80px 20px;
         }
 
         /* Hero Section */
@@ -48,161 +77,182 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover fixed;
             padding: 20px;
         }
-        .hero h3 { color: var(--accent-yellow); letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 0; }
-        .hero h1 { font-size: 3.5rem; margin: 10px 0; font-weight: 700; }
-        .hero h1 span { color: var(--accent-yellow); }
-        .hero h2 { font-size: 1.5rem; font-weight: 400; margin-bottom: 30px; color: var(--text-gray); }
+        .hero h3 { color: var(--accent-color); letter-spacing: 3px; font-size: 1.2rem; margin-bottom: 0; text-transform: uppercase; }
+        .hero h1 { font-size: 4rem; margin: 10px 0; font-weight: 700; }
+        .hero h1 span { color: var(--accent-color); }
+        .hero h2 { font-size: 1.5rem; font-weight: 300; margin-bottom: 40px; color: var(--text-gray); }
         
-        .btn-group { display: flex; gap: 15px; }
+        .btn-group { display: flex; gap: 20px; }
         .btn {
-            padding: 12px 30px;
-            border: 2px solid var(--text-light);
+            padding: 12px 35px;
+            border: 2px solid var(--accent-color);
             border-radius: 30px;
             color: var(--text-light);
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.9rem;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .btn:hover, .btn.active { background-color: var(--accent-yellow); border-color: var(--accent-yellow); color: var(--bg-dark); }
+        .btn:hover, .btn.active { 
+            background-color: var(--accent-color); 
+            color: var(--bg-dark); 
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.4);
+        }
 
-        /* Profile & Skills */
-        .avatar-container { text-align: center; margin-bottom: 40px; }
+        /* Profile & Info */
+        .avatar-container { text-align: center; margin-bottom: 50px; }
         .avatar-bg {
-            width: 200px; height: 200px; background-color: var(--card-bg);
-            border-radius: 50%; margin: 0 auto; overflow: hidden; border: 5px solid var(--accent-yellow);
-            display: flex; align-items: center; justify-content: center;
+            width: 250px; 
+            height: 250px; 
+            background-color: var(--card-bg);
+            border-radius: 50%; 
+            margin: 0 auto; 
+            overflow: hidden; 
+            border: 6px solid var(--accent-color);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 0 0 25px rgba(0, 180, 216, 0.2);
         }
-        .avatar-bg img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 50%; }
-        .info-grid p { margin: 10px 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .info-grid span { color: var(--text-gray); display: inline-block; width: 120px; }
-
-        /* Progress Bars */
-        .skill-box { margin-bottom: 20px; margin-top: 30px; }
-        .skill-name { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; }
-        .progress-bar { background-color: var(--bar-bg); height: 6px; border-radius: 4px; width: 100%; }
-        .progress { background-color: var(--accent-yellow); height: 100%; border-radius: 4px; }
-
-        /* Philosophy Section */
-        .philosophy-wrapper {
-            display: flex;
-            gap: 30px;
-            margin-top: 60px;
-            flex-wrap: wrap;
-            align-items: center;
+        .avatar-bg img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .info-grid {
             background-color: var(--card-bg);
             padding: 30px;
-            border-radius: 8px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
         }
-        .philosophy-img {
-            width: 100%;
-            max-width: 300px;
-            border-radius: 8px;
-            border: 2px solid var(--bar-bg);
-            object-fit: cover;
-        }
-        .philosophy-text { flex: 1; min-width: 250px; }
-        .philosophy-text h3 { color: var(--accent-yellow); font-size: 1.5rem; margin-top: 0; }
-        
+        .info-grid p { margin: 15px 0; border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1.1rem; }
+        .info-grid p:last-child { border-bottom: none; }
+        .info-grid span { color: var(--accent-color); display: inline-block; width: 130px; font-weight: 600; }
+
+        /* Progress Bars */
+        .skill-box { margin-bottom: 25px; margin-top: 30px; }
+        .skill-name { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
+        .progress-bar { background-color: var(--bar-bg); height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
+        .progress { background-color: var(--accent-color); height: 100%; border-radius: 4px; transition: width 1.5s ease-in-out; }
+
         /* Tools Grid */
         .tools-grid {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         .tool-badge {
-            background-color: var(--bar-bg);
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid #333;
+            background-color: rgba(0, 180, 216, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--accent-color);
             font-size: 0.9rem;
+            color: var(--text-light);
+            transition: 0.3s;
+        }
+        .tool-badge:hover {
+            background-color: var(--accent-color);
+            color: var(--bg-dark);
+            font-weight: 600;
         }
 
         /* Metrics Banner */
         .metrics-banner {
             background-color: var(--card-bg);
-            padding: 50px 20px;
+            padding: 60px 20px;
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             text-align: center;
-            border-top: 2px solid var(--accent-yellow);
-            border-bottom: 2px solid var(--accent-yellow);
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
             flex-wrap: wrap;
-            gap: 30px;
+            gap: 60px;
         }
-        .metric-item h2 { font-size: 3.5rem; margin: 0; color: var(--accent-yellow); line-height: 1; }
-        .metric-item p { margin-top: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-gray); }
+        .metric-item h2 { font-size: 4rem; margin: 0; color: var(--accent-color); line-height: 1; }
+        .metric-item p { margin-top: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--text-gray); }
 
         /* Timeline Cards (Experience & Education) */
         .exp-card {
             background-color: var(--card-bg);
-            padding: 30px;
-            border-radius: 8px;
+            padding: 40px;
+            border-radius: 10px;
             margin-bottom: 30px;
-            border-top: 3px solid var(--accent-yellow);
+            border-left: 4px solid var(--accent-color);
+            transition: transform 0.3s ease;
         }
-        .exp-date { color: var(--accent-yellow); font-weight: 700; font-size: 1.2rem; margin-bottom: 10px; }
-        .exp-title { font-size: 1.5rem; font-weight: 600; margin: 0 0 5px 0; }
-        .exp-company { color: var(--text-gray); font-size: 1.1rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .exp-desc { color: #cccccc; font-weight: 300; line-height: 1.7; }
-        .exp-desc ul { padding-left: 20px; }
-        .exp-desc li { margin-bottom: 10px; }
+        .exp-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .exp-date { color: var(--accent-color); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .exp-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 5px 0; }
+        .exp-company { color: var(--text-gray); font-size: 1.1rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Custom Bullet Points */
+        .exp-desc ul { list-style: none; padding-left: 0; }
+        .exp-desc li { position: relative; padding-left: 25px; margin-bottom: 15px; color: #cccccc; font-weight: 300; line-height: 1.7; }
+        .exp-desc li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
         /* Projects Section */
         .project-card {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             margin-bottom: 40px;
+            border: 1px solid #333;
+            transition: transform 0.3s ease;
         }
-        .project-img { width: 100%; height: 300px; object-fit: cover; }
-        .project-content { padding: 30px; }
-        .project-content h3 { font-size: 1.5rem; margin-top: 0; color: var(--accent-yellow); }
+        .project-card:hover { transform: translateY(-5px); border-color: var(--accent-color); }
+        .project-img { width: 100%; height: 350px; object-fit: cover; border-bottom: 3px solid var(--accent-color); }
+        .project-content { padding: 40px; }
+        .project-content h3 { font-size: 1.8rem; margin-top: 0; color: var(--text-light); }
         
         /* Footer / Contact */
-        footer { text-align: center; padding: 60px 20px; background-color: var(--card-bg); border-top: 1px solid #333; }
-        .contact-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
+        footer { text-align: center; padding: 80px 20px; background-color: var(--card-bg); border-top: 1px solid #333; }
+        .contact-grid { display: flex; justify-content: center; gap: 20px; margin-top: 40px; flex-wrap: wrap; }
     </style>
 </head>
 <body>
 
     <section class="hero">
-        <h3>HELLO!</h3>
-        <h1>I'm <span>Pratik More</span></h1>
-        <h2>Data Analyst & SecOps Architect</h2>
-        <div class="btn-group">
+        <h3 class="fade-in">HELLO!</h3>
+        <h1 class="fade-in">I'm <span>Pratik More</span></h1>
+        <h2 class="fade-in">Data Analyst & SecOps Architect</h2>
+        <div class="btn-group fade-in">
             <a href="#projects" class="btn">My Projects</a>
             <a href="#contact" class="btn active">Hire Me</a>
         </div>
     </section>
 
     <section class="container" id="about">
-        <div class="avatar-container">
+        <div class="avatar-container fade-in">
             <div class="avatar-bg">
                 <img src="profile.jpg.jfif" alt="Pratik More">
             </div>
         </div>
 
-        <div class="info-grid">
+        <div class="info-grid fade-in">
             <p><span>Name:</span> Pratik More</p>
             <p><span>Job Role:</span> Trust & Safety / SecOps</p>
             <p><span>Experience:</span> 4+ Years</p>
             <p><span>Address:</span> Coventry, UK</p>
         </div>
 
-        <div class="philosophy-wrapper">
-            <img src="https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Tech Setup" class="philosophy-img">
-            <div class="philosophy-text">
-                <h3>My Philosophy</h3>
-                <p>I believe that robust internet governance and proactive threat hunting are the foundation of any digital platform. From moderating millions of data points at TikTok to engineering zero-touch kill switches for high-velocity ransomware, my approach is simple: build secure perimeters, automate the response, and protect the user experience at scale.</p>
-            </div>
+        <div class="fade-in" style="margin-top: 60px;">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: #ccc; background-color: var(--card-bg); padding: 30px; border-radius: 10px;">
+                <strong style="color: var(--text-light); font-size: 1.3rem;">My Philosophy:</strong><br><br>
+                I believe that robust internet governance and proactive threat hunting are the foundation of any digital platform. From moderating millions of data points at TikTok to engineering zero-touch kill switches for high-velocity ransomware, my approach is simple: build secure perimeters, automate the response, and protect the user experience at scale.
+            </p>
         </div>
 
-        <div style="margin-top: 60px;">
+        <div class="fade-in" style="margin-top: 60px;">
             <h2 style="margin-bottom: 30px;">Core Skills</h2>
             <div class="skill-box"><div class="skill-name"><span>Python & SQL</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
             <div class="skill-box"><div class="skill-name"><span>Threat Analysis (SOAR)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
@@ -210,8 +260,8 @@
             <div class="skill-box"><div class="skill-name"><span>Policy Enforcement (T&S)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
         </div>
 
-        <div style="margin-top: 50px;">
-            <h3 style="color: var(--accent-yellow);">Tools & Architecture</h3>
+        <div class="fade-in" style="margin-top: 50px;">
+            <h3 style="color: var(--text-light); margin-bottom: 20px;">Tools & Architecture</h3>
             <div class="tools-grid">
                 <span class="tool-badge">Python (Pandas, NumPy)</span>
                 <span class="tool-badge">SQL & Databases</span>
@@ -224,7 +274,7 @@
         </div>
     </section>
 
-    <section class="metrics-banner">
+    <section class="metrics-banner fade-in">
         <div class="metric-item">
             <h2>95%</h2>
             <p>Quality Accuracy</p>
@@ -240,81 +290,87 @@
     </section>
 
     <section class="container" id="experience">
-        <h2 class="section-title">Work Experience</h2>
+        <h2 class="section-title fade-in">Work Experience</h2>
         
-        <div class="exp-card">
+        <div class="exp-card fade-in">
             <div class="exp-date">June 2022 - Nov 2024</div>
             <h3 class="exp-title">Lead Workforce Management Analyst</h3>
             <div class="exp-company">Concentrix Daksh Pvt Ltd</div>
             <div class="exp-desc">
                 <ul>
-                    <li>Conducted research and data analysis across 4 global sites, identifying operational trends and opportunities that drove a 15% increase in resource utilisation.</li>
+                    <li>Conducted research and data analysis across 4 global sites, identifying operational trends and opportunities that drove a <strong>15% increase in resource utilisation.</strong></li>
                     <li>Documented workflows and prepared detailed root cause analysis summaries, helping stakeholders design and test operational improvements.</li>
                     <li>Collaborated with a cross-functional team of 20+ analysts, managing projects and building Python/Excel dashboards to communicate insights to senior leadership.</li>
                 </ul>
             </div>
         </div>
 
-        <div class="exp-card">
+        <div class="exp-card fade-in">
             <div class="exp-date">Dec 2019 - June 2022</div>
             <h3 class="exp-title">Content Moderator & AI Policy Evaluator</h3>
             <div class="exp-company">Concentrix - ByteDance (TikTok Project)</div>
             <div class="exp-desc">
                 <ul>
                     <li>Supported internet governance and protected user experience by reviewing high volumes of content across EU, MENA, and Bangladesh markets.</li>
-                    <li>Analysed platform data and processed queues via Task Crowdsourcing (TCS) tool to identify risks and policy violations, maintaining a 95% accuracy rate.</li>
-                    <li>Collaborated with global moderation teams to share feedback, document risk trends, and improve detection accuracy.</li>
+                    <li>Analysed platform data and processed queues via Task Crowdsourcing (TCS) tool to identify risks and policy violations, maintaining a <strong>95% accuracy rate.</strong></li>
+                    <li>Collaborated with global moderation teams to share feedback, document risk trends, and improve overall detection accuracy.</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section class="container" id="education">
-        <h2 class="section-title">Education</h2>
+        <h2 class="section-title fade-in">Education</h2>
         
-        <div class="exp-card">
-            <div class="exp-date">Currently Enrolled</div>
+        <div class="exp-card fade-in">
+            <div class="exp-date">Currently Enrolled (Expected 2026)</div>
             <h3 class="exp-title">MSc Cybersecurity</h3>
             <div class="exp-company">United Kingdom</div>
             <div class="exp-desc">
-                <p>Modules include AI ethics, data security, threat analysis, and secure programming. Focused on cloud-native security operations and automated incident response architecture.</p>
+                <ul>
+                    <li><strong>Modules:</strong> AI ethics, data security, threat analysis, and secure programming.</li>
+                    <li><strong>Focus:</strong> Cloud-native security operations and automated incident response architecture.</li>
+                </ul>
             </div>
         </div>
 
-        <div class="exp-card">
+        <div class="exp-card fade-in">
             <div class="exp-date">Graduated</div>
             <h3 class="exp-title">BEng Information Technology</h3>
             <div class="exp-company">Sinhgad College of Engineering, Pune</div>
             <div class="exp-desc">
-                <p>CGPA: 7.5/10. Core modules in software engineering, database management, and network infrastructure.</p>
+                <ul>
+                    <li><strong>CGPA:</strong> 7.5/10</li>
+                    <li><strong>Core Modules:</strong> Software engineering, database management, and network infrastructure.</li>
+                </ul>
             </div>
         </div>
     </section>
 
     <section class="container" id="projects">
-        <h2 class="section-title">Key Projects</h2>
+        <h2 class="section-title fade-in">Key Projects</h2>
 
-        <div class="project-card">
+        <div class="project-card fade-in">
             <img src="soar.jpg.jpeg" alt="Cybersecurity SOAR" class="project-img">
             <div class="project-content">
-                <h3>Cloud-Native SOAR & Incident Response Architecture</h3>
-                <div class="exp-desc">
-                    <p><strong>MSc Dissertation (2026)</strong></p>
+                <h3 style="color: var(--accent-color);">Cloud-Native SOAR & Incident Response Architecture</h3>
+                <div class="exp-desc" style="margin-top: 15px;">
+                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>MSc Dissertation (2026)</strong></p>
                     <ul>
                         <li>Engineered a "Zero-Touch" automated containment workflow using Microsoft Sentinel and Azure Logic Apps to mitigate high-velocity ransomware.</li>
                         <li>Designed a quantitative experimental simulation, benchmarking automated SOAR responses against manual triage.</li>
-                        <li><strong>Impact:</strong> Reduced the Mean Time to Contain (MTTC) from ~380 seconds to 41 seconds, achieving an 89% reduction in containment time and halting lateral movement.</li>
+                        <li><strong>Impact:</strong> Reduced the Mean Time to Contain (MTTC) from ~380 seconds to 41 seconds, achieving an <strong>89% reduction</strong> in containment time and halting lateral movement.</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div class="project-card">
+        <div class="project-card fade-in">
             <img src="https://images.unsplash.com/photo-1555099962463-31739c15ebb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Secure Web App Architecture" class="project-img">
             <div class="project-content">
-                <h3>Secure Web Application Architecture</h3>
-                <div class="exp-desc">
-                    <p><strong>Academic Build (2026)</strong></p>
+                <h3 style="color: var(--accent-color);">Secure Web Application Architecture</h3>
+                <div class="exp-desc" style="margin-top: 15px;">
+                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>Academic Build (2026)</strong></p>
                     <ul>
                         <li>Built a secure website demonstrating strict role-based access control (RBAC), coding custom privilege levels and dashboards for admin, developer, and client accounts.</li>
                         <li>Developed a secure login portal requiring multi-factor authentication (MFA) integrated with Microsoft Authenticator to prevent unauthorised access.</li>
@@ -325,14 +381,35 @@
     </section>
 
     <footer id="contact">
-        <h2>Let's Connect</h2>
-        <p style="color: var(--text-gray); max-width: 600px; margin: 0 auto;">Currently seeking opportunities in Data Analytics, Trust & Safety, and Security Operations. Feel free to reach out directly.</p>
-        <div class="contact-grid">
+        <h2 class="fade-in">Let's Connect</h2>
+        <p class="fade-in" style="color: var(--text-gray); max-width: 600px; margin: 0 auto;">Currently seeking opportunities in Data Analytics, Trust & Safety, and Security Operations. Feel free to reach out directly.</p>
+        <div class="contact-grid fade-in">
             <a href="mailto:morepratik77@gmail.com" class="btn active">Email Me</a>
             <a href="https://github.com/Pratikm7073" target="_blank" class="btn">GitHub Profile</a>
         </div>
-        <p style="margin-top: 50px; color: var(--text-gray); font-size: 0.8rem;">&copy; 2026 Pratik More. All rights reserved.</p>
+        <p class="fade-in" style="margin-top: 60px; color: var(--text-gray); font-size: 0.9rem;">&copy; 2026 Pratik More. All rights reserved.</p>
     </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once it's visible
+                    }
+                });
+            }, observerOptions);
+
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
