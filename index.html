@@ -245,7 +245,7 @@
         <div class="info-grid fade-in">
             <p><span>Name:</span> Pratik More</p>
             <p><span>Job Role:</span> Trust & Safety / SecOps</p>
-            <p><span>Experience:</span> 4+ Years</p>
+            <p><span>Experience:</span> 4.5+ Years</p>
             <p><span>Address:</span> Coventry, UK</p>
         </div>
 
@@ -356,7 +356,7 @@
         <h2 class="section-title fade-in">Key Projects</h2>
 
         <div class="project-card fade-in">
-            <img src="soar.jpg.jpeg" alt="Cybersecurity SOAR" class="project-img">
+            <img src="image_23a68e.jpg" alt="Cybersecurity SOAR" class="project-img">
             <div class="project-content">
                 <h3 style="color: var(--accent-color);">Cloud-Native SOAR & Incident Response Architecture</h3>
                 <div class="exp-desc" style="margin-top: 15px;">
@@ -371,17 +371,51 @@
         </div>
 
         <div class="project-card fade-in">
-            <img src="https://images.unsplash.com/photo-1555099962463-31739c15ebb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Secure Web App Architecture" class="project-img">
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="E-Commerce ML Data Dashboard" class="project-img">
+            <div class="project-content">
+                <h3 style="color: var(--accent-color);">E-Commerce Vendor Risk & Governance Pipeline</h3>
+                <div class="exp-desc" style="margin-top: 15px;">
+                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>Independent ML Architecture</strong></p>
+                    <ul>
+                        <li>Analysed a <strong>167MB</strong> e-commerce dataset to identify compliance risks, platform vulnerabilities, and vendor fraud trends.</li>
+                        <li>Supported the design of governance policies by engineering custom behavioural tripwires to accurately flag high-risk accounts, balancing aggressive threat detection with a positive platform user experience.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="project-card fade-in">
+            <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Secure Web App Architecture" class="project-img">
             <div class="project-content">
                 <h3 style="color: var(--accent-color);">Secure Web Application Architecture</h3>
                 <div class="exp-desc" style="margin-top: 15px;">
-                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>Academic Build (2026)</strong></p>
+                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>Academic Project (2026)</strong></p>
                     <ul>
                         <li>Built a secure website demonstrating strict role-based access control (RBAC), coding custom privilege levels and dashboards for admin, developer, and client accounts.</li>
                         <li>Developed a secure login portal requiring multi-factor authentication (MFA) integrated with Microsoft Authenticator to prevent unauthorised access.</li>
                     </ul>
                 </div>
             </div>
+        </div>
+
+        <div class="project-card fade-in">
+            <img src="https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Machine Learning IDS" class="project-img">
+            <div class="project-content">
+                <h3 style="color: var(--accent-color);">Machine Learning Intrusion Detection System (IDS)</h3>
+                <div class="exp-desc" style="margin-top: 15px;">
+                    <p style="color: var(--text-gray); margin-bottom: 20px;"><strong>Academic Project</strong></p>
+                    <ul>
+                        <li>Developed a Machine Learning IDS to analyze network traffic and draw insights on system vulnerabilities, showcasing strong business sensitivity to external threats.</li>
+                        <li>Researched and summarized complex attack vectors, presenting findings in clear, actionable reports to improve platform defense mechanisms.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fade-in" style="text-align: center; margin-top: 60px; padding: 50px 20px; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80') center/cover; border-radius: 10px; border: 1px solid #333;">
+            <h2 style="font-size: 2.2rem; margin-top: 0; margin-bottom: 15px; color: var(--text-light);">More projects on GitHub</h2>
+            <p style="color: var(--text-gray); font-size: 1.1rem; margin-bottom: 35px; max-width: 600px; margin-left: auto; margin-right: auto;">I love to solve business problems & uncover hidden threat vectors.</p>
+            <a href="https://github.com/Pratikm7073" target="_blank" class="btn active" style="padding: 15px 40px; font-size: 1rem;">View GitHub</a>
         </div>
     </section>
 
@@ -396,25 +430,3 @@
     </footer>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.15
-            };
-
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target); // Stop observing once it's visible
-                    }
-                });
-            }, observerOptions);
-
-            const fadeElements = document.querySelectorAll('.fade-in');
-            fadeElements.forEach(el => observer.observe(el));
-        });
-    </script>
-</body>
-</html>
