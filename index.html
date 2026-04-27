@@ -30,7 +30,7 @@
         
         a { text-decoration: none; }
         
-        /* Scroll Animations */
+        /* Scroll Animations (Fixed to repeat on scroll) */
         .fade-in {
             opacity: 0;
             transform: translateY(40px);
@@ -71,7 +71,7 @@
             padding: 80px 20px;
         }
 
-        /* Hero Section */
+        /* Hero Section (Updated Background & Title) */
         .hero {
             height: 100vh;
             display: flex;
@@ -79,7 +79,8 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover fixed;
+            /* Replaced dollar image with a technical cyber network background */
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover fixed;
             padding: 20px;
         }
         
@@ -137,13 +138,28 @@
         .info-grid p:last-child { border-bottom: none; }
         .info-grid span { color: var(--accent-color); display: inline-block; width: 130px; font-weight: 600; }
 
-        /* Progress Bars */
-        .skill-box { margin-bottom: 25px; margin-top: 30px; }
-        .skill-name { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; letter-spacing: 1px; }
-        .progress-bar { background-color: var(--bar-bg); height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
-        .progress { background-color: var(--accent-color); height: 100%; border-radius: 4px; transition: width 1.5s ease-in-out; }
+        /* Progress Bars (Upgraded to Interactive Popup Cards) */
+        .skills-container { margin-top: 30px; }
+        .skill-box { 
+            background: #151515;
+            padding: 20px 25px;
+            border-radius: 10px;
+            border-left: 3px solid var(--accent-color);
+            margin-bottom: 20px; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+        .skill-box:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.2);
+            border-left: 6px solid var(--accent-color);
+        }
+        .skill-name { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; letter-spacing: 1px; font-size: 1.1rem; }
+        .skill-name span:last-child { color: var(--accent-color); font-weight: 700; }
+        .progress-bar { background-color: var(--bg-dark); height: 10px; border-radius: 5px; width: 100%; overflow: hidden; }
+        .progress { background-color: var(--accent-color); height: 100%; border-radius: 5px; transition: width 1.5s ease-in-out; box-shadow: 0 0 10px var(--accent-color); }
 
-        /* Tools Grid */
+        /* Tools Grid (Added new tools) */
         .tools-grid {
             display: flex;
             gap: 12px;
@@ -151,10 +167,10 @@
             margin-top: 20px;
         }
         .tool-badge {
-            background-color: rgba(0, 180, 216, 0.1);
+            background-color: rgba(0, 180, 216, 0.05);
             padding: 10px 20px;
             border-radius: 25px;
-            border: 1px solid var(--accent-color);
+            border: 1px solid rgba(0, 180, 216, 0.4);
             font-size: 0.9rem;
             color: var(--text-light);
             transition: 0.3s;
@@ -163,22 +179,63 @@
             background-color: var(--accent-color);
             color: var(--bg-dark);
             font-weight: 600;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.5);
+            transform: translateY(-3px);
         }
 
-        /* Metrics Banner */
+        /* Metrics Banner (Upgraded to creative impact cards) */
         .metrics-banner {
             background-color: var(--card-bg);
-            padding: 60px 20px;
+            padding: 80px 20px;
             display: flex;
             justify-content: center;
             text-align: center;
             border-top: 1px solid #333;
             border-bottom: 1px solid #333;
             flex-wrap: wrap;
-            gap: 60px;
+            gap: 40px;
         }
-        .metric-item h2 { font-size: 4rem; margin: 0; color: var(--accent-color); line-height: 1; }
-        .metric-item p { margin-top: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; color: var(--text-gray); }
+        .metric-card {
+            background: #181818;
+            padding: 40px 30px;
+            border-radius: 15px;
+            border: 1px solid #2a2a2a;
+            width: 220px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            border-color: #444;
+        }
+        .metric-card:hover::before {
+            transform: scaleX(1);
+        }
+        .metric-card h2 { 
+            font-size: 4.5rem; 
+            margin: 0; 
+            color: var(--accent-color); 
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 180, 216, 0.3);
+        }
+        .metric-card p { 
+            margin-top: 20px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            color: var(--text-light); 
+            font-size: 0.9rem;
+        }
 
         /* Timeline Cards */
         .exp-card {
@@ -229,7 +286,7 @@
     <section class="hero">
         <h3 class="fade-in">HELLO!</h3>
         <h1 class="fade-in">I'm <span>Pratik More</span></h1>
-        <h2 class="fade-in">Data Analyst & SecOps Architect</h2>
+        <h2 class="fade-in">Cybersecurity Risk Analyst & Business Operations Lead</h2>
         <div class="btn-group fade-in">
             <a href="#projects" class="btn">My Projects</a>
             <a href="#contact" class="btn active">Hire Me</a>
@@ -259,11 +316,13 @@
 
         <div class="fade-in" style="margin-top: 60px;">
             <h2 style="margin-bottom: 30px;">Core Skills</h2>
-            <div class="skill-box"><div class="skill-name"><span>Security Operations (SIEM, Sentinel)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
-            <div class="skill-box"><div class="skill-name"><span>Risk Management & Compliance</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
-            <div class="skill-box"><div class="skill-name"><span>Identity & Access Management</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
-            <div class="skill-box"><div class="skill-name"><span>Python for Security Operations</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
-            <div class="skill-box"><div class="skill-name"><span>Data Governance & Privacy</span><span>85%</span></div><div class="progress-bar"><div class="progress" style="width: 85%;"></div></div></div>
+            <div class="skills-container">
+                <div class="skill-box"><div class="skill-name"><span>Security Operations (SIEM, Sentinel)</span><span>95%</span></div><div class="progress-bar"><div class="progress" style="width: 95%;"></div></div></div>
+                <div class="skill-box"><div class="skill-name"><span>Risk Management & Compliance</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
+                <div class="skill-box"><div class="skill-name"><span>Identity & Access Management</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
+                <div class="skill-box"><div class="skill-name"><span>Python for Security Operations</span><span>90%</span></div><div class="progress-bar"><div class="progress" style="width: 90%;"></div></div></div>
+                <div class="skill-box"><div class="skill-name"><span>Data Governance & Privacy</span><span>85%</span></div><div class="progress-bar"><div class="progress" style="width: 85%;"></div></div></div>
+            </div>
         </div>
 
         <div class="fade-in" style="margin-top: 50px;">
@@ -274,22 +333,24 @@
                 <span class="tool-badge">Microsoft Sentinel</span>
                 <span class="tool-badge">Azure Logic Apps</span>
                 <span class="tool-badge">Power BI & Tableau</span>
+                <span class="tool-badge">MS Office</span>
+                <span class="tool-badge">NICE IEX</span>
+                <span class="tool-badge">Workforce Management Tools</span>
                 <span class="tool-badge">Task Crowdsourcing (TCS)</span>
-                <span class="tool-badge">Advanced Excel</span>
             </div>
         </div>
     </section>
 
     <section class="metrics-banner fade-in">
-        <div class="metric-item">
+        <div class="metric-card">
             <h2>95%</h2>
             <p>Quality Accuracy</p>
         </div>
-        <div class="metric-item">
+        <div class="metric-card">
             <h2>89%</h2>
             <p>MTTC Reduction</p>
         </div>
-        <div class="metric-item">
+        <div class="metric-card">
             <h2>4</h2>
             <p>Global Sites Managed</p>
         </div>
@@ -357,7 +418,7 @@
         <h2 class="section-title fade-in">Key Projects</h2>
 
         <div class="project-card fade-in">
-            <img src="image_23a68e.jpg" alt="Cybersecurity SOAR" class="project-img">
+            <img src="soar.jpg.jpeg" alt="Cybersecurity SOAR" class="project-img">
             <div class="project-content">
                 <h3 style="color: var(--accent-color);">Cloud-Native SOAR & Incident Response Architecture</h3>
                 <div class="exp-desc" style="margin-top: 15px;">
@@ -439,11 +500,14 @@
                     threshold: 0.15
                 };
 
-                const observer = new IntersectionObserver((entries, observer) => {
+                // Fixed Observer: Now toggles visibility on and off based on scrolling
+                const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             entry.target.classList.add('visible');
-                            observer.unobserve(entry.target); 
+                        } else {
+                            // Removing this class makes the fade-in happen again when scrolled back into view
+                            entry.target.classList.remove('visible'); 
                         }
                     });
                 }, observerOptions);
