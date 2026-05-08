@@ -1258,14 +1258,18 @@
       document.querySelectorAll('.stat-value').forEach(el => {
         const target = parseFloat(el.innerText);
         if (!isNaN(target)) {
-          gsap.from({ val: 0 }, {
+          // Create a dummy object starting at 0
+          const counter = { val: 0 };
+          
+          // Animate TO the target number
+          gsap.to(counter, {
             val: target,
             duration: 2,
             ease: 'power1.out',
             onUpdate: function() {
-              el.childNodes[0].textContent = this.targets()[0].val.toFixed(
-                target % 1 !== 0 ? 2 : 0
-              );
+              // Use 1 decimal place if it's a fraction (like 4.5), otherwise 0
+              let decimals = target % 1 !== 0 ? 1 : 0;
+              el.childNodes[0].textContent = counter.val.toFixed(decimals);
             }
           });
         }
