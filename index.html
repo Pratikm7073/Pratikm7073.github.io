@@ -6,13 +6,14 @@
     <title>Pratik More | Cybersecurity Analyst</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── BASE THEME ── */
+        /* ── PREMIUM LIGHTER THEME ── */
         :root {
-            --bg-color: #030305;
-            --accent-color: #00b4d8;
-            --text-light: #ffffff;
-            --text-gray: #aaaaaa;
-            --card-bg: rgba(10, 10, 15, 0.65); 
+            --bg-color: #0f172a; /* Deep Slate Navy (Premium, not pure black) */
+            --accent-color: #00f2fe; /* Vibrant Cyan */
+            --secondary-accent: #818cf8; /* Soft Indigo */
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --card-bg: rgba(30, 41, 59, 0.65); /* Frosted glass slate */
         }
         
         /* Force scroll to top on refresh fix */
@@ -38,8 +39,8 @@
 
         /* ── SCROLL PROGRESS BAR ── */
         #scroll-bar {
-            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
-            background: var(--accent-color);
+            position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+            background: linear-gradient(90deg, var(--secondary-accent), var(--accent-color));
             box-shadow: 0 0 15px var(--accent-color); z-index: 999;
             transition: width 0.1s linear;
         }
@@ -62,7 +63,7 @@
         .align-center { align-items: center; text-align: center; }
 
         h1 { font-size: 5.5rem; margin: 0; font-weight: 700; line-height: 1.1; letter-spacing: -2px; }
-        h1 span { color: var(--accent-color); }
+        h1 span { background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         h2 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--accent-color); font-weight: 700;}
         p { font-size: 1.1rem; max-width: 600px; line-height: 1.6; color: var(--text-gray); }
 
@@ -70,11 +71,12 @@
         .btn {
             padding: 12px 35px; border: 1px solid var(--accent-color); border-radius: 30px;
             color: var(--text-light); font-weight: 600; text-transform: uppercase; font-size: 0.9rem;
-            transition: all 0.3s ease; cursor: pointer; background: rgba(0, 180, 216, 0.05);
+            transition: all 0.3s ease; cursor: pointer; background: rgba(0, 242, 254, 0.05);
             backdrop-filter: blur(5px);
         }
         .btn:hover, .btn.active {
-            background-color: var(--accent-color); color: #000; box-shadow: 0 0 20px rgba(0,180,216,0.5);
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-accent)); color: #000; 
+            box-shadow: 0 0 20px rgba(0,242,254,0.5); border-color: transparent;
         }
 
         /* ── DETAILED PORTFOLIO SECTIONS ── */
@@ -90,7 +92,6 @@
             bottom: -10px; left: 25%; border-radius: 2px;
         }
 
-        /* Basic Fade for text/headers */
         .fade-in {
             opacity: 0; transform: translateY(40px);
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -99,24 +100,24 @@
 
         /* Terminal */
         .terminal-container {
-            background-color: rgba(5, 5, 8, 0.85); border: 1px solid #222; border-top: 2px solid var(--accent-color);
-            border-radius: 8px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            background-color: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--accent-color);
+            border-radius: 8px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             font-family: 'Courier New', Courier, monospace; width: 100%; max-width: 600px;
             backdrop-filter: blur(10px);
         }
-        .terminal-header { background-color: rgba(20, 20, 25, 0.9); padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid #222;}
+        .terminal-header { background-color: rgba(30, 41, 59, 0.9); padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);}
         .terminal-header span[class^="btn-"] { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
         .btn-red { background-color: #ff5f56; } .btn-yellow { background-color: #ffbd2e; } .btn-green { background-color: #27c93f; }
         .terminal-title { color: #888; font-size: 0.85rem; margin-left: 10px; font-family: 'Poppins', sans-serif; letter-spacing: 1px; }
         .terminal-body { padding: 25px; color: var(--accent-color); font-size: 1rem; line-height: 1.8; min-height: 120px; text-align: left;}
-        .terminal-line { margin: 0; text-shadow: 0 0 5px rgba(0,180,216,0.4); }
+        .terminal-line { margin: 0; text-shadow: 0 0 5px rgba(0,242,254,0.4); }
         .terminal-cursor { display: inline-block; width: 10px; height: 18px; background-color: var(--accent-color); animation: blink 1s step-end infinite; margin-left: 5px; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* Avatar Box */
         .avatar-box {
             display: flex; align-items: center; gap: 20px; background: var(--card-bg);
-            padding: 20px; border-radius: 10px; border-left: 4px solid var(--accent-color);
+            padding: 20px; border-radius: 10px; border-left: 4px solid var(--secondary-accent);
             backdrop-filter: blur(10px); margin-top: 20px; max-width: 600px;
             border: 1px solid rgba(255,255,255,0.05);
         }
@@ -127,75 +128,69 @@
 
         /* Skills & Tools */
         .skill-box {
-            background: rgba(15, 15, 20, 0.7); padding: 20px 25px; border-radius: 10px;
+            background: rgba(30, 41, 59, 0.7); padding: 20px 25px; border-radius: 10px;
             border-left: 3px solid var(--accent-color); margin-bottom: 20px;
-            backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.03);
-            /* Initial state for pop animation */
-            opacity: 0; transform: translateY(30px) scale(0.95);
+            backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05);
+            opacity: 0; transform: translateY(30px) scale(0.95); /* Pop initial state */
         }
         .skill-name { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 1.1rem; }
         .skill-name span:last-child { color: var(--accent-color); }
-        .progress-bar { background-color: #050505; height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
-        .progress { background-color: var(--accent-color); height: 100%; border-radius: 4px; width: 0%; box-shadow: 0 0 10px var(--accent-color);}
+        .progress-bar { background-color: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; width: 100%; overflow: hidden; }
+        .progress { background: linear-gradient(90deg, var(--secondary-accent), var(--accent-color)); height: 100%; border-radius: 4px; width: 0%; box-shadow: 0 0 10px var(--accent-color);}
         
         .tools-grid { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
         .tool-badge {
-            background-color: rgba(0,180,216,0.05); padding: 10px 20px; border-radius: 25px;
-            border: 1px solid rgba(0,180,216,0.2); font-size: 0.9rem; color: var(--text-light); transition: 0.3s;
-            backdrop-filter: blur(5px);
-            /* Initial state for pop animation */
-            opacity: 0; transform: translateY(20px) scale(0.8);
+            background-color: rgba(255,255,255,0.03); padding: 10px 20px; border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; color: var(--text-light); transition: 0.3s;
+            backdrop-filter: blur(5px); opacity: 0; transform: translateY(20px) scale(0.8);
         }
-        .tool-badge:hover { background-color: var(--accent-color); color: #000; font-weight: 600; transform: translateY(-3px) scale(1.05) !important; box-shadow: 0 5px 15px rgba(0,180,216,0.3);}
+        .tool-badge:hover { background: var(--accent-color); color: #000; font-weight: 600; transform: translateY(-3px) scale(1.05) !important; box-shadow: 0 5px 15px rgba(0,242,254,0.3);}
 
         /* Metrics Banner */
         .metrics-banner {
             padding: 80px 20px; display: flex; justify-content: center; text-align: center;
             border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 40px;
-            background: rgba(5, 5, 8, 0.7); backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(10px);
         }
         .metric-card {
-            background: rgba(20, 20, 25, 0.5); padding: 40px 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); width: 220px; transition: 0.3s;
+            background: rgba(30, 41, 59, 0.5); padding: 40px 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); width: 220px; transition: 0.3s;
         }
-        .metric-card:hover { transform: translateY(-10px); border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-        .metric-card h2 { font-size: 4.5rem; margin: 0; text-shadow: 0 0 20px rgba(0,180,216,0.2);}
+        .metric-card:hover { transform: translateY(-10px); border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(0,0,0,0.3);}
+        .metric-card h2 { font-size: 4.5rem; margin: 0; text-shadow: 0 0 20px rgba(0,242,254,0.2);}
         .metric-card p { margin-top: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; color: #fff;}
 
         /* Cards (Exp/Edu/Projects) */
         .exp-card {
             background-color: var(--card-bg); padding: 40px; border-radius: 10px; margin-bottom: 30px;
             border-left: 4px solid var(--accent-color); backdrop-filter: blur(10px); transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.03);
-            /* Initial state for pop animation */
+            border: 1px solid rgba(255,255,255,0.05);
             opacity: 0; transform: translateY(50px) scale(0.95);
         }
-        .exp-card:hover { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        .exp-card:hover { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border-color: var(--secondary-accent); }
         .exp-date { color: var(--accent-color); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
         .exp-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 5px 0; }
         .exp-company { color: var(--text-gray); font-size: 1.1rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;}
         .exp-desc ul { list-style: none; padding-left: 0; }
-        .exp-desc li { position: relative; padding-left: 25px; margin-bottom: 15px; color: #cccccc; font-weight: 300; line-height: 1.7; }
+        .exp-desc li { position: relative; padding-left: 25px; margin-bottom: 15px; color: var(--text-light); font-weight: 300; line-height: 1.7; }
         .exp-desc li::before { content: '▹'; position: absolute; left: 0; top: 0; color: var(--accent-color); font-size: 1.2rem; font-weight: bold; }
 
         .project-card {
             background-color: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 40px;
             border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: 0.3s;
-            /* Initial state for pop animation */
             opacity: 0; transform: translateY(60px) scale(0.95);
         }
-        .project-card:hover { transform: translateY(-5px) scale(1.02) !important; border-color: var(--accent-color); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        .project-card:hover { transform: translateY(-5px) scale(1.02) !important; border-color: var(--accent-color); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
         .project-img { width: 100%; height: 350px; object-fit: cover; border-bottom: 2px solid var(--accent-color); }
         .project-content { padding: 40px; }
         .project-content h3 { font-size: 1.8rem; margin-top: 0; color: var(--text-light); }
 
-        footer { text-align: center; padding: 80px 20px; background-color: #020202; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 1;}
+        footer { text-align: center; padding: 80px 20px; background-color: #0b1120; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 1;}
         .contact-grid { display: flex; justify-content: center; gap: 20px; margin-top: 40px; flex-wrap: wrap; pointer-events: auto;}
     </style>
 </head>
 <body>
 
     <div id="scroll-bar"></div>
-
     <div id="canvas-container"></div>
 
     <div class="content">
@@ -370,7 +365,7 @@
                 </div>
             </div>
 
-            <div class="fade-in" style="text-align:center;margin-top:60px;padding:50px 20px;background:linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80') center/cover;border-radius:10px;border:1px solid #333;">
+            <div class="fade-in" style="text-align:center;margin-top:60px;padding:50px 20px;background:linear-gradient(rgba(15, 23, 42, 0.8),rgba(15, 23, 42, 0.8)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80') center/cover;border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
                 <h2 style="font-size:2.2rem;margin-top:0;margin-bottom:15px;color:var(--text-light)">More projects on GitHub</h2>
                 <p style="color:var(--text-gray);font-size:1.1rem;margin-bottom:35px;max-width:600px;margin-left:auto;margin-right:auto">I love to solve business problems & uncover hidden threat vectors.</p>
                 <a href="https://github.com/Pratikm7073" target="_blank" class="btn active" style="padding:15px 40px;font-size:1rem">View GitHub</a>
@@ -400,110 +395,120 @@
         window.addEventListener('beforeunload', function() {
             window.scrollTo(0, 0);
         });
-        // Tiny delay ensures it overrides the browser's aggressive caching
         setTimeout(() => { window.scrollTo(0, 0); }, 10);
 
         gsap.registerPlugin(ScrollTrigger);
 
         // ==========================================
-        // 2. PREMIUM THREE.JS SETUP
+        // 2. THE CYBER HIGHWAY (NEW 3D SCENE)
         // ==========================================
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
-        scene.fog = new THREE.FogExp2(0x030305, 0.02);
+        // Navy/Slate Fog fading into the distance
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
 
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        const ambientLight = new THREE.AmbientLight(0x0a0a1a, 2);
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x1e293b, 2);
         scene.add(ambientLight);
         
-        const mainSpot = new THREE.SpotLight(0x00ffcc, 5);
-        mainSpot.position.set(10, 20, 10);
-        mainSpot.angle = Math.PI / 4;
-        mainSpot.penumbra = 0.5;
-        scene.add(mainSpot);
+        const cyanLight = new THREE.PointLight(0x00f2fe, 5, 50);
+        cyanLight.position.set(0, 5, -10);
+        scene.add(cyanLight);
 
-        const cyanRim = new THREE.PointLight(0x00b4d8, 3, 50);
-        cyanRim.position.set(10, 5, 15);
-        scene.add(cyanRim);
+        const purpleLight = new THREE.PointLight(0x818cf8, 5, 50);
+        purpleLight.position.set(0, 5, 10);
+        scene.add(purpleLight);
 
-        const violetRim = new THREE.PointLight(0x5500ff, 4, 50);
-        violetRim.position.set(-15, -5, -15);
-        scene.add(violetRim);
+        // --- The Endless Grid Floor ---
+        const gridHelper = new THREE.GridHelper(200, 100, 0x00f2fe, 0x1e293b);
+        gridHelper.position.y = -2;
+        gridHelper.material.opacity = 0.4;
+        gridHelper.material.transparent = true;
+        scene.add(gridHelper);
 
-        const coreGroup = new THREE.Group();
-        scene.add(coreGroup);
+        // --- Glowing Data Pillars (Environment passing by) ---
+        const pillars = [];
+        const pillarGroup = new THREE.Group();
+        scene.add(pillarGroup);
 
-        const innerGeo = new THREE.IcosahedronGeometry(1.8, 2); 
-        const innerMat = new THREE.MeshPhysicalMaterial({
-            color: 0x050505, metalness: 0.9, roughness: 0.1,
-            emissive: 0x002233, emissiveIntensity: 0.5,
-            clearcoat: 1.0, clearcoatRoughness: 0.1
-        });
-        const innerCore = new THREE.Mesh(innerGeo, innerMat);
-        coreGroup.add(innerCore);
-
-        const outerGeo = new THREE.IcosahedronGeometry(2.1, 1);
-        const outerMat = new THREE.MeshBasicMaterial({
-            color: 0x00b4d8, wireframe: true, transparent: true, opacity: 0.15
-        });
-        const outerCage = new THREE.Mesh(outerGeo, outerMat);
-        coreGroup.add(outerCage);
-
-        const rings = [];
-        for(let i=0; i<3; i++) {
-            const ringGeo = new THREE.TorusGeometry(3.5 + (i * 0.8), 0.015, 16, 100);
-            const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0.3 - (i*0.05) });
-            const ring = new THREE.Mesh(ringGeo, ringMat);
-            ring.rotation.x = Math.random() * Math.PI;
-            ring.rotation.y = Math.random() * Math.PI;
-            coreGroup.add(ring);
-            rings.push({ mesh: ring, speed: 0.002 + Math.random() * 0.003 });
+        for(let i=0; i<40; i++) {
+            const h = Math.random() * 10 + 2;
+            const geo = new THREE.BoxGeometry(0.5, h, 0.5);
+            // Mix of solid and wireframe pillars
+            const isWire = Math.random() > 0.5;
+            const mat = new THREE.MeshBasicMaterial({ 
+                color: isWire ? 0x00f2fe : 0x1e293b, 
+                wireframe: isWire,
+                transparent: true, opacity: 0.5 
+            });
+            const p = new THREE.Mesh(geo, mat);
+            
+            // Place pillars randomly on left and right sides of the highway
+            const side = Math.random() > 0.5 ? 1 : -1;
+            p.position.set((Math.random() * 15 + 5) * side, (h/2) - 2, -Math.random() * 100);
+            pillarGroup.add(p);
+            pillars.push(p);
         }
 
-        const particleCount = 1500;
-        const posArray = new Float32Array(particleCount * 3);
-        for(let i = 0; i < particleCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 40; 
-        }
-        const particlesGeo = new THREE.BufferGeometry();
-        particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const particlesMat = new THREE.PointsMaterial({
-            size: 0.03, color: 0x00b4d8, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending
-        });
-        const particles = new THREE.Points(particlesGeo, particlesMat);
-        scene.add(particles);
+        // --- The Cyber Glider (Stylized Car) ---
+        // I built a sleek, glowing low-poly geometric car. 
+        // IF YOU WANT TO ADD A REAL 3D MODEL: Remove 'carGroup.add(...)' codes below and use GLTFLoader.
+        const carGroup = new THREE.Group();
+        scene.add(carGroup);
 
-        const spheres = [];
-        const sphereGroup = new THREE.Group();
-        scene.add(sphereGroup);
-        sphereGroup.position.y = -15; 
+        // Car Body
+        const bodyGeo = new THREE.CylinderGeometry(0.2, 1, 3, 3);
+        bodyGeo.rotateX(Math.PI / 2);
+        const bodyMat = new THREE.MeshPhysicalMaterial({ color: 0x0f172a, metalness: 0.9, roughness: 0.1, clearcoat: 1.0 });
+        const carBody = new THREE.Mesh(bodyGeo, bodyMat);
+        carGroup.add(carBody);
 
-        const techColors = [0x00b4d8, 0xffffff, 0x003355, 0x111111];
-        for(let i = 0; i < 15; i++) {
-            const sphere = new THREE.Mesh(
-                new THREE.SphereGeometry(Math.random() * 0.4 + 0.3, 32, 32),
-                new THREE.MeshPhysicalMaterial({ 
-                    color: techColors[Math.floor(Math.random() * techColors.length)], 
-                    roughness: 0.2, metalness: 0.8, clearcoat: 1.0 
-                })
-            );
-            sphere.position.set((Math.random() - 0.5) * 8, (Math.random() - 0.5) * 8, (Math.random() - 0.5) * 5);
-            sphere.userData = { speed: Math.random() * 0.015 + 0.01, offset: Math.random() * Math.PI * 2 };
-            sphereGroup.add(sphere);
-            spheres.push(sphere);
+        // Neon Trim
+        const trimGeo = new THREE.EdgesGeometry(bodyGeo);
+        const trimMat = new THREE.LineBasicMaterial({ color: 0x00f2fe, linewidth: 2 });
+        const carTrim = new THREE.LineSegments(trimGeo, trimMat);
+        carGroup.add(carTrim);
+
+        // Thrusters (Glowing back)
+        const thrustGeo = new THREE.BoxGeometry(1.2, 0.2, 0.2);
+        const thrustMat = new THREE.MeshBasicMaterial({ color: 0x818cf8 });
+        const thrust = new THREE.Mesh(thrustGeo, thrustMat);
+        thrust.position.set(0, -0.3, 1.5);
+        carGroup.add(thrust);
+
+        // Engine glow light
+        const engineGlow = new THREE.PointLight(0x818cf8, 2, 10);
+        engineGlow.position.set(0, 0, 2);
+        carGroup.add(engineGlow);
+
+        carGroup.position.set(0, -1, -5); // Start position
+
+        // --- Pop-up Data Gates ---
+        const gates = [];
+        for(let i=0; i<5; i++) {
+            const gateGeo = new THREE.TorusGeometry(5, 0.1, 4, 4); // Diamond shape
+            const gateMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.3 });
+            const gate = new THREE.Mesh(gateGeo, gateMat);
+            gate.rotation.z = Math.PI / 4; // Diamond orientation
+            gate.position.set(0, -1, -30 - (i * 40)); // Spaced out
+            scene.add(gate);
+            gates.push(gate);
         }
 
         // ==========================================
-        // 3. GSAP CAMERA ANIMATION 
+        // 3. GSAP CAMERA ANIMATION (Cinematic Sweeps)
         // ==========================================
-        camera.position.set(0, 0, 7); 
-        camera.lookAt(0, 0, 0);
+        
+        // Initial: Behind the car
+        camera.position.set(0, 1.5, 2); 
+        camera.lookAt(0, -1, -10);
 
         const tl3D = gsap.timeline({
             scrollTrigger: {
@@ -514,28 +519,17 @@
             }
         });
 
-        tl3D.to(camera.position, { x: -4, y: 2, z: 9, ease: "power1.inOut" }, 0.1);
-        tl3D.to(camera.position, { x: 4, y: -1, z: 8, ease: "power1.inOut" }, 0.4);
-        tl3D.to(camera.position, { x: 0, y: -15, z: 8, ease: "power2.inOut" }, 0.8);
+        // 1. Zoom out & Pan to side profile (Terminal Section)
+        tl3D.to(camera.position, { x: -6, y: 0, z: -2, ease: "power1.inOut" }, 0.1);
+        tl3D.to(camera.rotation, { y: -Math.PI / 4, ease: "power1.inOut" }, 0.1); // Look at car
         
-        spheres.forEach(sphere => {
-            tl3D.to(sphere.position, {
-                x: (Math.random() - 0.5) * 7,
-                y: (Math.random() - 0.5) * 7,
-                z: (Math.random() - 0.5) * 5,
-                ease: "back.out(1.2)"
-            }, 0.85);
-        });
+        // 2. Sweep up and look down (Tech Stack)
+        tl3D.to(camera.position, { x: 3, y: 6, z: -8, ease: "power2.inOut" }, 0.5);
+        tl3D.to(camera.rotation, { x: -Math.PI / 6, y: Math.PI / 6, z: 0, ease: "power2.inOut" }, 0.5);
 
         window.addEventListener('scroll', () => {
             let scrollProgress = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
             document.getElementById('scroll-bar').style.width = (scrollProgress * 100) + '%';
-        }, { passive: true });
-
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', e => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
         }, { passive: true });
 
         // ==========================================
@@ -551,31 +545,26 @@
             }, { threshold: 0.15 });
             document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-            // --- 5. THE FIX: POPPING TABS AND CARDS ---
-            
             // Tech Tools Pop Out
             ScrollTrigger.create({
-                trigger: '.tools-grid',
-                start: 'top 85%',
+                trigger: '.tools-grid', start: 'top 85%',
                 onEnter: () => gsap.to('.tool-badge', { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.05, ease: 'back.out(1.7)' }),
                 onLeaveBack: () => gsap.to('.tool-badge', { opacity: 0, y: 20, scale: 0.8, duration: 0.3, stagger: 0.03 })
             });
 
             // Skills Pop Out
             ScrollTrigger.create({
-                trigger: '.skill-box',
-                start: 'top 85%',
+                trigger: '.skill-box', start: 'top 85%',
                 onEnter: () => {
                     gsap.to('.skill-box', { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'back.out(1.5)' });
-                    // Trigger the bar widths inside
                     document.querySelectorAll('.progress').forEach(bar => {
                         gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.6, ease: 'power2.out', delay: 0.2 });
                     });
                 }
             });
 
-            // Experience & Education Cards Pop Out
-            gsap.utils.toArray('.exp-card').forEach((card, i) => {
+            // Experience & Project Cards Pop Out
+            gsap.utils.toArray('.exp-card, .project-card').forEach((card) => {
                 gsap.fromTo(card, 
                     { opacity: 0, y: 60, scale: 0.95 }, 
                     { 
@@ -584,18 +573,6 @@
                     }
                 );
             });
-
-            // Project Cards Pop Out
-            gsap.utils.toArray('.project-card').forEach((card, i) => {
-                gsap.fromTo(card, 
-                    { opacity: 0, y: 80, scale: 0.95 }, 
-                    { 
-                        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' },
-                        opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'back.out(1.3)'
-                    }
-                );
-            });
-            // ------------------------------------------
 
             ScrollTrigger.create({
                 trigger: '.metrics-banner', start: 'top 82%',
@@ -609,13 +586,13 @@
                 }
             });
 
-            // Terminal Setup
+            // Terminal
             const terminalText = document.getElementById('terminal-text');
             const terminalBox  = document.getElementById('terminal');
             const lines = [
                 "> Initializing SecOps Profile...",
-                "> Bypassing standard HR filters...",
-                "> Loading Risk Assessment Protocols...",
+                "> Locating target vehicle...",
+                "> Loading Cyber Highway...",
                 "> Access Granted: Welcome to Pratik's Workspace."
             ];
             let lineIndex = 0, charIndex = 0, hasTyped = false;
@@ -649,33 +626,35 @@
         });
 
         // ==========================================
-        // 6. 3D RENDER LOOP
+        // 5. 3D RENDER LOOP (The Driving Physics)
         // ==========================================
         const clock = new THREE.Clock();
+        const speed = 0.5; // Driving speed
+
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            innerCore.rotation.y += 0.002;
-            innerCore.rotation.x += 0.001;
-            outerCage.rotation.y -= 0.003;
-            outerCage.rotation.x -= 0.002;
+            // 1. Move the grid to simulate driving
+            gridHelper.position.z += speed;
+            if(gridHelper.position.z > 10) gridHelper.position.z = 0; // Infinite loop
 
-            rings.forEach(r => {
-                r.mesh.rotation.x += r.speed;
-                r.mesh.rotation.y += r.speed;
+            // 2. Move pillars
+            pillars.forEach(p => {
+                p.position.z += speed;
+                if(p.position.z > 10) p.position.z = -100; // Send back to horizon
             });
 
-            particles.rotation.y = time * 0.02;
-
-            spheres.forEach((sphere) => {
-                sphere.position.y += Math.sin(time * 2 + sphere.userData.offset) * 0.004;
-                sphere.rotation.x += sphere.userData.speed;
-                sphere.rotation.y += sphere.userData.speed;
+            // 3. Move Data Gates
+            gates.forEach(g => {
+                g.position.z += speed;
+                g.rotation.z += 0.01; // Spin slightly
+                if(g.position.z > 5) g.position.z = -150; // Reset
             });
 
-            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 0.5 - camera.position.y + (camera.position.y > 0 ? 0 : -15)) * 0.05; 
+            // 4. Car hovering logic
+            carGroup.position.y = -1 + Math.sin(time * 3) * 0.1; // Gentle hover
+            carGroup.rotation.z = Math.sin(time * 1.5) * 0.05; // Slight tilting
 
             renderer.render(scene, camera);
         }
