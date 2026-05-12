@@ -8,13 +8,16 @@
     <style>
         /* ── BASE THEME ── */
         :root {
-            --bg-color: #030305; /* Deep, rich premium black */
+            --bg-color: #030305;
             --accent-color: #00b4d8;
             --text-light: #ffffff;
             --text-gray: #aaaaaa;
-            --card-bg: rgba(10, 10, 15, 0.65); /* Glassmorphism background */
+            --card-bg: rgba(10, 10, 15, 0.65); 
         }
-        html { scroll-behavior: smooth; }
+        
+        /* Force scroll to top on refresh fix */
+        html { scroll-behavior: smooth; height: 100%; overflow-y: scroll; }
+        
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
@@ -87,7 +90,7 @@
             bottom: -10px; left: 25%; border-radius: 2px;
         }
 
-        /* Scroll Animations */
+        /* Basic Fade for text/headers */
         .fade-in {
             opacity: 0; transform: translateY(40px);
             transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -127,6 +130,8 @@
             background: rgba(15, 15, 20, 0.7); padding: 20px 25px; border-radius: 10px;
             border-left: 3px solid var(--accent-color); margin-bottom: 20px;
             backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.03);
+            /* Initial state for pop animation */
+            opacity: 0; transform: translateY(30px) scale(0.95);
         }
         .skill-name { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 1.1rem; }
         .skill-name span:last-child { color: var(--accent-color); }
@@ -138,8 +143,10 @@
             background-color: rgba(0,180,216,0.05); padding: 10px 20px; border-radius: 25px;
             border: 1px solid rgba(0,180,216,0.2); font-size: 0.9rem; color: var(--text-light); transition: 0.3s;
             backdrop-filter: blur(5px);
+            /* Initial state for pop animation */
+            opacity: 0; transform: translateY(20px) scale(0.8);
         }
-        .tool-badge:hover { background-color: var(--accent-color); color: #000; font-weight: 600; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,180,216,0.3);}
+        .tool-badge:hover { background-color: var(--accent-color); color: #000; font-weight: 600; transform: translateY(-3px) scale(1.05) !important; box-shadow: 0 5px 15px rgba(0,180,216,0.3);}
 
         /* Metrics Banner */
         .metrics-banner {
@@ -159,8 +166,10 @@
             background-color: var(--card-bg); padding: 40px; border-radius: 10px; margin-bottom: 30px;
             border-left: 4px solid var(--accent-color); backdrop-filter: blur(10px); transition: 0.3s;
             border: 1px solid rgba(255,255,255,0.03);
+            /* Initial state for pop animation */
+            opacity: 0; transform: translateY(50px) scale(0.95);
         }
-        .exp-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        .exp-card:hover { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
         .exp-date { color: var(--accent-color); font-weight: 700; font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
         .exp-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 5px 0; }
         .exp-company { color: var(--text-gray); font-size: 1.1rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;}
@@ -171,8 +180,10 @@
         .project-card {
             background-color: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 40px;
             border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: 0.3s;
+            /* Initial state for pop animation */
+            opacity: 0; transform: translateY(60px) scale(0.95);
         }
-        .project-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        .project-card:hover { transform: translateY(-5px) scale(1.02) !important; border-color: var(--accent-color); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
         .project-img { width: 100%; height: 350px; object-fit: cover; border-bottom: 2px solid var(--accent-color); }
         .project-content { padding: 40px; }
         .project-content h3 { font-size: 1.8rem; margin-top: 0; color: var(--text-light); }
@@ -252,7 +263,7 @@
         <section class="container" id="experience">
             <h2 class="section-title fade-in">Work Experience</h2>
 
-            <div class="exp-card fade-in">
+            <div class="exp-card">
                 <div class="exp-date">June 2022 – Nov 2024</div>
                 <h3 class="exp-title">Lead Workforce Management Analyst</h3>
                 <div class="exp-company">Concentrix Daksh Pvt Ltd</div>
@@ -263,7 +274,7 @@
                 </ul></div>
             </div>
 
-            <div class="exp-card fade-in">
+            <div class="exp-card">
                 <div class="exp-date">Dec 2019 – June 2022</div>
                 <h3 class="exp-title">Content Moderator & AI Policy Evaluator</h3>
                 <div class="exp-company">Concentrix – ByteDance (TikTok Project)</div>
@@ -278,7 +289,7 @@
         <section class="container" id="education">
             <h2 class="section-title fade-in">Education</h2>
 
-            <div class="exp-card fade-in">
+            <div class="exp-card">
                 <div class="exp-date">Currently Enrolled (Expected 2026)</div>
                 <h3 class="exp-title">MSc Cybersecurity</h3>
                 <div class="exp-company">United Kingdom</div>
@@ -288,7 +299,7 @@
                 </ul></div>
             </div>
 
-            <div class="exp-card fade-in">
+            <div class="exp-card">
                 <div class="exp-date">Graduated</div>
                 <h3 class="exp-title">BEng Information Technology</h3>
                 <div class="exp-company">Sinhgad College of Engineering, Pune</div>
@@ -302,7 +313,7 @@
         <section class="container" id="projects">
             <h2 class="section-title fade-in">Key Projects</h2>
 
-            <div class="project-card fade-in">
+            <div class="project-card">
                 <img src="soar.jpg.jpeg" alt="Cybersecurity SOAR" class="project-img">
                 <div class="project-content">
                     <h3 style="color:var(--accent-color)">Cloud-Native SOAR & Incident Response Architecture</h3>
@@ -317,7 +328,7 @@
                 </div>
             </div>
 
-            <div class="project-card fade-in">
+            <div class="project-card">
                 <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="E-Commerce ML Data Dashboard" class="project-img">
                 <div class="project-content">
                     <h3 style="color:var(--accent-color)">E-Commerce Vendor Risk & Governance Pipeline</h3>
@@ -331,7 +342,7 @@
                 </div>
             </div>
 
-            <div class="project-card fade-in">
+            <div class="project-card">
                 <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Secure Web App Architecture" class="project-img">
                 <div class="project-content">
                     <h3 style="color:var(--accent-color)">Secure Web Application Architecture</h3>
@@ -345,7 +356,7 @@
                 </div>
             </div>
 
-            <div class="project-card fade-in">
+            <div class="project-card">
                 <img src="https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Machine Learning IDS" class="project-img">
                 <div class="project-content">
                     <h3 style="color:var(--accent-color)">Machine Learning Intrusion Detection System (IDS)</h3>
@@ -382,18 +393,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
     <script>
-        if (history.scrollRestoration) history.scrollRestoration = 'manual';
-        window.scrollTo(0, 0);
+        // --- 1. FORCE SCROLL TO TOP FIX ---
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.addEventListener('beforeunload', function() {
+            window.scrollTo(0, 0);
+        });
+        // Tiny delay ensures it overrides the browser's aggressive caching
+        setTimeout(() => { window.scrollTo(0, 0); }, 10);
 
         gsap.registerPlugin(ScrollTrigger);
 
         // ==========================================
-        // 1. PREMIUM THREE.JS SETUP (The $100k Look)
+        // 2. PREMIUM THREE.JS SETUP
         // ==========================================
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
-        // Deep cinematic fog
         scene.fog = new THREE.FogExp2(0x030305, 0.02);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -402,7 +419,6 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         container.appendChild(renderer.domElement);
 
-        // --- Cinematic Studio Lighting ---
         const ambientLight = new THREE.AmbientLight(0x0a0a1a, 2);
         scene.add(ambientLight);
         
@@ -412,7 +428,6 @@
         mainSpot.penumbra = 0.5;
         scene.add(mainSpot);
 
-        // Dual-tone rim lighting (Cyan + Deep Violet for a premium Cyber look)
         const cyanRim = new THREE.PointLight(0x00b4d8, 3, 50);
         cyanRim.position.set(10, 5, 15);
         scene.add(cyanRim);
@@ -421,14 +436,10 @@
         violetRim.position.set(-15, -5, -15);
         scene.add(violetRim);
 
-        // ==========================================
-        // 2. ABSTRACT "QUANTUM SECURITY CORE"
-        // ==========================================
         const coreGroup = new THREE.Group();
         scene.add(coreGroup);
 
-        // Inner glowing solid core (Dark sleek metal)
-        const innerGeo = new THREE.IcosahedronGeometry(1.8, 2); // Smooth sphere-like gem
+        const innerGeo = new THREE.IcosahedronGeometry(1.8, 2); 
         const innerMat = new THREE.MeshPhysicalMaterial({
             color: 0x050505, metalness: 0.9, roughness: 0.1,
             emissive: 0x002233, emissiveIntensity: 0.5,
@@ -437,7 +448,6 @@
         const innerCore = new THREE.Mesh(innerGeo, innerMat);
         coreGroup.add(innerCore);
 
-        // Outer wireframe energy cage
         const outerGeo = new THREE.IcosahedronGeometry(2.1, 1);
         const outerMat = new THREE.MeshBasicMaterial({
             color: 0x00b4d8, wireframe: true, transparent: true, opacity: 0.15
@@ -445,7 +455,6 @@
         const outerCage = new THREE.Mesh(outerGeo, outerMat);
         coreGroup.add(outerCage);
 
-        // Orbiting Security Rings (Firewalls)
         const rings = [];
         for(let i=0; i<3; i++) {
             const ringGeo = new THREE.TorusGeometry(3.5 + (i * 0.8), 0.015, 16, 100);
@@ -457,11 +466,10 @@
             rings.push({ mesh: ring, speed: 0.002 + Math.random() * 0.003 });
         }
 
-        // --- Premium Data Dust (Particles) ---
         const particleCount = 1500;
         const posArray = new Float32Array(particleCount * 3);
         for(let i = 0; i < particleCount * 3; i++) {
-            posArray[i] = (Math.random() - 0.5) * 40; // Spread wide
+            posArray[i] = (Math.random() - 0.5) * 40; 
         }
         const particlesGeo = new THREE.BufferGeometry();
         particlesGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
@@ -471,11 +479,10 @@
         const particles = new THREE.Points(particlesGeo, particlesMat);
         scene.add(particles);
 
-        // --- Tech Stack Spheres (Frosted Glass & Metal) ---
         const spheres = [];
         const sphereGroup = new THREE.Group();
         scene.add(sphereGroup);
-        sphereGroup.position.y = -15; // Hidden far below initially
+        sphereGroup.position.y = -15; 
 
         const techColors = [0x00b4d8, 0xffffff, 0x003355, 0x111111];
         for(let i = 0; i < 15; i++) {
@@ -493,7 +500,7 @@
         }
 
         // ==========================================
-        // 3. GSAP CAMERA ANIMATION (Cinematic Sweeps)
+        // 3. GSAP CAMERA ANIMATION 
         // ==========================================
         camera.position.set(0, 0, 7); 
         camera.lookAt(0, 0, 0);
@@ -503,17 +510,12 @@
                 trigger: "body",
                 start: "top top",
                 end: "30% top", 
-                scrub: 1.5 // Buttery smooth easing
+                scrub: 1.5 
             }
         });
 
-        // 1. Zoom out and reveal the Core structure
         tl3D.to(camera.position, { x: -4, y: 2, z: 9, ease: "power1.inOut" }, 0.1);
-        
-        // 2. Pan across to show the terminal and profile
         tl3D.to(camera.position, { x: 4, y: -1, z: 8, ease: "power1.inOut" }, 0.4);
-
-        // 3. Drop down into the floating Tech Stack spheres
         tl3D.to(camera.position, { x: 0, y: -15, z: 8, ease: "power2.inOut" }, 0.8);
         
         spheres.forEach(sphere => {
@@ -525,13 +527,11 @@
             }, 0.85);
         });
 
-        // Scroll Progress Bar
         window.addEventListener('scroll', () => {
             let scrollProgress = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
             document.getElementById('scroll-bar').style.width = (scrollProgress * 100) + '%';
         }, { passive: true });
 
-        // Mouse Parallax Effect for depth
         let mouseX = 0, mouseY = 0;
         document.addEventListener('mousemove', e => {
             mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -542,6 +542,8 @@
         // 4. UI ANIMATIONS & TERMINAL
         // ==========================================
         document.addEventListener("DOMContentLoaded", function () {
+            
+            // Standard Text Fades
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -549,12 +551,51 @@
             }, { threshold: 0.15 });
             document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-            document.querySelectorAll('.progress').forEach(bar => {
-                ScrollTrigger.create({
-                    trigger: bar, start: 'top 88%',
-                    onEnter: () => gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.6, ease: 'power2.out' })
-                });
+            // --- 5. THE FIX: POPPING TABS AND CARDS ---
+            
+            // Tech Tools Pop Out
+            ScrollTrigger.create({
+                trigger: '.tools-grid',
+                start: 'top 85%',
+                onEnter: () => gsap.to('.tool-badge', { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.05, ease: 'back.out(1.7)' }),
+                onLeaveBack: () => gsap.to('.tool-badge', { opacity: 0, y: 20, scale: 0.8, duration: 0.3, stagger: 0.03 })
             });
+
+            // Skills Pop Out
+            ScrollTrigger.create({
+                trigger: '.skill-box',
+                start: 'top 85%',
+                onEnter: () => {
+                    gsap.to('.skill-box', { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'back.out(1.5)' });
+                    // Trigger the bar widths inside
+                    document.querySelectorAll('.progress').forEach(bar => {
+                        gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.6, ease: 'power2.out', delay: 0.2 });
+                    });
+                }
+            });
+
+            // Experience & Education Cards Pop Out
+            gsap.utils.toArray('.exp-card').forEach((card, i) => {
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 60, scale: 0.95 }, 
+                    { 
+                        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' },
+                        opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.4)'
+                    }
+                );
+            });
+
+            // Project Cards Pop Out
+            gsap.utils.toArray('.project-card').forEach((card, i) => {
+                gsap.fromTo(card, 
+                    { opacity: 0, y: 80, scale: 0.95 }, 
+                    { 
+                        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' },
+                        opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'back.out(1.3)'
+                    }
+                );
+            });
+            // ------------------------------------------
 
             ScrollTrigger.create({
                 trigger: '.metrics-banner', start: 'top 82%',
@@ -568,6 +609,7 @@
                 }
             });
 
+            // Terminal Setup
             const terminalText = document.getElementById('terminal-text');
             const terminalBox  = document.getElementById('terminal');
             const lines = [
@@ -607,14 +649,13 @@
         });
 
         // ==========================================
-        // 5. 3D RENDER LOOP
+        // 6. 3D RENDER LOOP
         // ==========================================
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // Core rotations
             innerCore.rotation.y += 0.002;
             innerCore.rotation.x += 0.001;
             outerCage.rotation.y -= 0.003;
@@ -627,16 +668,14 @@
 
             particles.rotation.y = time * 0.02;
 
-            // Sphere physics
             spheres.forEach((sphere) => {
                 sphere.position.y += Math.sin(time * 2 + sphere.userData.offset) * 0.004;
                 sphere.rotation.x += sphere.userData.speed;
                 sphere.rotation.y += sphere.userData.speed;
             });
 
-            // Subtle mouse parallax camera drift
             camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY * 0.5 - camera.position.y + (camera.position.y > 0 ? 0 : -15)) * 0.05; // adjusts based on scroll depth
+            camera.position.y += (-mouseY * 0.5 - camera.position.y + (camera.position.y > 0 ? 0 : -15)) * 0.05; 
 
             renderer.render(scene, camera);
         }
