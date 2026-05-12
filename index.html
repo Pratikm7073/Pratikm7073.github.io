@@ -550,6 +550,13 @@
     </footer>
 
     <script>
+        // --- ADDED: Force page to start at the top on refresh ---
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
+        window.scrollTo(0, 0);
+        // --------------------------------------------------------
+
         document.addEventListener("DOMContentLoaded", function() {
             try {
                 // 1. General Scroll Fade-In Observer
