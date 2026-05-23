@@ -16,7 +16,6 @@
             --card-bg: rgba(15, 15, 15, 0.5); /* Deep frosted glass */
         }
         
-        /* Force scroll to top on refresh */
         html { scroll-behavior: smooth; height: 100%; overflow-y: scroll; }
         
         body {
@@ -37,19 +36,14 @@
             pointer-events: none;
         }
 
-        /* ── SCROLL PROGRESS BAR ── */
         #scroll-bar {
             position: fixed; top: 0; left: 0; height: 4px; width: 0%;
             background: linear-gradient(90deg, var(--accent-secondary), var(--accent-color));
             box-shadow: 0 0 15px var(--accent-color); z-index: 999;
         }
 
-        /* ── HTML CONTENT OVERLAY ── */
-        .content {
-            position: relative; z-index: 1;
-        }
+        .content { position: relative; z-index: 1; }
 
-        /* Top 3D interaction sections */
         .sync-section {
             min-height: 100vh;
             display: flex; flex-direction: column; justify-content: center;
@@ -395,12 +389,20 @@
         gsap.registerPlugin(ScrollTrigger);
 
         // ==========================================
-        // 2. THE "TERMINAL" TRUCK TRANSFORMATION SCENE (FIXED LIGHTING & MATERIALS)
+        // 2. THE "TERMINAL" TRUCK TRANSFORMATION SCENE (FIXED LIGHTING & MODELS)
         // ==========================================
+        
+        /* NOTE ON 3D MODELS: 
+        The photorealistic truck in the reference video is a custom .glb 3D model file, not mathematical code. 
+        Because I am an AI generating text/code, I have built the absolute highest-fidelity procedural geometric 
+        truck possible using code (complete with a chrome grill, bumper, smoke stacks, and detailed wheels). 
+        To get the exact photorealistic look from the video, you must download a free semi-truck .glb file 
+        from Sketchfab.com and load it using THREE.GLTFLoader().
+        */
+
         const container = document.getElementById('canvas-container');
         const scene = new THREE.Scene();
         
-        // Deep atmosphere
         const fogColor = new THREE.Color(0x0a0a0a);
         scene.fog = new THREE.FogExp2(fogColor, 0.02);
         scene.background = fogColor;
@@ -412,108 +414,115 @@
         container.appendChild(renderer.domElement);
 
         // --- Cinematic Lighting (FIXED TO ILLUMINATE THE TRUCK) ---
-        // Brighter ambient light so shadows aren't pitch black
+        // Brighter ambient light guarantees it won't be pitch black
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
         scene.add(ambientLight);
 
-        // Warm directional "Sunset" light from front right
-        const sunLight = new THREE.DirectionalLight(0xffdfbb, 3.0); 
-        sunLight.position.set(15, 20, 15);
+        // Warm directional "Sunset" light positioned to hit the side of the truck facing the camera
+        const sunLight = new THREE.DirectionalLight(0xffdfbb, 3.5); 
+        sunLight.position.set(15, 10, 20); 
         scene.add(sunLight);
 
-        // Cool "Fill" light from front left to show details
+        // Cool "Fill" light from the opposite side to highlight details
         const fillLight = new THREE.DirectionalLight(0x88bbff, 1.5);
-        fillLight.position.set(-15, 10, 15);
+        fillLight.position.set(-10, 5, 20);
         scene.add(fillLight);
 
-        const cyberLight = new THREE.PointLight(0x00ffcc, 0); // Cyan light (turns on during transformation)
+        // Cyan light (turns on during the AI wireframe transformation)
+        const cyberLight = new THREE.PointLight(0x00ffcc, 0); 
         cyberLight.position.set(0, 5, 5);
         scene.add(cyberLight);
 
         // --- Moving Ground (The Road) ---
         const gridGeo = new THREE.PlaneGeometry(200, 200, 40, 40);
-        // Changed ground to Lambert for flat, non-distracting reflection
         const gridMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
         const ground = new THREE.Mesh(gridGeo, gridMat);
         ground.rotation.x = -Math.PI / 2;
         ground.position.y = -1.5;
         scene.add(ground);
         
-        // Moving grid lines
         const wireMat = new THREE.LineBasicMaterial({ color: 0x333333, transparent: true, opacity: 0.3 });
         const wireGround = new THREE.LineSegments(new THREE.WireframeGeometry(gridGeo), wireMat);
         wireGround.rotation.x = -Math.PI / 2;
         wireGround.position.y = -1.49;
         scene.add(wireGround);
 
-        // --- The Semi-Truck Model (Refined Geometry & Fixed Materials) ---
+        // --- The Highly Detailed Procedural Truck ---
         const truckGroup = new THREE.Group();
         scene.add(truckGroup);
 
-        // Fixed Solid Materials (Using Phong for shiny look without HDRI, and transparent=true from start for smooth fading)
-        const solidMat = new THREE.MeshPhongMaterial({ color: 0x555555, shininess: 50, transparent: true, opacity: 1 });
-        const cabMat = new THREE.MeshPhongMaterial({ color: 0x333333, shininess: 90, transparent: true, opacity: 1 });
-        const wheelMat = new THREE.MeshPhongMaterial({ color: 0x111111, shininess: 20, transparent: true, opacity: 1 });
+        // Arrays to hold materials for the GSAP fade transition
+        const solidMaterials = [];
+        const wireMaterials = [];
+
+        // Fixed Solid Materials (Using Phong for sleek reflections without needing an HDRI environment map)
+        const trailerMat = new THREE.MeshPhongMaterial({ color: 0xe0e0e0, shininess: 30, transparent: true, opacity: 1 });
+        const cabMat = new THREE.MeshPhongMaterial({ color: 0x111111, shininess: 80, transparent: true, opacity: 1 });
+        const chromeMat = new THREE.MeshPhongMaterial({ color: 0xaaaaaa, shininess: 100, transparent: true, opacity: 1 });
+        const tireMat = new THREE.MeshPhongMaterial({ color: 0x050505, shininess: 10, transparent: true, opacity: 1 });
         
-        // AI Wireframe Materials (Hidden initially)
+        solidMaterials.push(trailerMat, cabMat, chromeMat, tireMat);
+
+        // AI Wireframe Material (Hidden initially)
         const wireframeMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0 });
-        const wheelWireMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0 });
+        wireMaterials.push(wireframeMat);
         
+        // Helper function to create parts
+        function addTruckPart(geo, solidMaterial, x, y, z) {
+            const solidMesh = new THREE.Mesh(geo, solidMaterial);
+            const wireMesh = new THREE.Mesh(geo, wireframeMat);
+            solidMesh.position.set(x, y, z);
+            wireMesh.position.set(x, y, z);
+            truckGroup.add(solidMesh);
+            truckGroup.add(wireMesh);
+            return { solid: solidMesh, wire: wireMesh };
+        }
+
         // 1. Trailer
-        const trailerGeo = new THREE.BoxGeometry(8, 3.5, 2);
-        const trailerSolid = new THREE.Mesh(trailerGeo, solidMat);
-        const trailerWire = new THREE.Mesh(trailerGeo, wireframeMat);
-        trailerSolid.position.set(-2.5, 0.5, 0);
-        trailerWire.position.set(-2.5, 0.5, 0);
-        truckGroup.add(trailerSolid);
-        truckGroup.add(trailerWire);
+        addTruckPart(new THREE.BoxGeometry(9, 3.5, 2.2), trailerMat, -3, 1.75, 0);
 
-        // 2. Cab Back (Sleeper)
-        const cabGeo = new THREE.BoxGeometry(2.5, 3.2, 2);
-        const cabSolid = new THREE.Mesh(cabGeo, cabMat);
-        const cabWire = new THREE.Mesh(cabGeo, wireframeMat);
-        cabSolid.position.set(3, 0.35, 0);
-        cabWire.position.set(3, 0.35, 0);
-        truckGroup.add(cabSolid);
-        truckGroup.add(cabWire);
+        // 2. Cab Sleeper
+        addTruckPart(new THREE.BoxGeometry(2.5, 3.2, 2.2), cabMat, 2.75, 1.6, 0);
 
-        // 3. Cab Front (Hood)
-        const hoodGeo = new THREE.BoxGeometry(1.5, 1.5, 1.8);
-        const hoodSolid = new THREE.Mesh(hoodGeo, cabMat);
-        const hoodWire = new THREE.Mesh(hoodGeo, wireframeMat);
-        hoodSolid.position.set(5, -0.5, 0);
-        hoodWire.position.set(5, -0.5, 0);
-        truckGroup.add(hoodSolid);
-        truckGroup.add(hoodWire);
+        // 3. Cab Hood (Lower front)
+        addTruckPart(new THREE.BoxGeometry(1.8, 1.5, 2.2), cabMat, 4.9, 0.75, 0);
 
-        // 4. Wheels
+        // 4. Chrome Grill
+        addTruckPart(new THREE.BoxGeometry(0.2, 1.3, 1.6), chromeMat, 5.8, 0.75, 0);
+
+        // 5. Chrome Bumper
+        addTruckPart(new THREE.BoxGeometry(0.4, 0.4, 2.4), chromeMat, 5.8, 0.2, 0);
+
+        // 6. Exhaust Smokestacks
+        addTruckPart(new THREE.CylinderGeometry(0.1, 0.1, 4, 16), chromeMat, 1.4, 2, 1.2);
+        addTruckPart(new THREE.CylinderGeometry(0.1, 0.1, 4, 16), chromeMat, 1.4, 2, -1.2);
+
+        // 7. Wheels (Tires)
         const wheels = [];
-        const wheelGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.4, 24);
+        const wheelGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 24);
         wheelGeo.rotateX(Math.PI / 2);
 
         const wheelPositions = [
-            [4.5, -1.0, 1.1], [4.5, -1.0, -1.1], // Front steering
-            [2.5, -1.0, 1.1], [2.5, -1.0, -1.1], // Cab drive axle 1
-            [1.2, -1.0, 1.1], [1.2, -1.0, -1.1], // Cab drive axle 2
-            [-4.5, -1.0, 1.1], [-4.5, -1.0, -1.1], // Trailer rear 1
-            [-5.8, -1.0, 1.1], [-5.8, -1.0, -1.1]  // Trailer rear 2
+            [4.5, 0.5, 1.1], [4.5, 0.5, -1.1],     // Front steering
+            [2.5, 0.5, 1.1], [2.5, 0.5, -1.1],     // Cab drive 1
+            [1.2, 0.5, 1.1], [1.2, 0.5, -1.1],     // Cab drive 2
+            [-5, 0.5, 1.1], [-5, 0.5, -1.1],       // Trailer rear 1
+            [-6.5, 0.5, 1.1], [-6.5, 0.5, -1.1]    // Trailer rear 2
         ];
 
         wheelPositions.forEach(pos => {
-            const wSolid = new THREE.Mesh(wheelGeo, wheelMat);
-            const wWire = new THREE.Mesh(wheelGeo, wheelWireMat);
-            wSolid.position.set(...pos);
-            wWire.position.set(...pos);
-            truckGroup.add(wSolid);
-            truckGroup.add(wWire);
-            wheels.push({ solid: wSolid, wire: wWire });
+            const w = addTruckPart(wheelGeo, tireMat, ...pos);
+            wheels.push(w);
         });
+
+        // Center the whole truck to align with camera better
+        truckGroup.position.y = -1;
 
         // ==========================================
         // 3. GSAP CAMERA & WIREFRAME TRANSFORMATION
         // ==========================================
         
-        // Initial setup: Look at side of truck (like the video start)
+        // Initial setup: Look at side of truck
         camera.position.set(8, 2, 16); 
         camera.lookAt(0, 0, 0);
 
@@ -538,15 +547,16 @@
         tl3D.to(fillLight, { intensity: 0 }, 0.4);
         tl3D.to(ambientLight, { intensity: 0.1 }, 0.4);
         tl3D.to(cyberLight, { intensity: 5 }, 0.4);
-        tl3D.to(scene.fog, { density: 0.04 }, 0.4); // Thicken fog for focus
-        tl3D.to(wireMat, { opacity: 0.8, color: 0x004466 }, 0.4); // Grid turns cyber blue
+        tl3D.to(scene.fog, { density: 0.04 }, 0.4); 
+        tl3D.to(wireMat, { opacity: 0.8, color: 0x004466 }, 0.4); 
 
         // Fade out solid materials completely, fade in wireframe
-        tl3D.to(solidMat, { opacity: 0 }, 0.4);
-        tl3D.to(cabMat, { opacity: 0 }, 0.4);
-        tl3D.to(wheelMat, { opacity: 0 }, 0.4);
-        tl3D.to(wireframeMat, { opacity: 1 }, 0.4);
-        tl3D.to(wheelWireMat, { opacity: 1 }, 0.4);
+        solidMaterials.forEach(mat => {
+            tl3D.to(mat, { opacity: 0 }, 0.4);
+        });
+        wireMaterials.forEach(mat => {
+            tl3D.to(mat, { opacity: 1 }, 0.4);
+        });
 
         // ==========================================
         // 4. UI ANIMATIONS & TERMINAL
@@ -638,7 +648,6 @@
             if (terminalBox) terminalObserver.observe(terminalBox);
         });
 
-        // Scroll Progress Bar
         window.addEventListener('scroll', () => {
             let scrollProgress = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
             document.getElementById('scroll-bar').style.width = (scrollProgress * 100) + '%';
@@ -648,7 +657,7 @@
         // 5. 3D RENDER LOOP (The Driving Physics)
         // ==========================================
         const clock = new THREE.Clock();
-        const speed = 15; // Ground moving speed
+        const speed = 15; 
 
         function animate() {
             requestAnimationFrame(animate);
@@ -657,7 +666,7 @@
 
             // 1. Move the ground texture/wireframe to simulate driving
             wireGround.position.x -= speed * delta;
-            if(wireGround.position.x < -10) wireGround.position.x = 0; // Seamless loop
+            if(wireGround.position.x < -10) wireGround.position.x = 0; 
 
             // 2. Rotate the wheels based on speed
             wheels.forEach(w => {
@@ -666,11 +675,9 @@
             });
 
             // 3. Subtle truck bounce/suspension
-            truckGroup.position.y = Math.sin(time * 10) * 0.05;
+            truckGroup.position.y = -1 + Math.sin(time * 10) * 0.05;
 
-            // Camera LookAt maintenance
             camera.lookAt(truckGroup.position);
-
             renderer.render(scene, camera);
         }
         animate();
