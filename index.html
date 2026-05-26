@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pratik More | Cybersecurity Analyst</title>
+    
+    <script>
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
+        }
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        };
+        window.onload = function() {
+            window.scrollTo(0,0);
+        };
+    </script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ── PREMIUM THEME (Terminal Video Exact Match) ── */
         :root {
-            --bg-dark: #050505;
             --accent-color: #00ffcc; /* Cyan AI Glow */
+            --accent-secondary: #0088aa;
             --text-light: #ffffff;
             --text-gray: #a0a0a0;
             --card-bg: rgba(15, 15, 15, 0.4); 
@@ -17,22 +29,11 @@
         
         html, body {
             margin: 0; padding: 0;
-            background-color: var(--bg-dark);
+            background-color: #050505; /* Fallback */
             color: var(--text-light);
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
-        }
-
-        /* ── THE TRANSITIONING BACKGROUND ── */
-        /* Replicates the sunset fading to black from the video */
-        #bg-gradient {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 50%, #b86b40 0%, #2a1b14 50%, #050505 100%);
-            z-index: 0;
-            transition: opacity 0.1s linear;
         }
 
         /* ── THREE.JS CANVAS ── */
@@ -40,20 +41,22 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            z-index: 1;
+            z-index: 0;
             pointer-events: none;
         }
 
-        /* ── HTML CONTENT OVERLAY ── */
-        .content {
-            position: relative; 
-            z-index: 2;
+        /* ── SCROLL PROGRESS BAR ── */
+        #scroll-bar {
+            position: fixed; top: 0; left: 0; height: 4px; width: 0%;
+            background: linear-gradient(90deg, var(--accent-secondary), var(--accent-color));
+            box-shadow: 0 0 15px var(--accent-color); z-index: 999;
         }
 
-        /* Top 3D interaction sections */
+        /* ── HTML CONTENT OVERLAY ── */
+        .content { position: relative; z-index: 1; }
+
         .sync-section {
-            min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center;
+            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
             padding: 0 10%; pointer-events: none;
         }
         .sync-section * { pointer-events: auto; }
@@ -62,8 +65,8 @@
         .align-right { align-items: flex-end; text-align: right; }
         .align-center { align-items: center; text-align: center; }
 
-        h1 { font-size: 5rem; margin: 0; font-weight: 700; line-height: 1.1; letter-spacing: -2px; }
-        h1 span { color: var(--accent-color); }
+        h1 { font-size: 5.5rem; margin: 0; font-weight: 700; line-height: 1.1; letter-spacing: -2px; }
+        h1 span { color: var(--accent-color); text-shadow: 0 0 20px rgba(0,255,204,0.4); }
         h2 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-light); font-weight: 600;}
         p { font-size: 1.1rem; max-width: 600px; line-height: 1.6; color: var(--text-gray); }
 
@@ -71,14 +74,12 @@
         .btn {
             padding: 12px 35px; border: 1px solid var(--text-light); border-radius: 30px;
             color: var(--text-light); font-weight: 500; text-transform: uppercase; font-size: 0.9rem;
-            transition: all 0.3s ease; cursor: pointer; background: transparent;
-            backdrop-filter: blur(5px);
+            transition: all 0.3s ease; cursor: pointer; background: transparent; backdrop-filter: blur(5px);
         }
         .btn:hover, .btn.active {
-            background: var(--text-light); color: #000; 
-            box-shadow: 0 0 20px rgba(255,255,255,0.3); border-color: transparent;
+            background: var(--text-light); color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.3); border-color: transparent;
         }
-        .btn.active { background: var(--accent-color); color: #000; box-shadow: 0 0 20px rgba(0,255,204,0.4); border:none;}
+        .btn.active { background: var(--accent-color); color: #000; box-shadow: 0 0 20px rgba(0,255,204,0.6); border:none;}
 
         /* ── DETAILED PORTFOLIO SECTIONS ── */
         .container { max-width: 900px; margin: 0 auto; padding: 80px 20px; pointer-events: auto; }
@@ -92,18 +93,14 @@
             bottom: -10px; left: 25%; border-radius: 2px;
         }
 
-        .fade-in {
-            opacity: 0; transform: translateY(40px);
-            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .fade-in { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
 
         /* Terminal */
         .terminal-container {
             background-color: rgba(5, 5, 5, 0.6); border: 1px solid rgba(255,255,255,0.1); border-top: 2px solid var(--accent-color);
             border-radius: 8px; margin-bottom: 40px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            font-family: 'Courier New', Courier, monospace; width: 100%; max-width: 600px;
-            backdrop-filter: blur(15px);
+            font-family: 'Courier New', Courier, monospace; width: 100%; max-width: 600px; backdrop-filter: blur(15px);
         }
         .terminal-header { background-color: rgba(20, 20, 20, 0.9); padding: 12px 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);}
         .terminal-header span[class^="btn-"] { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
@@ -118,8 +115,7 @@
         .avatar-box {
             display: flex; align-items: center; gap: 20px; background: var(--card-bg);
             padding: 20px; border-radius: 10px; border-left: 4px solid var(--accent-color);
-            backdrop-filter: blur(15px); margin-top: 20px; max-width: 600px;
-            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(15px); margin-top: 20px; max-width: 600px; border: 1px solid rgba(255,255,255,0.05);
         }
         .avatar-img {
             width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
@@ -128,10 +124,8 @@
 
         /* Skills & Tools */
         .skill-box {
-            background: var(--card-bg); padding: 20px 25px; border-radius: 10px;
-            border-left: 3px solid var(--accent-color); margin-bottom: 20px;
-            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05);
-            opacity: 0; transform: translateY(30px) scale(0.95);
+            background: var(--card-bg); padding: 20px 25px; border-radius: 10px; border-left: 3px solid var(--accent-color); margin-bottom: 20px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); opacity: 0; transform: translateY(30px) scale(0.95);
         }
         .skill-name { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: 600; font-size: 1.1rem; }
         .skill-name span:last-child { color: var(--accent-color); }
@@ -146,27 +140,33 @@
         }
         .tool-badge:hover { background: var(--text-light); color: #000; font-weight: 600; transform: translateY(-3px) scale(1.05) !important; box-shadow: 0 5px 15px rgba(255,255,255,0.2);}
 
-        /* Cards (Exp/Edu/Projects) */
-        .exp-card {
-            background-color: var(--card-bg); padding: 40px; border-radius: 10px; margin-bottom: 30px;
-            border-left: 4px solid var(--accent-color); backdrop-filter: blur(10px); transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.05);
+        /* Metrics Banner */
+        .metrics-banner {
+            padding: 80px 20px; display: flex; justify-content: center; text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 40px;
+            background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(10px);
+        }
+        .metric-card { background: rgba(20, 20, 20, 0.5); padding: 40px 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); width: 220px; transition: 0.3s; }
+        .metric-card:hover { transform: translateY(-10px); border-color: var(--accent-color); box-shadow: 0 10px 30px rgba(0,255,204,0.1);}
+        .metric-card h2 { font-size: 4.5rem; margin: 0; color: var(--accent-color); text-shadow: 0 0 20px rgba(0,255,204,0.2);}
+        .metric-card p { margin-top: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; color: #fff;}
+
+        /* Cards */
+        .exp-card, .project-card {
+            background-color: var(--card-bg); border-radius: 10px; margin-bottom: 30px;
+            backdrop-filter: blur(10px); transition: 0.3s; border: 1px solid rgba(255,255,255,0.05);
             opacity: 0; transform: translateY(50px) scale(0.95);
         }
-        .exp-card:hover { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border-color: var(--text-light); }
+        .exp-card { padding: 40px; border-left: 4px solid var(--accent-color); }
+        .exp-card:hover, .project-card:hover { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border-color: var(--text-light); }
         .exp-date { color: var(--text-gray); font-weight: 500; font-size: 1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
         .exp-title { font-size: 1.6rem; font-weight: 600; margin: 0 0 5px 0; color: var(--accent-color); }
         .exp-company { color: var(--text-light); font-size: 1.1rem; margin-bottom: 20px; font-weight: 500;}
         .exp-desc ul { list-style: none; padding-left: 0; }
         .exp-desc li { position: relative; padding-left: 25px; margin-bottom: 15px; color: #ccc; font-weight: 300; line-height: 1.7; }
         .exp-desc li::before { content: '▹'; position: absolute; left: 0; top: 0; color: var(--accent-color); font-size: 1.2rem; font-weight: bold; }
-
-        .project-card {
-            background-color: var(--card-bg); border-radius: 10px; overflow: hidden; margin-bottom: 40px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); transition: 0.3s;
-            opacity: 0; transform: translateY(60px) scale(0.95);
-        }
-        .project-card:hover { transform: translateY(-5px) scale(1.02) !important; border-color: var(--accent-color); box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
+        
+        .project-card { overflow: hidden; margin-bottom: 40px; }
         .project-img { width: 100%; height: 350px; object-fit: cover; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .project-content { padding: 40px; }
         .project-content h3 { font-size: 1.8rem; margin-top: 0; color: var(--accent-color); }
@@ -177,7 +177,7 @@
 </head>
 <body>
 
-    <div id="bg-gradient"></div>
+    <div id="scroll-bar"></div>
     <div id="canvas-container"></div>
 
     <div class="content">
@@ -185,7 +185,7 @@
         <div class="sync-section align-left fade-in" style="padding-top: 10vh;">
             <h3 style="color: var(--accent-color); letter-spacing: 4px; font-size: 1.2rem;">TERMINAL INITIALIZED</h3>
             <h1><span>Pratik</span><br>More</h1>
-            <p style="color: var(--text-light); font-size: 1.2rem; font-weight: 300;">Quality & Risk Management | Business Strategy | Data Analysis & Reporting | MSc Cybersecurity</p>
+            <p style="color: var(--text-light); font-size: 1.2rem; font-weight: 300; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Quality & Risk Management | Business Strategy | Data Analysis | MSc Cybersecurity</p>
             <div class="btn-group">
                 <a href="#projects" class="btn">My Projects</a>
                 <a href="#contact" class="btn active">Hire Me</a>
@@ -263,9 +263,14 @@
             </div>
         </section>
 
+        <section class="metrics-banner fade-in">
+            <div class="metric-card"><h2 data-target="95" data-suffix="%">0%</h2><p>Quality Accuracy</p></div>
+            <div class="metric-card"><h2 data-target="89" data-suffix="%">0%</h2><p>MTTC Reduction</p></div>
+            <div class="metric-card"><h2 data-target="4" data-suffix="">0</h2><p>Global Sites Managed</p></div>
+        </section>
+
         <section class="container" id="education">
             <h2 class="section-title fade-in">Education</h2>
-
             <div class="exp-card">
                 <div class="exp-date">Expected May 2026</div>
                 <h3 class="exp-title">MSc Cybersecurity</h3>
@@ -274,7 +279,6 @@
                     <li><strong>Modules:</strong> Operational Risk, Data Security, Threat Analysis, Al Ethics, Data Architecture, Secure Programming, Technology Risk Management.</li>
                 </ul></div>
             </div>
-
             <div class="exp-card">
                 <div class="exp-date">2016-2022</div>
                 <h3 class="exp-title">BEng Information Technology</h3>
@@ -341,264 +345,12 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-
-    <script>
-        // --- FORCE SCROLL TO TOP FIX ---
-        if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
-        }
-        window.addEventListener('beforeunload', function() {
-            window.scrollTo(0, 0);
-        });
-        setTimeout(() => { window.scrollTo(0, 0); }, 10);
-
-        gsap.registerPlugin(ScrollTrigger);
-
-        // ==========================================
-        // THE TRUE "TERMINAL" SCENE RENDERING
-        // ==========================================
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
-
-        // Soft Studio Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        // Warm rim light matching the video gradient
-        const rimLight = new THREE.DirectionalLight(0xffaa55, 2.0); 
-        rimLight.position.set(10, 10, -10); 
-        scene.add(rimLight);
-
-        const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        fillLight.position.set(-10, 5, 10);
-        scene.add(fillLight);
-
-        // The Master Group that holds our 3D Object
-        const masterGroup = new THREE.Group();
-        scene.add(masterGroup);
-
-        // Arrays to manage the Solid -> Wireframe transition
-        const solidMeshes = [];
-        const wireMeshes = [];
-        
-        const wireMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0 });
-
-        // =========================================================================
-        // IMPORTANT: HOW TO ADD A REAL 3D TRUCK MODEL
-        // =========================================================================
-        /* To get the EXACT truck from the video:
-           1. Go to Sketchfab.com, search "Semi Truck", download a free `.glb` file.
-           2. Upload that `.glb` file to your GitHub repository.
-           3. Change the variable below to true:
-        */
-        const USE_CUSTOM_TRUCK_MODEL = false; 
-        const CUSTOM_TRUCK_URL = 'your_truck_file_name.glb'; // Put your file name here
-
-        if(USE_CUSTOM_TRUCK_MODEL) {
-            // Load the real 3D model
-            const loader = new THREE.GLTFLoader();
-            loader.load(CUSTOM_TRUCK_URL, function(gltf) {
-                const model = gltf.scene;
-                
-                // Scale and position adjustment (you may need to tweak these based on your model)
-                model.scale.set(1, 1, 1);
-                model.position.set(0, -2, 0);
-
-                // Clone the model to create the wireframe overlay
-                const wireModel = model.clone();
-
-                model.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.8, roughness: 0.2, transparent: true, opacity: 1 });
-                        solidMeshes.push(child.material);
-                    }
-                });
-
-                wireModel.traverse((child) => {
-                    if (child.isMesh) {
-                        child.material = wireMat;
-                        wireMeshes.push(child.material);
-                    }
-                });
-
-                masterGroup.add(model);
-                masterGroup.add(wireModel);
-            });
-        } else {
-            // =========================================================================
-            // THE PREMIUM FALLBACK: "CYBERSECURITY SERVER NODE"
-            // If you don't have a truck model, this renders an incredibly sleek, 
-            // high-poly data core. It looks $100k, unlike the boxy truck attempt.
-            // =========================================================================
-            const serverGeo = new THREE.CylinderGeometry(2, 2, 6, 64);
-            const serverSolid = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1, transparent: true, opacity: 1 });
-            
-            const node1 = new THREE.Mesh(serverGeo, serverSolid);
-            const node1Wire = new THREE.Mesh(serverGeo, wireMat);
-            
-            masterGroup.add(node1);
-            masterGroup.add(node1Wire);
-            solidMeshes.push(serverSolid);
-            wireMeshes.push(wireMat);
-
-            // Data Rings
-            for(let i=0; i<3; i++) {
-                const ringGeo = new THREE.TorusGeometry(3 + (i*0.5), 0.05, 16, 100);
-                const ringSolid = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 1, transparent: true, opacity: 1 });
-                const ring1 = new THREE.Mesh(ringGeo, ringSolid);
-                const ring1Wire = new THREE.Mesh(ringGeo, wireMat);
-                
-                ring1.rotation.x = Math.PI / 2;
-                ring1Wire.rotation.x = Math.PI / 2;
-                ring1.position.y = -2 + (i*2);
-                ring1Wire.position.y = -2 + (i*2);
-
-                masterGroup.add(ring1);
-                masterGroup.add(ring1Wire);
-                solidMeshes.push(ringSolid);
-                wireMeshes.push(wireMat);
-            }
-        }
-
-        // ==========================================
-        // GSAP CAMERA & WIREFRAME TRANSFORMATION
-        // ==========================================
-        
-        camera.position.set(10, 2, 10); 
-        camera.lookAt(0, 0, 0);
-
-        const tl3D = gsap.timeline({
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "40% top", 
-                scrub: 1.2 
-            }
-        });
-
-        // 1. Pan Camera smoothly along a curve
-        tl3D.to(camera.position, { x: 5, y: 5, z: 8, ease: "power1.inOut" }, 0);
-        
-        // 2. The Background Gradient Fade (Orange -> Black)
-        tl3D.to('#bg-gradient', { opacity: 0, ease: "power1.inOut" }, 0.2);
-        
-        // 3. The Material Swap (Solid fades out, Wireframe fades in)
-        tl3D.to(solidMeshes, { opacity: 0, ease: "power2.inOut" }, 0.2);
-        tl3D.to(wireMeshes, { opacity: 1, ease: "power2.inOut" }, 0.2);
-
-        // ==========================================
-        // UI ANIMATIONS & TERMINAL
-        // ==========================================
-        document.addEventListener("DOMContentLoaded", function () {
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('visible');
-                });
-            }, { threshold: 0.15 });
-            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-            ScrollTrigger.create({
-                trigger: '.tools-grid', start: 'top 85%',
-                onEnter: () => gsap.to('.tool-badge', { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.05, ease: 'back.out(1.7)' }),
-                onLeaveBack: () => gsap.to('.tool-badge', { opacity: 0, y: 20, scale: 0.8, duration: 0.3, stagger: 0.03 })
-            });
-
-            ScrollTrigger.create({
-                trigger: '.skill-box', start: 'top 85%',
-                onEnter: () => {
-                    gsap.to('.skill-box', { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'back.out(1.5)' });
-                    document.querySelectorAll('.progress').forEach(bar => {
-                        gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.6, ease: 'power2.out', delay: 0.2 });
-                    });
-                }
-            });
-
-            gsap.utils.toArray('.exp-card, .project-card').forEach((card) => {
-                gsap.fromTo(card, 
-                    { opacity: 0, y: 60, scale: 0.95 }, 
-                    { 
-                        scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' },
-                        opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.4)'
-                    }
-                );
-            });
-
-            const terminalText = document.getElementById('terminal-text');
-            const terminalBox  = document.getElementById('terminal');
-            const lines = [
-                "> Initializing SecOps Profile...",
-                "> Connecting to logistics API...",
-                "> Securing AI-driven workflows...",
-                "> Access Granted: Welcome to Pratik's Workspace."
-            ];
-            let lineIndex = 0, charIndex = 0, hasTyped = false;
-
-            const typeLine = () => {
-                if (lineIndex < lines.length) {
-                    if (charIndex === 0) {
-                        const p = document.createElement('p'); p.className = 'terminal-line';
-                        terminalText.insertBefore(p, terminalText.lastChild);
-                    }
-                    const pEls = terminalText.getElementsByClassName('terminal-line');
-                    if (charIndex < lines[lineIndex].length) {
-                        pEls[pEls.length - 1].innerHTML += lines[lineIndex].charAt(charIndex++);
-                        setTimeout(typeLine, 35);
-                    } else {
-                        lineIndex++; charIndex = 0; setTimeout(typeLine, 500);
-                    }
-                } else {
-                    const pEls = terminalText.getElementsByClassName('terminal-line');
-                    pEls[pEls.length - 1].style.color = '#fff'; pEls[pEls.length - 1].style.fontWeight = '600';
-                }
-            };
-
-            const terminalObserver = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && !hasTyped) {
-                    hasTyped = true; terminalText.innerHTML = '<span class="terminal-cursor"></span>';
-                    setTimeout(typeLine, 600);
-                }
-            }, { threshold: 0.5 });
-            if (terminalBox) terminalObserver.observe(terminalBox);
-        });
-
-        window.addEventListener('scroll', () => {
-            let scrollProgress = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
-            document.getElementById('scroll-bar').style.width = (scrollProgress * 100) + '%';
-        }, { passive: true });
-
-        // ==========================================
-        // 5. 3D RENDER LOOP
-        // ==========================================
-        const clock = new THREE.Clock();
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const time = clock.getElapsedTime();
-
-            // Very subtle floating rotation for the 3D object
-            masterGroup.rotation.y = time * 0.1;
-            masterGroup.position.y = Math.sin(time * 1.5) * 0.1;
-
-            camera.lookAt(0, 0, 0);
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
-</body>
-</html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.
