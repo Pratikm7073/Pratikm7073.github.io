@@ -353,4 +353,280 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ==========================================
+        // THE "TERMINAL" SCENE RENDERING (WITH TRUE NEON GLOW)
+        // ==========================================
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // Starts with the sunset orange background matching the video
+        const sunsetColor = new THREE.Color(0xb86b40);
+        const darkColor = new THREE.Color(0x050505);
+        scene.background = sunsetColor;
+        scene.fog = new THREE.FogExp2(sunsetColor, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 200);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // --- POST PROCESSING (FOR THE $100K NEON GLOW) ---
+        const renderScene = new THREE.RenderPass(scene, camera);
+        const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+        bloomPass.threshold = 0;
+        bloomPass.strength = 1.5; // High strength for wireframe glow
+        bloomPass.radius = 0.5;
+        
+        const composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // --- The Solid Silhouette Truck Design ---
+        const truckGroup = new THREE.Group();
+        scene.add(truckGroup);
+
+        // Solid material creates a dark silhouette against the bright sunset
+        const solidMat = new THREE.MeshBasicMaterial({ color: 0x050505, transparent: true, opacity: 1 });
+        // Wireframe material creates the AI scan effect
+        const wireMat = new THREE.LineBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0 });
+
+        const solidMeshes = [];
+        const wireMeshes = [];
+
+        function createTruckPart(w, h, d, x, y, z) {
+            const geo = new THREE.BoxGeometry(w, h, d);
+            
+            const solid = new THREE.Mesh(geo, solidMat);
+            solid.position.set(x, y, z);
+            truckGroup.add(solid);
+            solidMeshes.push(solid);
+
+            // Create sharp edges for the wireframe glow
+            const edgesGeo = new THREE.EdgesGeometry(geo);
+            const wire = new THREE.LineSegments(edgesGeo, wireMat);
+            wire.position.set(x, y, z);
+            truckGroup.add(wire);
+            wireMeshes.push(wire);
+        }
+
+        // Proportions designed to look sleek and stylized
+        createTruckPart(12, 3.8, 2.6, -4.5, 2.5, 0); // Trailer
+        createTruckPart(1, 0.5, 0.5, 2, 1, 0); // Connector
+        createTruckPart(2.5, 3.8, 2.6, 3.75, 2.5, 0); // Cab Sleeper
+        createTruckPart(2.2, 2.0, 2.4, 6.1, 1.6, 0); // Cab Hood
+
+        // Wheels
+        const wheelGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.5, 24);
+        wheelGeo.rotateX(Math.PI / 2);
+        const wheelEdges = new THREE.EdgesGeometry(wheelGeo);
+        
+        const wheelPositions = [
+            [6.1, 0.6, 1.3], [6.1, 0.6, -1.3],     
+            [4.0, 0.6, 1.3], [4.0, 0.6, -1.3],     
+            [2.6, 0.6, 1.3], [2.6, 0.6, -1.3],     
+            [-8, 0.6, 1.3], [-8, 0.6, -1.3],       
+            [-9.5, 0.6, 1.3], [-9.5, 0.6, -1.3]    
+        ];
+
+        const wheels = [];
+        wheelPositions.forEach(pos => {
+            const wSolid = new THREE.Mesh(wheelGeo, solidMat);
+            const wWire = new THREE.LineSegments(wheelEdges, wireMat);
+            wSolid.position.set(...pos);
+            wWire.position.set(...pos);
+            truckGroup.add(wSolid);
+            truckGroup.add(wWire);
+            solidMeshes.push(wSolid);
+            wireMeshes.push(wWire);
+            wheels.push({solid: wSolid, wire: wWire});
+        });
+
+        // Moving Ground Grid
+        const gridGeo = new THREE.PlaneGeometry(200, 200, 40, 40);
+        const gridWireMat = new THREE.LineBasicMaterial({ color: 0x00ffcc, transparent: true, opacity: 0 });
+        const grid = new THREE.LineSegments(new THREE.WireframeGeometry(gridGeo), gridWireMat);
+        grid.rotation.x = -Math.PI / 2;
+        grid.position.y = 0;
+        scene.add(grid);
+
+        // Data Particles (Appear during AI mode)
+        const particleCount = 1000;
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 60;
+        }
+        const pGeo = new THREE.BufferGeometry();
+        pGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const pMat = new THREE.PointsMaterial({ size: 0.1, color: 0x00ffcc, transparent: true, opacity: 0, blending: THREE.AdditiveBlending });
+        const particles = new THREE.Points(pGeo, pMat);
+        scene.add(particles);
+
+        // ==========================================
+        // GSAP EXACT VIDEO TRANSITION TIMELINE
+        // ==========================================
+        
+        camera.position.set(12, 3, 20); 
+        camera.lookAt(0, 2, 0);
+
+        const tl3D = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "40% top", 
+                scrub: 1.5 
+            }
+        });
+
+        // 1. Camera Pan
+        tl3D.to(camera.position, { x: 18, y: 2, z: 12, ease: "power1.inOut" }, 0);
+        tl3D.to(camera.position, { x: 8, y: 15, z: 15, ease: "power2.inOut" }, 0.4);
+        
+        // 2. Background Crossfade (Sunset -> Dark Space)
+        tl3D.to(scene.background, { r: darkColor.r, g: darkColor.g, b: darkColor.b, ease: "power1.inOut" }, 0.2);
+        tl3D.to(scene.fog.color, { r: darkColor.r, g: darkColor.g, b: darkColor.b, ease: "power1.inOut" }, 0.2);
+
+        // 3. The Object Transformation
+        tl3D.to(solidMat, { opacity: 0, ease: "power1.inOut" }, 0.3);
+        tl3D.to(wireMat, { opacity: 1, ease: "power1.inOut" }, 0.3);
+        tl3D.to(gridWireMat, { opacity: 0.15, ease: "power1.inOut" }, 0.3);
+        tl3D.to(pMat, { opacity: 0.8, ease: "power1.inOut" }, 0.4);
+
+        // UI Scroll Progress Bar
+        window.addEventListener('scroll', () => {
+            let scrollProgress = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
+            document.getElementById('scroll-bar').style.width = (scrollProgress * 100) + '%';
+        }, { passive: true });
+
+        // ==========================================
+        // UI ANIMATIONS & TERMINAL
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.15 });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+            // POP OUT ANIMATIONS
+            ScrollTrigger.create({
+                trigger: '.tools-grid', start: 'top 85%',
+                onEnter: () => gsap.to('.tool-badge', { opacity: 1, y: 0, scale: 1, duration: 0.5, stagger: 0.05, ease: 'back.out(1.7)' }),
+                onLeaveBack: () => gsap.to('.tool-badge', { opacity: 0, y: 20, scale: 0.8, duration: 0.3, stagger: 0.03 })
+            });
+
+            ScrollTrigger.create({
+                trigger: '.skill-box', start: 'top 85%',
+                onEnter: () => {
+                    gsap.to('.skill-box', { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.1, ease: 'back.out(1.5)' });
+                    document.querySelectorAll('.progress').forEach(bar => {
+                        gsap.to(bar, { width: bar.dataset.width + '%', duration: 1.6, ease: 'power2.out', delay: 0.2 });
+                    });
+                }
+            });
+
+            gsap.utils.toArray('.exp-card, .project-card').forEach((card) => {
+                gsap.fromTo(card, { opacity: 0, y: 60, scale: 0.95 }, { 
+                    scrollTrigger: { trigger: card, start: 'top 88%', toggleActions: 'play none none reverse' },
+                    opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'back.out(1.4)'
+                });
+            });
+
+            ScrollTrigger.create({
+                trigger: '.metrics-banner', start: 'top 82%',
+                onEnter: () => {
+                    document.querySelectorAll('.metric-card h2[data-target]').forEach(el => {
+                        gsap.to({ v: 0 }, {
+                            v: parseInt(el.dataset.target), duration: 2, ease: 'power2.out',
+                            onUpdate: function() { el.textContent = Math.round(this.targets()[0].v) + (el.dataset.suffix || ''); }
+                        });
+                    });
+                }
+            });
+
+            // Terminal Setup
+            const terminalText = document.getElementById('terminal-text');
+            const terminalBox  = document.getElementById('terminal');
+            const lines = [
+                "> Initializing SecOps Profile...",
+                "> Connecting to logistics API...",
+                "> Securing AI-driven workflows...",
+                "> Access Granted: Welcome to Pratik's Workspace."
+            ];
+            let lineIndex = 0, charIndex = 0, hasTyped = false;
+
+            const typeLine = () => {
+                if (lineIndex < lines.length) {
+                    if (charIndex === 0) {
+                        const p = document.createElement('p'); p.className = 'terminal-line';
+                        terminalText.insertBefore(p, terminalText.lastChild);
+                    }
+                    const pEls = terminalText.getElementsByClassName('terminal-line');
+                    if (charIndex < lines[lineIndex].length) {
+                        pEls[pEls.length - 1].innerHTML += lines[lineIndex].charAt(charIndex++);
+                        setTimeout(typeLine, 35);
+                    } else {
+                        lineIndex++; charIndex = 0; setTimeout(typeLine, 500);
+                    }
+                } else {
+                    const pEls = terminalText.getElementsByClassName('terminal-line');
+                    pEls[pEls.length - 1].style.color = '#fff'; pEls[pEls.length - 1].style.fontWeight = '600';
+                }
+            };
+
+            const terminalObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !hasTyped) {
+                    hasTyped = true; terminalText.innerHTML = '<span class="terminal-cursor"></span>';
+                    setTimeout(typeLine, 600);
+                }
+            }, { threshold: 0.5 });
+            if (terminalBox) terminalObserver.observe(terminalBox);
+        });
+
+        // ==========================================
+        // RENDER LOOP
+        // ==========================================
+        const clock = new THREE.Clock();
+        const speed = 20;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            const time = clock.getElapsedTime();
+
+            // Drive simulation
+            grid.position.x -= speed * delta;
+            if(grid.position.x < -10) grid.position.x = 0;
+
+            wheels.forEach(w => {
+                w.solid.rotation.y -= speed * delta * 0.5;
+                w.wire.rotation.y -= speed * delta * 0.5;
+            });
+
+            truckGroup.position.y = Math.sin(time * 15) * 0.05;
+            particles.rotation.y = time * 0.05;
+
+            camera.lookAt(truckGroup.position);
+            
+            // USE COMPOSER FOR THE GLOW
+            composer.render();
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
