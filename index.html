@@ -1,1053 +1,2103 @@
-HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pratik More | Cybersecurity Analyst</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Pratik More — SecOps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #050505;
-  --accent: #00ffcc;
-  --accent2: #0088aa;
-  --light: #ffffff;
-  --gray: #a0a0a0;
-  --card: rgba(15,15,15,0.5);
+:root{
+  --bg:#0a0a0a;
+  --bg-soft:#111;
+  --white:#ffffff;
+  --black:#000000;
+  --ink:#0a0a0a;
+  --grey:#808080;
+  --grey-2:#b8b8b8;
+  --grey-3:#dfdfdf;
+  --grey-4:#f4f4f4;
+  --lime:#c1ff00;
+  --cyan:#7defff;
 }
-html { scroll-behavior: smooth; }
-body { margin:0; padding:0; background:var(--bg); color:var(--light); font-family:'Poppins',sans-serif; overflow-x:hidden; }
-a { text-decoration:none; }
-
-#canvas-container { position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:0; pointer-events:none; }
-#scroll-bar { position:fixed; top:0; left:0; height:4px; width:0%; background:linear-gradient(90deg,var(--accent2),var(--accent)); box-shadow:0 0 15px var(--accent); z-index:999; transition:width 0.1s; }
-
-.content { position:relative; z-index:1; }
-
-.hero-section {
-  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-  padding:0 10%; pointer-events:none; position:relative;
-}
-.hero-section * { pointer-events:auto; }
-
-h1 { font-size:5rem; margin:0; font-weight:700; line-height:1.1; letter-spacing:-2px; }
-h1 span { color:var(--accent); }
-h2 { font-size:2.5rem; margin-bottom:1rem; font-weight:600; }
-p  { font-size:1.1rem; max-width:600px; line-height:1.6; color:var(--gray); }
-
-.btn-group { display:flex; gap:20px; margin-top:20px; flex-wrap:wrap; }
-.btn {
-  padding:12px 35px; border:1px solid var(--light); border-radius:30px;
-  color:var(--light); font-weight:500; text-transform:uppercase; font-size:0.9rem;
-  transition:all 0.3s; cursor:pointer; background:transparent; backdrop-filter:blur(5px);
-}
-.btn:hover { background:var(--light); color:#000; box-shadow:0 0 20px rgba(255,255,255,0.3); border-color:transparent; }
-.btn.active { background:var(--accent); color:#000; box-shadow:0 0 20px rgba(0,255,204,0.4); border:none; }
-
-.section-spacer { min-height:100vh; }
-
-.container { max-width:900px; margin:0 auto; padding:80px 20px; }
-
-.section-title {
-  font-size:2.5rem; text-align:center; margin-bottom:50px; font-weight:700;
-  position:relative; display:inline-block; left:50%; transform:translateX(-50%);
-}
-.section-title::after {
-  content:''; position:absolute; width:50%; height:3px; background:var(--accent); bottom:-10px; left:25%; border-radius:2px;
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:0}
+body{
+  font-family:'Bricolage Grotesque',sans-serif;
+  background:var(--bg);
+  color:var(--white);
+  overflow-x:hidden;
+  font-weight:400;
 }
 
-.fade-in { opacity:0; transform:translateY(40px); transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
-.fade-in.visible { opacity:1; transform:translateY(0); }
-
-/* TERMINAL */
-.terminal-container {
-  background:rgba(10,10,10,0.85); border:1px solid rgba(255,255,255,0.1);
-  border-top:2px solid var(--accent); border-radius:8px; margin-bottom:40px;
-  font-family:'Courier New',monospace; width:100%; max-width:580px;
-  backdrop-filter:blur(10px); box-shadow:0 15px 35px rgba(0,0,0,0.5);
+/* ─── NAV ──────────────────────────────────────────── */
+nav{
+  position:fixed;
+  top:18px;left:50%;
+  transform:translateX(-50%);
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 8px 8px 22px;
+  background:rgba(15,15,15,.55);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:50px;
+  box-shadow:0 6px 28px rgba(0,0,0,.4);
 }
-.terminal-header { background:rgba(20,20,20,0.9); padding:12px 15px; display:flex; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); }
-.dot { width:12px; height:12px; border-radius:50%; margin-right:8px; }
-.dot-r{background:#ff5f56;} .dot-y{background:#ffbd2e;} .dot-g{background:#27c93f;}
-.terminal-title { color:#888; font-size:0.85rem; margin-left:10px; font-family:'Poppins',sans-serif; letter-spacing:1px; }
-.terminal-body { padding:25px; color:var(--accent); font-size:1rem; line-height:1.8; min-height:130px; }
-.tline { margin:0; text-shadow:0 0 5px rgba(0,255,204,0.4); }
-.cursor { display:inline-block; width:10px; height:18px; background:var(--accent); animation:blink 1s step-end infinite; margin-left:4px; vertical-align:middle; }
-@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
-
-.avatar-box {
-  display:flex; align-items:center; gap:20px; background:var(--card);
-  padding:20px; border-radius:10px; backdrop-filter:blur(15px); margin-top:20px;
-  max-width:580px; border:1px solid rgba(255,255,255,0.05);
+.nav-logo{
+  display:flex;align-items:center;gap:8px;
+  font-weight:600;letter-spacing:-.02em;
+  font-size:15px;color:#fff;
+  margin-right:18px;
 }
-.avatar-img { width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); padding:3px; background:linear-gradient(135deg,#00ffcc22,#0088aa44); }
-
-.skill-box {
-  background:var(--card); padding:20px 25px; border-radius:10px;
-  border-left:3px solid var(--accent); margin-bottom:20px;
-  backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.05);
-  opacity:0; transform:translateY(30px) scale(0.95);
+.nav-logo svg{width:22px;height:22px}
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:8px 14px;border-radius:30px;
+  text-decoration:none;color:rgba(255,255,255,.78);
+  font-size:13.5px;font-weight:400;letter-spacing:-.005em;
+  transition:background .25s,color .25s;
 }
-.skill-name { display:flex; justify-content:space-between; margin-bottom:15px; font-weight:600; font-size:1.1rem; }
-.skill-name span:last-child { color:var(--accent); }
-.progress-bar { background:rgba(0,0,0,0.5); height:6px; border-radius:4px; overflow:hidden; }
-.progress { background:var(--accent); height:100%; border-radius:4px; width:0%; box-shadow:0 0 10px var(--accent); }
-
-.tools-grid { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
-.tool-badge {
-  background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:25px;
-  border:1px solid rgba(255,255,255,0.1); font-size:0.9rem; transition:0.3s;
-  backdrop-filter:blur(5px); opacity:0; transform:translateY(20px) scale(0.8);
+.nav-links a:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-links a .chev{font-size:9px;opacity:.6}
+.nav-cta{display:flex;gap:6px;margin-left:10px}
+.nav-phone{
+  width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;cursor:pointer;
+  transition:background .25s;
 }
-.tool-badge:hover { background:var(--light); color:#000; font-weight:600; transform:translateY(-3px) scale(1.05) !important; }
-
-.metrics-banner {
-  padding:80px 20px; display:flex; justify-content:center; text-align:center;
-  flex-wrap:wrap; gap:40px; background:rgba(10,10,10,0.7); backdrop-filter:blur(10px);
-  border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05);
+.nav-phone:hover{background:rgba(255,255,255,.1)}
+.nav-phone svg{width:15px;height:15px}
+.nav-btn{
+  padding:10px 20px;border-radius:30px;
+  font-size:12px;font-weight:500;letter-spacing:.04em;
+  text-transform:uppercase;text-decoration:none;
+  transition:transform .2s,background .25s;
+  cursor:pointer;border:none;
 }
-.metric-card { background:rgba(20,20,20,0.5); padding:40px 30px; border-radius:15px; border:1px solid rgba(255,255,255,0.05); width:220px; transition:0.3s; }
-.metric-card:hover { transform:translateY(-10px); border-color:var(--accent); box-shadow:0 10px 30px rgba(0,255,204,0.1); }
-.metric-card h2 { font-size:4.5rem; margin:0; color:var(--accent); }
-.metric-card p  { margin-top:20px; font-weight:600; text-transform:uppercase; letter-spacing:2px; font-size:0.9rem; color:#fff; }
+.nav-btn:active{transform:scale(.97)}
+.nav-btn.light{background:rgba(255,255,255,.92);color:#000}
+.nav-btn.light:hover{background:#fff}
+.nav-btn.lime{background:var(--lime);color:#0a0a0a}
+.nav-btn.lime:hover{background:#d4ff3d}
 
-.exp-card {
-  background:var(--card); padding:40px; border-radius:10px; margin-bottom:30px;
-  border-left:4px solid var(--accent); backdrop-filter:blur(10px);
-  border:1px solid rgba(255,255,255,0.05); opacity:0; transform:translateY(50px) scale(0.95); transition:0.3s;
+/* ─── HERO ──────────────────────────────────────────── */
+#hero{
+  position:relative;
+  height:100vh;
+  width:100%;
+  overflow:hidden;
 }
-.exp-card:hover { transform:translateY(-5px) scale(1.02) !important; box-shadow:0 15px 35px rgba(0,0,0,0.6); border-color:var(--light) !important; }
-.exp-date    { color:var(--gray); font-weight:500; font-size:1rem; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
-.exp-title   { font-size:1.6rem; font-weight:600; margin:0 0 5px; color:var(--accent); }
-.exp-company { color:var(--light); font-size:1.1rem; margin-bottom:20px; font-weight:500; }
-.exp-desc ul { list-style:none; padding-left:0; }
-.exp-desc li { position:relative; padding-left:25px; margin-bottom:15px; color:#ccc; font-weight:300; line-height:1.7; }
-.exp-desc li::before { content:'▹'; position:absolute; left:0; color:var(--accent); font-size:1.2rem; font-weight:bold; }
-
-.project-card {
-  background:var(--card); border-radius:10px; overflow:hidden; margin-bottom:40px;
-  border:1px solid rgba(255,255,255,0.05); backdrop-filter:blur(10px); transition:0.3s;
-  opacity:0; transform:translateY(60px) scale(0.95);
+#hero-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  display:block;
 }
-.project-card:hover { transform:translateY(-5px) scale(1.02) !important; border-color:var(--accent); box-shadow:0 15px 35px rgba(0,0,0,0.6); }
-.project-img     { width:100%; height:320px; object-fit:cover; border-bottom:1px solid rgba(255,255,255,0.1); }
-.project-content { padding:40px; }
-.project-content h3 { font-size:1.8rem; margin-top:0; color:var(--accent); }
+.hero-text{
+  position:absolute;
+  bottom:14vh;
+  left:0;right:0;
+  text-align:center;
+  z-index:5;
+  padding:0 20px;
+  pointer-events:none;
+}
+.hero-text h1{
+  font-size:clamp(2.4rem,6.5vw,5.4rem);
+  font-weight:500;
+  letter-spacing:-.035em;
+  line-height:1.02;
+  color:#fff;
+  text-shadow:0 4px 30px rgba(0,0,0,.3);
+}
+.hero-text h1 .word{
+  display:inline-block;
+  opacity:0;
+  transform:translateY(28px);
+  animation:reveal 1s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes reveal{to{opacity:1;transform:translateY(0)}}
+.hero-text h1 .word:nth-child(1){animation-delay:.6s}
+.hero-text h1 .word:nth-child(2){animation-delay:.7s}
+.hero-text h1 .word:nth-child(3){animation-delay:.8s}
+.hero-text h1 .word:nth-child(4){animation-delay:.9s}
+.hero-text h1 .word:nth-child(5){animation-delay:1.0s}
+.hero-text h1 .word:nth-child(6){animation-delay:1.1s}
+.hero-text h1 .word:nth-child(7){animation-delay:1.2s}
 
-footer { text-align:center; padding:80px 20px; background:#020202; border-top:1px solid rgba(255,255,255,0.05); position:relative; z-index:1; }
-.contact-grid { display:flex; justify-content:center; gap:20px; margin-top:40px; flex-wrap:wrap; }
+.hero-meta{
+  position:absolute;
+  bottom:4vh;left:0;right:0;
+  display:flex;justify-content:space-between;
+  padding:0 5vw;
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.55);
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  z-index:5;
+  opacity:0;
+  animation:reveal 1s 1.5s forwards;
+}
+.hero-meta .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--lime);margin-right:8px;vertical-align:middle;box-shadow:0 0 8px var(--lime)}
 
-.philosophy-box {
-  background:var(--card); padding:30px; border-radius:10px; text-align:left;
-  backdrop-filter:blur(15px); border:1px solid rgba(255,255,255,0.05); max-width:580px;
+/* ─── SCROLL SCENE (wireframe + grid + missions) ───── */
+.scroll-scene{
+  position:relative;
+  height:300vh; /* 3 sections of scroll */
+  background:#000;
+}
+#scene2-canvas{
+  position:sticky;
+  top:0;
+  left:0;
+  width:100%;
+  height:100vh;
+  display:block;
+  z-index:1;
+}
+.scroll-text-layer{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:2;
+}
+.scroll-text{
+  position:sticky;
+  top:0;
+  height:100vh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.scroll-text .big{
+  font-size:clamp(2.5rem,7vw,6rem);
+  font-weight:500;
+  letter-spacing:-.04em;
+  color:#fff;
+  text-align:center;
+  line-height:1;
+  opacity:0;
+  transform:translateY(40px);
+  transition:opacity .8s,transform .8s;
+}
+.scroll-text.on .big{opacity:1;transform:translateY(0)}
+.scroll-text .big em{font-style:normal;color:var(--lime)}
+
+/* ─── WHITE STATEMENT ──────────────────────────────── */
+.statement{
+  background:#fff;
+  color:#0a0a0a;
+  padding:18vh 5vw 18vh;
+  position:relative;
+  z-index:5;
+}
+.statement-inner{
+  max-width:1200px;
+  margin:0 auto;
+  text-align:center;
+}
+.statement h2{
+  font-size:clamp(2rem,5.5vw,4.8rem);
+  font-weight:500;
+  letter-spacing:-.035em;
+  line-height:1.08;
+  color:#0a0a0a;
+}
+.statement h2 em{
+  font-style:normal;
+  color:var(--lime);
+  -webkit-text-stroke:.5px #a8df00;
+  text-shadow:0 0 1px rgba(193,255,0,.4);
+}
+.statement .word{
+  display:inline-block;
+  opacity:0;
+  transform:translateY(18px);
+}
+.statement.on .word{
+  animation:reveal .8s cubic-bezier(.16,1,.3,1) forwards;
 }
 
-.second-section {
-  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-  align-items:flex-end; padding:0 10%; pointer-events:none;
+/* ─── FEATURE PANELS ──────────────────────────────── */
+.features{background:#fff;color:#0a0a0a}
+.feature{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  min-height:90vh;
+  padding:6vh 0 6vh 5vw;
+  align-items:center;
+  gap:5vw;
+  position:relative;
 }
-.second-section * { pointer-events:auto; }
-
-.third-section {
-  min-height:100vh; display:flex; flex-direction:column; justify-content:center;
-  align-items:center; padding:0 10%; text-align:center; pointer-events:none;
+.feature .left{
+  padding-right:4vw;
+  position:relative;
 }
-.third-section * { pointer-events:auto; }
+.feature .num{
+  font-family:'Geist Mono',monospace;
+  font-size:13px;
+  color:#999;
+  letter-spacing:.06em;
+  position:absolute;
+  top:0;
+  left:0;
+}
+.feature h3{
+  font-size:clamp(1.8rem,3.8vw,3.2rem);
+  font-weight:500;
+  letter-spacing:-.035em;
+  line-height:1.08;
+  margin-top:54px;
+  color:#0a0a0a;
+}
+.feature h3 .hl{color:var(--lime);
+  text-shadow:0 0 1px rgba(193,255,0,.3)}
+.feature .sub{
+  margin-top:20px;
+  font-size:clamp(.95rem,1.3vw,1.15rem);
+  color:#666;
+  font-weight:400;
+  letter-spacing:-.01em;
+  line-height:1.5;
+  max-width:480px;
+}
+.feature .right{
+  height:78vh;
+  background:#0a0a0a;
+  border-radius:32px 0 0 32px;
+  position:relative;
+  overflow:hidden;
+  margin-right:0;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.feature .right canvas{
+  width:100%;height:100%;display:block;
+}
+.feature .right .corner-cut{
+  position:absolute;
+  top:0;left:-1px;
+  width:60px;height:60px;
+  background:radial-gradient(circle at 0% 100%, transparent 60px, #fff 60px);
+  pointer-events:none;
+}
+.feature .right .panel-tags{
+  position:absolute;
+  bottom:24px;left:24px;right:24px;
+  display:flex;justify-content:space-between;
+  font-family:'Geist Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  pointer-events:none;
+  z-index:3;
+}
+.feature .right .top-marks{
+  position:absolute;
+  top:18px;left:24px;right:24px;
+  display:flex;justify-content:space-between;
+  font-family:'Geist Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,.35);
+  letter-spacing:.15em;
+  pointer-events:none;
+  z-index:3;
+}
 
-@media(max-width:768px){
-  h1{font-size:3rem;} .hero-section,.second-section,.third-section{padding:0 6%;}
-  .container{padding:60px 16px;} .project-img{height:200px;}
-  .metric-card{width:160px;padding:30px 20px;} .metric-card h2{font-size:3rem;}
+/* ─── EXPERIENCE / TIMELINE ───────────────────────── */
+.section-dark{
+  background:#0a0a0a;
+  color:#fff;
+  padding:14vh 5vw;
+  position:relative;
+}
+.section-eyebrow{
+  font-family:'Geist Mono',monospace;
+  font-size:12px;
+  color:var(--lime);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+.section-eyebrow::before{content:'// ';opacity:.5}
+.section-title{
+  font-size:clamp(2.2rem,4.5vw,4rem);
+  font-weight:500;
+  letter-spacing:-.035em;
+  line-height:1;
+  margin-bottom:60px;
+  color:#fff;
+}
+.section-title em{font-style:normal;color:var(--lime)}
+
+.timeline{
+  display:grid;
+  gap:0;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.tl-row{
+  display:grid;
+  grid-template-columns:200px 1fr 1fr;
+  padding:50px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  gap:40px;
+  transition:background .3s;
+  position:relative;
+}
+.tl-row:hover{background:rgba(255,255,255,.015)}
+.tl-row .yr{
+  font-family:'Geist Mono',monospace;
+  font-size:13px;
+  color:#888;
+  letter-spacing:.05em;
+}
+.tl-row .role{
+  font-size:clamp(1.3rem,2.2vw,2rem);
+  font-weight:500;
+  letter-spacing:-.025em;
+  line-height:1.1;
+  color:#fff;
+}
+.tl-row .co{
+  font-size:13px;
+  color:#888;
+  margin-top:6px;
+  font-family:'Geist Mono',monospace;
+  letter-spacing:.04em;
+}
+.tl-row .desc{
+  color:#aaa;
+  font-size:14.5px;
+  line-height:1.65;
+  font-weight:300;
+}
+.tl-row .desc strong{color:#fff;font-weight:500}
+.tl-row .desc ul{list-style:none}
+.tl-row .desc li{padding-left:20px;position:relative;margin-bottom:10px}
+.tl-row .desc li::before{content:'→';position:absolute;left:0;color:var(--lime)}
+
+/* ─── METRICS STRIP ─────────────────────────────────── */
+.metrics{
+  background:#fff;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-top:1px solid #eaeaea;
+}
+.metric{
+  padding:80px 50px;
+  text-align:left;
+  position:relative;
+  border-right:1px solid #eaeaea;
+}
+.metric:last-child{border-right:none}
+.metric .label{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:#999;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+.metric .val{
+  font-size:clamp(3.5rem,7vw,6.4rem);
+  font-weight:500;
+  letter-spacing:-.04em;
+  line-height:1;
+  color:#0a0a0a;
+}
+.metric .val .pct{color:var(--lime);font-size:.7em}
+.metric .det{
+  font-size:13px;color:#666;margin-top:14px;
+  letter-spacing:-.005em;
+}
+
+/* ─── PROJECTS ──────────────────────────────────────── */
+.projects-grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:14px;
+  margin-top:40px;
+}
+.pj{
+  background:#111;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  overflow:hidden;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  transition:transform .35s,border-color .35s;
+}
+.pj:hover{transform:translateY(-3px);border-color:rgba(193,255,0,.4)}
+.pj.big{grid-column:span 8}
+.pj.small{grid-column:span 4}
+.pj.wide{grid-column:span 6}
+.pj .pj-img{
+  position:relative;
+  height:240px;
+  overflow:hidden;
+  background:#000;
+}
+.pj.big .pj-img{height:360px}
+.pj .pj-img img{
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:saturate(.65) brightness(.75);
+  transition:filter .5s,transform .5s;
+}
+.pj:hover .pj-img img{filter:saturate(1) brightness(.9);transform:scale(1.03)}
+.pj .pj-img::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 60%,#111);
+  pointer-events:none;
+}
+.pj .pj-tag{
+  position:absolute;
+  top:14px;left:14px;
+  font-family:'Geist Mono',monospace;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  padding:6px 12px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  color:#fff;
+  z-index:2;
+}
+.pj .pj-tag.lime{color:var(--lime);border-color:rgba(193,255,0,.35);background:rgba(193,255,0,.05)}
+.pj .pj-body{padding:24px 26px 28px;flex:1;display:flex;flex-direction:column}
+.pj .pj-title{
+  font-size:clamp(1.15rem,1.6vw,1.5rem);
+  font-weight:500;
+  letter-spacing:-.025em;
+  line-height:1.18;
+  color:#fff;
+  margin-bottom:12px;
+}
+.pj .pj-desc{
+  font-size:13.5px;
+  color:#999;
+  line-height:1.65;
+  font-weight:300;
+  margin-bottom:14px;
+}
+.pj .pj-desc strong{color:#fff;font-weight:500}
+.pj .pj-impact{
+  margin-top:auto;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.08);
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:var(--lime);
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+/* ─── EDUCATION CARDS ──────────────────────────────── */
+.edu-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+.edu{
+  background:#0a0a0a;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  padding:40px;
+  position:relative;
+  overflow:hidden;
+  transition:border-color .3s;
+}
+.edu:hover{border-color:rgba(193,255,0,.3)}
+.edu .edu-yr{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:var(--lime);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+.edu h4{
+  font-size:clamp(1.4rem,2vw,1.9rem);
+  font-weight:500;
+  letter-spacing:-.025em;
+  line-height:1.15;
+  color:#fff;
+  margin-bottom:8px;
+}
+.edu .edu-sch{
+  font-size:13px;color:#888;
+  font-family:'Geist Mono',monospace;
+  letter-spacing:.02em;
+  margin-bottom:18px;
+}
+.edu p{
+  color:#999;
+  font-size:14px;line-height:1.65;
+  font-weight:300;
+}
+.edu .chips{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:18px;
+}
+.edu .chip{
+  font-family:'Geist Mono',monospace;
+  font-size:10.5px;
+  padding:5px 12px;
+  border-radius:20px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  color:#aaa;
+  letter-spacing:.05em;
+}
+.edu-num{
+  position:absolute;
+  top:18px;right:30px;
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:10rem;
+  font-weight:500;
+  color:rgba(255,255,255,.025);
+  line-height:1;
+  letter-spacing:-.06em;
+  pointer-events:none;
+}
+
+/* ─── PROFILE / ABOUT BLOCK ───────────────────────── */
+.profile-block{
+  display:grid;
+  grid-template-columns:340px 1fr;
+  gap:60px;
+  align-items:start;
+  margin-top:30px;
+}
+.profile-img{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  aspect-ratio:4/5;
+}
+.profile-img img{
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:saturate(.85) brightness(.95);
+}
+.profile-img::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 50%,rgba(10,10,10,.7));
+  pointer-events:none;
+}
+.profile-img .badge{
+  position:absolute;
+  bottom:18px;left:18px;
+  font-family:'Geist Mono',monospace;
+  font-size:10px;
+  color:var(--lime);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.profile-info p{
+  font-size:clamp(1.05rem,1.5vw,1.4rem);
+  font-weight:400;
+  letter-spacing:-.015em;
+  line-height:1.45;
+  color:#ddd;
+  margin-bottom:24px;
+}
+.profile-info p strong{color:#fff;font-weight:500}
+.profile-info p em{font-style:normal;color:var(--lime)}
+.profile-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+  margin-top:36px;
+  padding-top:30px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+.profile-stat .k{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:#888;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.profile-stat .v{
+  font-size:clamp(1.2rem,1.6vw,1.6rem);
+  font-weight:500;
+  color:#fff;
+  letter-spacing:-.02em;
+}
+
+/* ─── SKILLS BAR ROW ──────────────────────────────── */
+.skills-list{margin-top:30px}
+.sk{
+  display:grid;
+  grid-template-columns:1fr 80px 200px;
+  gap:30px;
+  padding:24px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  align-items:center;
+}
+.sk .sk-name{
+  font-size:clamp(1.05rem,1.4vw,1.3rem);
+  font-weight:500;
+  letter-spacing:-.015em;
+}
+.sk .sk-val{
+  font-family:'Geist Mono',monospace;
+  font-size:13px;
+  color:var(--lime);
+  text-align:right;
+}
+.sk .sk-bar{
+  height:2px;
+  background:rgba(255,255,255,.08);
+  position:relative;
+  overflow:hidden;
+}
+.sk .sk-bar .sk-fill{
+  position:absolute;
+  top:0;left:0;
+  height:100%;
+  background:var(--lime);
+  width:0;
+  transition:width 1.8s cubic-bezier(.16,1,.3,1);
+  box-shadow:0 0 8px rgba(193,255,0,.5);
+}
+.sk.on .sk-fill{width:var(--w)}
+
+/* tools chips */
+.tools-block{margin-top:60px;padding-top:50px;border-top:1px solid rgba(255,255,255,.08)}
+.tools-block .lbl{
+  font-family:'Geist Mono',monospace;
+  font-size:11px;
+  color:#888;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:20px;
+}
+.tools-chips{display:flex;flex-wrap:wrap;gap:8px}
+.tool-chip{
+  padding:9px 16px;
+  border-radius:30px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.1);
+  color:#ccc;
+  font-size:13px;
+  letter-spacing:-.005em;
+  transition:all .25s;
+}
+.tool-chip:hover{
+  background:rgba(193,255,0,.06);
+  border-color:rgba(193,255,0,.35);
+  color:#fff;
+}
+
+/* ─── CONTACT ───────────────────────────────────────── */
+#contact{
+  background:#fff;
+  color:#0a0a0a;
+  padding:18vh 5vw;
+  text-align:center;
+  position:relative;
+}
+.contact-eyebrow{
+  font-family:'Geist Mono',monospace;
+  font-size:12px;
+  color:#999;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:30px;
+}
+#contact h2{
+  font-size:clamp(3rem,8vw,7rem);
+  font-weight:500;
+  letter-spacing:-.045em;
+  line-height:.95;
+  margin-bottom:50px;
+  color:#0a0a0a;
+}
+#contact h2 em{font-style:normal;color:var(--lime)}
+.contact-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cbtn{
+  padding:18px 38px;
+  border-radius:60px;
+  font-size:15px;font-weight:500;letter-spacing:-.01em;
+  text-decoration:none;
+  transition:transform .2s,background .25s,color .25s;
+  cursor:pointer;border:none;
+  display:inline-flex;align-items:center;gap:10px;
+}
+.cbtn:active{transform:scale(.98)}
+.cbtn.dark{background:#0a0a0a;color:#fff}
+.cbtn.dark:hover{background:#000}
+.cbtn.lime{background:var(--lime);color:#0a0a0a}
+.cbtn.lime:hover{background:#d4ff3d}
+
+/* footer */
+footer{
+  background:#0a0a0a;color:#888;
+  padding:30px 5vw;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Geist Mono',monospace;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+footer .l{color:var(--lime)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .9s,transform .9s}
+.rv.on{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media(max-width:980px){
+  nav{padding:6px 6px 6px 16px;gap:4px}
+  .nav-links{display:none}
+  .feature{grid-template-columns:1fr;padding:6vh 5vw}
+  .feature .right{height:60vh;margin:30px -5vw 0 0;border-radius:24px 0 0 24px}
+  .profile-block{grid-template-columns:1fr}
+  .tl-row{grid-template-columns:1fr;gap:14px;padding:36px 0}
+  .pj.big,.pj.small,.pj.wide{grid-column:span 12}
+  .edu-grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr}
+  .metric{border-right:none;border-bottom:1px solid #eaeaea;padding:50px 30px}
+  .sk{grid-template-columns:1fr;gap:8px}
+  .sk .sk-val{text-align:left}
+  .sk .sk-bar{width:100%}
+  footer{flex-direction:column;gap:10px}
 }
 </style>
 </head>
 <body>
 
-<div id="scroll-bar"></div>
-<div id="canvas-container"></div>
-
-<div class="content">
-
-  <!-- HERO -->
-  <div class="hero-section fade-in">
-    <h3 style="color:var(--accent);letter-spacing:4px;font-size:1.2rem;margin-bottom:10px;">TERMINAL INITIALIZED</h3>
-    <h1><span>Pratik</span><br>More</h1>
-    <p style="color:var(--light);font-size:1.2rem;font-weight:300;margin-top:16px;">
-      Quality &amp; Risk Management | Business Strategy | Data Analysis &amp; Reporting | MSc Cybersecurity
-    </p>
-    <div class="btn-group">
-      <a href="#projects" class="btn">My Projects</a>
-      <a href="#contact"  class="btn active">Hire Me</a>
-    </div>
+<!-- ═══ NAV ════════════════════════════════════════ -->
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="2" y="2" width="20" height="20" rx="6" fill="#fff"/>
+      <path d="M8 8h8M12 8v8" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
+    </svg>
+    PM·SecOps
   </div>
-
-  <!-- SPACER so 3D animation plays while scrolling -->
-  <div class="section-spacer"></div>
-
-  <!-- TERMINAL + PHILOSOPHY -->
-  <div class="second-section fade-in">
-    <div class="terminal-container" id="terminal">
-      <div class="terminal-header">
-        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
-        <span class="terminal-title">bash — pratik@secops: ~</span>
-      </div>
-      <div class="terminal-body" id="terminal-text"></div>
-    </div>
-
-    <div class="philosophy-box">
-      <strong style="color:var(--light);font-size:1.3rem;">My Philosophy:</strong><br><br>
-      <span style="color:var(--gray);">I believe robust internet governance and proactive threat hunting are the foundation of every digital platform.
-      From moderating millions of data points at TikTok to engineering automated kill switches for high-velocity ransomware,
-      my approach is simple: build secure perimeters, automate the response, and protect the user experience at scale.</span>
-    </div>
-
-    <div class="avatar-box fade-in" style="margin-top:24px;">
-      <img src="download.jfif" alt="Pratik More" class="avatar-img"
-           onerror="this.style.background='linear-gradient(135deg,#00332a,#005544)';this.removeAttribute('src')">
-      <div style="text-align:left;">
-        <h3 style="margin:0;font-size:1.5rem;color:var(--accent);">Pratik More</h3>
-        <p style="margin:5px 0;font-size:0.9rem;color:var(--gray);">Trust &amp; Safety / SecOps</p>
-        <p style="margin:0;font-size:0.9rem;color:#fff;">4.5+ Years Exp | Coventry, UK</p>
-      </div>
-    </div>
+  <ul class="nav-links">
+    <li><a href="#system">System <span class="chev">▾</span></a></li>
+    <li><a href="#projects">Projects <span class="chev">▾</span></a></li>
+    <li><a href="#experience">Experience <span class="chev">▾</span></a></li>
+    <li><a href="#resources">Resources <span class="chev">▾</span></a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <div class="nav-cta">
+    <button class="nav-phone" aria-label="phone">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg>
+    </button>
+    <a href="#" class="nav-btn light">DEMO</a>
+    <a href="#contact" class="nav-btn lime">CONTACT</a>
   </div>
+</nav>
 
-  <!-- AI-DRIVEN SKILLS -->
-  <div class="third-section fade-in">
-    <h2 style="font-size:3.5rem;margin-bottom:16px;letter-spacing:-1px;background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
-      AI-DRIVEN WORKFLOWS
+<!-- ═══ HERO (3D server-rack scene) ════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-text">
+    <h1>
+      <span class="word">I've</span>
+      <span class="word">reinvented</span>
+      <span class="word">the</span>
+      <span class="word">future</span>
+      <span class="word">of</span>
+      <span class="word">cybersecurity</span>
+    </h1>
+  </div>
+  <div class="hero-meta">
+    <span><span class="dot"></span>Pratik More // SecOps Analyst</span>
+    <span>52.40 N · 1.51 W // Coventry, UK</span>
+  </div>
+</section>
+
+<!-- ═══ SCROLL SCENE (wireframe + grid + missions) ═ -->
+<section class="scroll-scene">
+  <canvas id="scene2-canvas"></canvas>
+  <div class="scroll-text-layer">
+    <div class="scroll-text" data-step="1"><div class="big">through <em>AI-driven</em> threat hunting</div></div>
+    <div class="scroll-text" data-step="2"><div class="big">connecting <em>signal to defence</em></div></div>
+    <div class="scroll-text" data-step="3"><div class="big">across <em>every connected mission</em>.</div></div>
+  </div>
+</section>
+
+<!-- ═══ WHITE STATEMENT ═══════════════════════════ -->
+<section class="statement">
+  <div class="statement-inner">
+    <h2>
+      <span class="word" style="animation-delay:0s">Imagine</span>
+      <span class="word" style="animation-delay:.05s">security</span>
+      <span class="word" style="animation-delay:.1s">as</span>
+      <span class="word" style="animation-delay:.15s">an</span>
+      <em><span class="word" style="animation-delay:.2s">intelligent</span> <span class="word" style="animation-delay:.25s">shield</span></em>
+      <span class="word" style="animation-delay:.3s">seamlessly</span>
+      <span class="word" style="animation-delay:.35s">protecting</span>
+      <span class="word" style="animation-delay:.4s">endpoint</span>
+      <span class="word" style="animation-delay:.45s">to</span>
+      <span class="word" style="animation-delay:.5s">cloud.</span>
     </h2>
-    <p style="max-width:800px;text-align:center;margin:0 auto 40px;">
-      Simulating threat vectors and mapping vulnerabilities using the MITRE ATT&amp;CK framework and continuous automated monitoring.
-    </p>
-    <div class="tools-grid" style="justify-content:center;max-width:800px;margin:0 auto;">
-      <span class="tool-badge">Python (Pandas, NumPy)</span>
-      <span class="tool-badge">SQL &amp; Databases</span>
-      <span class="tool-badge">Microsoft Sentinel</span>
-      <span class="tool-badge">Azure Logic Apps</span>
-      <span class="tool-badge">Power BI &amp; Tableau</span>
-      <span class="tool-badge">MS Office</span>
-      <span class="tool-badge">NICE IEX</span>
-      <span class="tool-badge">Task Crowdsourcing (TCS)</span>
+  </div>
+</section>
+
+<!-- ═══ FEATURE PANELS (01-04) ═════════════════════ -->
+<section class="features" id="system">
+
+  <!-- 01 -->
+  <div class="feature">
+    <div class="left rv">
+      <span class="num">01</span>
+      <h3>Autonomous, <span class="hl">agentic SOAR</span>-driven workflows from detection to containment</h3>
+      <p class="sub">Single pane of glass visibility of all security operations — every alert, contained without a human in the loop.</p>
     </div>
-    <div style="max-width:800px;width:100%;margin:40px auto 0;text-align:left;">
-      <div class="skill-box"><div class="skill-name"><span>Security Operations (SIEM, Sentinel)</span><span>95%</span></div><div class="progress-bar"><div class="progress" data-width="95"></div></div></div>
-      <div class="skill-box"><div class="skill-name"><span>Risk Management &amp; Compliance</span><span>90%</span></div><div class="progress-bar"><div class="progress" data-width="90"></div></div></div>
-      <div class="skill-box"><div class="skill-name"><span>Data Analysis &amp; Reporting (Python, SQL)</span><span>88%</span></div><div class="progress-bar"><div class="progress" data-width="88"></div></div></div>
-      <div class="skill-box"><div class="skill-name"><span>Incident Response &amp; Threat Hunting</span><span>85%</span></div><div class="progress-bar"><div class="progress" data-width="85"></div></div></div>
+    <div class="right rv">
+      <canvas class="feat-canvas" data-scene="macbook"></canvas>
+      <div class="top-marks"><span>R-01</span><span>SENTINEL // ACTIVE</span></div>
+      <div class="panel-tags"><span>NODE 7741</span><span>· ENCRYPTED</span></div>
     </div>
   </div>
 
-  <!-- METRICS -->
-  <section class="metrics-banner fade-in">
-    <div class="metric-card"><h2 data-target="95" data-suffix="%">0%</h2><p>Quality Accuracy</p></div>
-    <div class="metric-card"><h2 data-target="89" data-suffix="%">0%</h2><p>MTTC Reduction</p></div>
-    <div class="metric-card"><h2 data-target="4"  data-suffix="">0</h2><p>Global Sites Managed</p></div>
-  </section>
-
-  <!-- EXPERIENCE -->
-  <section class="container" id="experience">
-    <h2 class="section-title fade-in">Work Experience</h2>
-
-    <div class="exp-card">
-      <div class="exp-date">June 2022 – November 2024</div>
-      <h3 class="exp-title">Lead WFM Analyst (Risk Operations &amp; Governance)</h3>
-      <div class="exp-company">Concentrix Daksh Pvt Ltd | India</div>
-      <div class="exp-desc"><ul>
-        <li>Incident Triage &amp; Containment: Managed prioritization and initial triage of operational anomalies across 4 global sites, independently responding to incidents and executing rigorous root-cause analysis.</li>
-        <li>SOC-Style Alert Management: Built automated MI dashboards using Python and SQL to monitor global operational metrics, identifying emerging risks and mitigating system bottlenecks.</li>
-        <li>Stakeholder Communication: Partnered with multi-site Directors to provide regular updates on operational risks, translating complex data into actionable mitigation strategies for senior leadership.</li>
-      </ul></div>
+  <!-- 02 -->
+  <div class="feature">
+    <div class="left rv">
+      <span class="num">02</span>
+      <h3>Real-time anomaly detection across <span class="hl">cloud and on-prem</span></h3>
+      <p class="sub">Managed by a unified platform with AI threat hunting — 167MB datasets processed for compliance, fraud, and behavioural tripwires.</p>
     </div>
-
-    <div class="exp-card">
-      <div class="exp-date">August 2019 – June 2022</div>
-      <h3 class="exp-title">Sr. Representative Content Moderator — ByteDance (TikTok Project)</h3>
-      <div class="exp-company">Concentrix Services India | ByteDance Project</div>
-      <div class="exp-desc"><ul>
-        <li>High-Volume Risk Management: Evaluated millions of data points for quality, compliance, and financial crime indicators across EU and MENA markets, maintaining a 95% accuracy rate across rigorous internal audits.</li>
-        <li>Incident Investigation &amp; Escalation: Identified and escalated security and risk management concerns to Legal and Compliance, compiling structured evidence packages and maintaining complete audit trails.</li>
-        <li>Process Documentation: Adapted rapidly to continuous regulatory changes, updating SOPs and advising team members on revised compliance requirements.</li>
-      </ul></div>
+    <div class="right rv">
+      <canvas class="feat-canvas" data-scene="iphone"></canvas>
+      <div class="top-marks"><span>NET-02</span><span>NODES // 248</span></div>
+      <div class="panel-tags"><span>NET-FLOW</span><span>· ML-IDS · LIVE</span></div>
     </div>
-  </section>
+  </div>
 
-  <!-- EDUCATION -->
-  <section class="container" id="education">
-    <h2 class="section-title fade-in">Education</h2>
-
-    <div class="exp-card">
-      <div class="exp-date">Expected May 2026</div>
-      <h3 class="exp-title">MSc Cybersecurity</h3>
-      <div class="exp-company">Coventry University, United Kingdom | Full-Time</div>
-      <div class="exp-desc"><ul>
-        <li><strong>Modules:</strong> Operational Risk, Data Security, Threat Analysis, AI Ethics, Data Architecture, Secure Programming, Technology Risk Management.</li>
-      </ul></div>
+  <!-- 03 -->
+  <div class="feature">
+    <div class="left rv">
+      <span class="num">03</span>
+      <h3>Highly configurable to all <span class="hl">environments</span> in your network</h3>
+      <p class="sub">Role-based access control, MFA via Microsoft Authenticator — granular privilege isolation across admin, developer, and client layers.</p>
     </div>
-
-    <div class="exp-card">
-      <div class="exp-date">2016 – 2022</div>
-      <h3 class="exp-title">BEng Information Technology</h3>
-      <div class="exp-company">Pune University, India | CGPA: 7.5 / 10</div>
+    <div class="right rv">
+      <canvas class="feat-canvas" data-scene="watch"></canvas>
+      <div class="top-marks"><span>RBAC-03</span><span>POLICIES // 38</span></div>
+      <div class="panel-tags"><span>MFA-LAYER</span><span>· ZERO-TRUST</span></div>
     </div>
-  </section>
+  </div>
 
-  <!-- PROJECTS -->
-  <section class="container" id="projects">
-    <h2 class="section-title fade-in">Key Projects</h2>
+  <!-- 04 -->
+  <div class="feature">
+    <div class="left rv">
+      <span class="num">04</span>
+      <h3><span class="hl">Unlocked value</span> from your existing SIEM &amp; SOC</h3>
+      <p class="sub">From moderating millions at TikTok to engineering zero-touch kill switches — built secure perimeters, automated responses, protected user experience at scale.</p>
+    </div>
+    <div class="right rv">
+      <canvas class="feat-canvas" data-scene="airpods"></canvas>
+      <div class="top-marks"><span>SIEM-04</span><span>EVENTS // 4.2M/D</span></div>
+      <div class="panel-tags"><span>UNIFIED</span><span>· SENTINEL · SOAR</span></div>
+    </div>
+  </div>
 
-    <div class="project-card">
-      <img src="soar.jpg.jpeg" class="project-img" alt="SOAR"
-           onerror="this.src='https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1000&q=80'">
-      <div class="project-content">
-        <h3>MSc Dissertation: Cloud-Native SOAR in Incident Containment (Azure)</h3>
-        <div class="exp-desc" style="margin-top:15px;">
-          <p style="color:var(--gray);margin-bottom:20px;"><strong>Academic Research | 2026</strong></p>
-          <ul>
-            <li>Evaluating SOAR workflows to coordinate incident recovery efforts and measure reductions in containment times.</li>
-            <li>Directly aligned with Business Resiliency frameworks by analyzing automated recovery strategies and optimizing rapid service restoration.</li>
-          </ul>
+</section>
+
+<!-- ═══ METRICS STRIP ═══════════════════════════════ -->
+<section class="metrics">
+  <div class="metric">
+    <div class="label">// Quality Accuracy</div>
+    <div class="val"><span class="count" data-t="95">0</span><span class="pct">%</span></div>
+    <div class="det">Content moderation across EU, MENA, and Bangladesh markets — TikTok project.</div>
+  </div>
+  <div class="metric">
+    <div class="label">// MTTC Reduction</div>
+    <div class="val"><span class="count" data-t="89">0</span><span class="pct">%</span></div>
+    <div class="det">Mean Time-to-Contain: 380s → 41s via zero-touch SOAR.</div>
+  </div>
+  <div class="metric">
+    <div class="label">// Global Sites Managed</div>
+    <div class="val"><span class="count" data-t="4">0</span></div>
+    <div class="det">India · Vietnam · Egypt · Poland — 20+ analysts cross-timezone.</div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT / PROFILE ═══════════════════════════ -->
+<section class="section-dark" id="about">
+  <div class="section-eyebrow">Profile</div>
+  <h2 class="section-title">Who I <em>am.</em></h2>
+
+  <div class="profile-block">
+    <div class="profile-img rv">
+      <img src="download.jfif" alt="Pratik More">
+      <div class="badge">// OPERATOR_01</div>
+    </div>
+    <div class="profile-info rv">
+      <p>
+        I'm <strong>Pratik More</strong> — a cybersecurity risk analyst with <em>4.5+ years</em> of building secure perimeters,
+        automating incident response, and protecting platform integrity at scale. Currently completing an
+        <strong>MSc Cybersecurity in the UK</strong>, with a dissertation on cloud-native SOAR architecture.
+      </p>
+      <p style="font-size:1rem;color:#999;font-weight:300;line-height:1.7">
+        From moderating millions of data points at TikTok to engineering zero-touch kill switches for
+        high-velocity ransomware — my philosophy is simple: build secure perimeters, automate the response,
+        protect the user experience at scale.
+      </p>
+
+      <div class="profile-stats">
+        <div class="profile-stat"><div class="k">Role</div><div class="v">SecOps / T&amp;S</div></div>
+        <div class="profile-stat"><div class="k">Location</div><div class="v">Coventry, UK</div></div>
+        <div class="profile-stat"><div class="k">Status</div><div class="v" style="color:var(--lime)">● Available</div></div>
+      </div>
+
+      <div class="skills-list">
+        <div class="sk" style="--w:95%">
+          <div class="sk-name">Security Operations (SIEM, Sentinel)</div>
+          <div class="sk-val">95</div>
+          <div class="sk-bar"><div class="sk-fill"></div></div>
+        </div>
+        <div class="sk" style="--w:90%">
+          <div class="sk-name">Risk Management &amp; Compliance</div>
+          <div class="sk-val">90</div>
+          <div class="sk-bar"><div class="sk-fill"></div></div>
+        </div>
+        <div class="sk" style="--w:90%">
+          <div class="sk-name">Identity &amp; Access Management</div>
+          <div class="sk-val">90</div>
+          <div class="sk-bar"><div class="sk-fill"></div></div>
+        </div>
+        <div class="sk" style="--w:90%">
+          <div class="sk-name">Python for Security Operations</div>
+          <div class="sk-val">90</div>
+          <div class="sk-bar"><div class="sk-fill"></div></div>
+        </div>
+        <div class="sk" style="--w:85%">
+          <div class="sk-name">Data Governance &amp; Privacy</div>
+          <div class="sk-val">85</div>
+          <div class="sk-bar"><div class="sk-fill"></div></div>
+        </div>
+      </div>
+
+      <div class="tools-block">
+        <div class="lbl">// Tools &amp; Architecture</div>
+        <div class="tools-chips">
+          <span class="tool-chip">Python · Pandas · NumPy</span>
+          <span class="tool-chip">SQL &amp; Databases</span>
+          <span class="tool-chip">Microsoft Sentinel</span>
+          <span class="tool-chip">Azure Logic Apps</span>
+          <span class="tool-chip">Power BI · Tableau</span>
+          <span class="tool-chip">NICE IEX</span>
+          <span class="tool-chip">Task Crowdsourcing (TCS)</span>
+          <span class="tool-chip">SOAR Automation</span>
+          <span class="tool-chip">RBAC Architecture</span>
+          <span class="tool-chip">MS Authenticator / MFA</span>
         </div>
       </div>
     </div>
+  </div>
+</section>
 
-    <div class="project-card">
-      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" class="project-img" alt="E-Commerce">
-      <div class="project-content">
-        <h3>E-Commerce Vendor Risk &amp; Governance Pipeline</h3>
-        <div class="exp-desc" style="margin-top:15px;">
-          <p style="color:var(--gray);margin-bottom:20px;"><strong>Independent Research Project | 2026</strong></p>
-          <ul>
-            <li>Engineered an automated intelligence pipeline using Python and Jupyter Notebooks to analyze a 167 MB dataset for compliance risks and threat actor behavior.</li>
-            <li>Developed custom scripting logic to hunt for anomalies, identifying high-risk fraud patterns demonstrating foundational Threat and Fraud Intelligence capabilities.</li>
-            <li>Documented findings in structured case studies, transforming raw threat data into comprehensive technical analysis reports.</li>
-          </ul>
-        </div>
+<!-- ═══ EXPERIENCE TIMELINE ═══════════════════════ -->
+<section class="section-dark" id="experience">
+  <div class="section-eyebrow">Career Log</div>
+  <h2 class="section-title">Work <em>experience.</em></h2>
+
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="yr">JUN 2022 — NOV 2024</div>
+      <div>
+        <div class="role">Lead Workforce Management Analyst</div>
+        <div class="co">Concentrix Daksh Pvt Ltd</div>
+      </div>
+      <div class="desc">
+        <ul>
+          <li>Led business-process analysis across <strong>4 global sites</strong> (India, Vietnam, Egypt, Poland), driving a <strong>15%</strong> resource-utilisation lift.</li>
+          <li>Coordinated <strong>20+ analysts</strong> across multiple time zones with precise operational execution.</li>
+          <li>Built reporting dashboards in <strong>Python &amp; Advanced Excel</strong>, delivering weekly forecasting &amp; root-cause analysis to senior leadership.</li>
+        </ul>
       </div>
     </div>
 
-    <div class="project-card">
-      <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" class="project-img" alt="Secure Web App">
-      <div class="project-content">
-        <h3>Secure Web Application: RBAC &amp; MFA Integration</h3>
-        <div class="exp-desc" style="margin-top:15px;">
-          <p style="color:var(--gray);margin-bottom:20px;"><strong>Academic Research | 2025</strong></p>
-          <ul>
-            <li>Built a full-stack application enforcing strict role-based access tiers and MFA identity verification, demonstrating applied knowledge of platform access governance and digital security controls.</li>
-          </ul>
+    <div class="tl-row">
+      <div class="yr">DEC 2019 — JUN 2022</div>
+      <div>
+        <div class="role">Content Moderator &amp; AI Policy Evaluator</div>
+        <div class="co">Concentrix · ByteDance — TikTok Project</div>
+      </div>
+      <div class="desc">
+        <ul>
+          <li>Reviewed high-volume content across <strong>EU, MENA, and Bangladesh</strong> markets supporting internet governance &amp; user safety.</li>
+          <li>Processed queues via <strong>TCS</strong> tool — sustained a <strong>95% accuracy</strong> rate over multiple quarters.</li>
+          <li>Collaborated with global moderation teams to document risk trends &amp; refine detection.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROJECTS BENTO ═══════════════════════════ -->
+<section class="section-dark" id="projects">
+  <div class="section-eyebrow">Portfolio</div>
+  <h2 class="section-title">Key <em>projects.</em></h2>
+
+  <div class="projects-grid">
+
+    <!-- Featured big card: SOAR -->
+    <div class="pj big rv">
+      <div class="pj-img">
+        <img src="soar.jpg" alt="SOAR Architecture">
+        <div class="pj-tag lime">MSc Dissertation · 2026</div>
+      </div>
+      <div class="pj-body">
+        <div class="pj-title">Cloud-Native SOAR &amp; Incident Response Architecture</div>
+        <div class="pj-desc">
+          Engineered a <strong>"Zero-Touch"</strong> automated containment workflow with Microsoft Sentinel &amp; Azure Logic Apps to mitigate high-velocity ransomware. Designed quantitative simulation benchmarking automated SOAR against manual triage.
         </div>
+        <div class="pj-impact">↯ MTTC: 380s → 41s · 89% reduction</div>
       </div>
     </div>
 
-    <div class="project-card">
-      <img src="https://images.unsplash.com/photo-1563206767-5b18f218e8de?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" class="project-img" alt="SIEM">
-      <div class="project-content">
-        <h3>SIEM Engineering &amp; Automated Incident Response (Wazuh)</h3>
-        <div class="exp-desc" style="margin-top:15px;">
-          <p style="color:var(--gray);margin-bottom:20px;"><strong>Independent Portfolio Project | 2026</strong></p>
-          <ul>
-            <li>Designed and deployed a localized SIEM environment using Wazuh to simulate real-world cyber threats, aggregate endpoint logs, and monitor system vulnerabilities.</li>
-            <li>Deployed and configured Wazuh agents across Ubuntu and Windows 10 VMs, establishing encrypted communication tunnels for real-time log ingestion.</li>
-            <li>Simulated an SSH Brute Force attack against a Linux server, correlating raw event data under the MITRE ATT&amp;CK Framework (T1110).</li>
-          </ul>
+    <!-- E-commerce: small -->
+    <div class="pj small rv">
+      <div class="pj-img">
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80" alt="E-commerce Risk">
+        <div class="pj-tag">Independent · ML</div>
+      </div>
+      <div class="pj-body">
+        <div class="pj-title">Vendor Risk &amp; Governance Pipeline</div>
+        <div class="pj-desc">
+          Analysed a <strong>167MB</strong> dataset to surface compliance risks &amp; vendor fraud. Custom <strong>behavioural tripwires</strong> flagged high-risk accounts.
         </div>
+        <div class="pj-impact">↯ 167MB processed</div>
       </div>
     </div>
 
-    <div class="fade-in" style="text-align:center;margin-top:60px;padding:50px 20px;background:linear-gradient(rgba(10,10,10,0.85),rgba(10,10,10,0.85)),url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1000&q=80') center/cover;border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
-      <h2 style="font-size:2.2rem;margin-top:0;margin-bottom:15px;">More projects on GitHub</h2>
-      <p style="margin-bottom:35px;max-width:600px;margin-left:auto;margin-right:auto;">I love to solve business problems &amp; uncover hidden threat vectors.</p>
-      <a href="https://github.com/Pratikm7073" target="_blank" class="btn active" style="padding:15px 40px;font-size:1rem;">View GitHub</a>
+    <!-- RBAC: wide -->
+    <div class="pj wide rv">
+      <div class="pj-img">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80" alt="Secure Web App">
+        <div class="pj-tag">Academic · 2026</div>
+      </div>
+      <div class="pj-body">
+        <div class="pj-title">Secure Web Application Architecture</div>
+        <div class="pj-desc">
+          Built strict <strong>RBAC</strong> with custom privilege levels for admin / developer / client. Integrated <strong>MFA via Microsoft Authenticator</strong> in a secure login portal.
+        </div>
+        <div class="pj-impact">↯ 3-tier privilege isolation</div>
+      </div>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer id="contact">
-    <h2 class="fade-in">Let's Connect</h2>
-    <p class="fade-in" style="max-width:600px;margin:0 auto;">Currently seeking opportunities in Data Analytics, Trust &amp; Safety, and Security Operations. Feel free to reach out directly.</p>
-    <div class="contact-grid fade-in">
-      <a href="mailto:morepratik77@gmail.com" class="btn active">Email Me</a>
-      <a href="https://github.com/Pratikm7073" target="_blank" class="btn">GitHub Profile</a>
+    <!-- ML IDS: wide -->
+    <div class="pj wide rv">
+      <div class="pj-img">
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80" alt="ML IDS">
+        <div class="pj-tag">Academic Research</div>
+      </div>
+      <div class="pj-body">
+        <div class="pj-title">Machine Learning Intrusion Detection System</div>
+        <div class="pj-desc">
+          ML-powered IDS analysing network traffic to surface system vulnerabilities. Mapped attack vectors to actionable defence reports.
+        </div>
+        <div class="pj-impact">↯ Quantifiable threat scoring</div>
+      </div>
     </div>
-    <p class="fade-in" style="margin-top:60px;color:var(--gray);font-size:0.9rem;">&copy; 2026 Pratik More. All rights reserved.</p>
-  </footer>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-<script>
-// ─────────────────────────────────────────────────────────────────────────────
-// FORCE SCROLL TOP
-// ─────────────────────────────────────────────────────────────────────────────
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.addEventListener('beforeunload', () => window.scrollTo(0, 0));
-setTimeout(() => window.scrollTo(0, 0), 10);
+  </div>
+</section>
 
-gsap.registerPlugin(ScrollTrigger);
+<!-- ═══ EDUCATION ═══════════════════════════════════ -->
+<section class="section-dark" id="resources">
+  <div class="section-eyebrow">Academic</div>
+  <h2 class="section-title">Education <em>log.</em></h2>
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RENDERER & SCENE
-// ─────────────────────────────────────────────────────────────────────────────
-const container = document.getElementById('canvas-container');
-const scene     = new THREE.Scene();
-const camera    = new THREE.PerspectiveCamera(48, innerWidth / innerHeight, 0.1, 500);
-camera.position.set(12, 4, 24);
-camera.lookAt(0, 1.5, 0);
+  <div class="edu-grid">
+    <div class="edu rv">
+      <span class="edu-num">01</span>
+      <div class="edu-yr">Currently Enrolled · 2026</div>
+      <h4>MSc Cybersecurity</h4>
+      <div class="edu-sch">United Kingdom</div>
+      <p>Focus on cloud-native security operations and automated incident response architecture.</p>
+      <div class="chips">
+        <span class="chip">AI Ethics</span>
+        <span class="chip">Data Security</span>
+        <span class="chip">Threat Analysis</span>
+        <span class="chip">Secure Programming</span>
+        <span class="chip">Cloud Security</span>
+      </div>
+    </div>
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
-container.appendChild(renderer.domElement);
+    <div class="edu rv">
+      <span class="edu-num">02</span>
+      <div class="edu-yr">Graduated</div>
+      <h4>BEng Information Technology</h4>
+      <div class="edu-sch">Sinhgad College of Engineering, Pune</div>
+      <p>CGPA <strong style="color:var(--lime)">7.5 / 10</strong> — foundation in software engineering, databases, and network infrastructure.</p>
+      <div class="chips">
+        <span class="chip">Software Engineering</span>
+        <span class="chip">Database Mgmt</span>
+        <span class="chip">Networks</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SKY — gradient canvas texture on inside of sphere
-// ─────────────────────────────────────────────────────────────────────────────
-const skyCanvas = document.createElement('canvas');
-skyCanvas.width = 2; skyCanvas.height = 512;
-const skyCtx  = skyCanvas.getContext('2d');
-const skyGrad = skyCtx.createLinearGradient(0, 0, 0, 512);
-skyGrad.addColorStop(0.00, '#0c001e');   // deep purple zenith
-skyGrad.addColorStop(0.20, '#3a0050');   // purple
-skyGrad.addColorStop(0.42, '#c03800');   // deep burnt orange
-skyGrad.addColorStop(0.58, '#ff7000');   // bright orange
-skyGrad.addColorStop(0.72, '#ffaa00');   // amber horizon glow
-skyGrad.addColorStop(0.85, '#cc5500');   // darkening
-skyGrad.addColorStop(1.00, '#150900');   // dark base
-skyCtx.fillStyle = skyGrad;
-skyCtx.fillRect(0, 0, 2, 512);
+<!-- ═══ CONTACT ═══════════════════════════════════ -->
+<section id="contact">
+  <div class="contact-eyebrow">// Open to opportunities</div>
+  <h2>Let's <em>connect.</em></h2>
+  <div class="contact-btns">
+    <a href="mailto:morepratik77@gmail.com" class="cbtn dark">Email Me →</a>
+    <a href="https://github.com/Pratikm7073" target="_blank" class="cbtn lime">GitHub Profile</a>
+  </div>
+</section>
 
-const skyTex = new THREE.CanvasTexture(skyCanvas);
-const skyMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(300, 32, 16),
-  new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, depthWrite: false })
-);
-scene.add(skyMesh);
+<footer>
+  <span>© 2026 Pratik More</span>
+  <span><span class="l">PM·SECOPS</span> // All rights reserved</span>
+  <span>Coventry, UK</span>
+</footer>
 
-// Sky opacity — will fade to 0 on scroll
-let skyOpacity = 1;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GROUND & ROAD
-// ─────────────────────────────────────────────────────────────────────────────
-const Y_GROUND = -1.2;
-
-const groundMesh = new THREE.Mesh(
-  new THREE.PlaneGeometry(400, 400),
-  new THREE.MeshStandardMaterial({ color: 0x1a1208, roughness: 0.95 })
-);
-groundMesh.rotation.x = -Math.PI / 2;
-groundMesh.position.y = Y_GROUND;
-groundMesh.receiveShadow = true;
-scene.add(groundMesh);
-
-// Road surface
-const roadMesh = new THREE.Mesh(
-  new THREE.PlaneGeometry(400, 9),
-  new THREE.MeshStandardMaterial({ color: 0x1f1f1f, roughness: 0.85 })
-);
-roadMesh.rotation.x = -Math.PI / 2;
-roadMesh.position.y  = Y_GROUND + 0.005;
-scene.add(roadMesh);
-
-// Dashed centre line
-const dashMat = new THREE.MeshBasicMaterial({ color: 0xffdd00 });
-const dashGeo = new THREE.PlaneGeometry(2.2, 0.14);
-for (let x = -160; x < 160; x += 4.5) {
-  const d = new THREE.Mesh(dashGeo, dashMat);
-  d.rotation.x = -Math.PI / 2;
-  d.position.set(x, Y_GROUND + 0.012, 0);
-  scene.add(d);
+<!-- ═══ THREE.JS + SCROLL LOGIC ═════════════════════ -->
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
 }
-// White edge lines
-const edgeMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-[-4.2, 4.2].forEach(z => {
-  const e = new THREE.Mesh(new THREE.PlaneGeometry(400, 0.14), edgeMat);
-  e.rotation.x = -Math.PI / 2;
-  e.position.set(0, Y_GROUND + 0.012, z);
-  scene.add(e);
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+/* ═══════════════════════════════════════════════════════════════
+   MATERIALS (premium PBR — like Apple product photography)
+═══════════════════════════════════════════════════════════════ */
+const matAluminum = new THREE.MeshPhysicalMaterial({
+  color: '#c4c5c8',
+  metalness: 0.88,
+  roughness: 0.32,
+  clearcoat: 0.4,
+  clearcoatRoughness: 0.15
+});
+const matSpaceBlack = new THREE.MeshPhysicalMaterial({
+  color: '#1c1c20',
+  metalness: 0.7,
+  roughness: 0.35,
+  clearcoat: 0.5,
+  clearcoatRoughness: 0.2
+});
+const matCeramic = new THREE.MeshPhysicalMaterial({
+  color: '#fafafa',
+  metalness: 0.05,
+  roughness: 0.35,
+  clearcoat: 0.6,
+  clearcoatRoughness: 0.18
+});
+const matGlass = new THREE.MeshPhysicalMaterial({
+  color: '#080812',
+  metalness: 0.2,
+  roughness: 0.1,
+  clearcoat: 1.0,
+  clearcoatRoughness: 0.05
+});
+const matRubber = new THREE.MeshPhysicalMaterial({
+  color: '#2a3a52',
+  roughness: 0.75,
+  clearcoat: 0.25
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LIGHTING (warm sunset)
-// ─────────────────────────────────────────────────────────────────────────────
-const sunLight = new THREE.DirectionalLight(0xff8000, 4.5);
-sunLight.position.set(-25, 12, -8);
-sunLight.castShadow = true;
-sunLight.shadow.mapSize.set(2048, 2048);
-sunLight.shadow.camera.near   = 0.5;
-sunLight.shadow.camera.far    = 80;
-sunLight.shadow.camera.left   = -18;
-sunLight.shadow.camera.right  = 18;
-sunLight.shadow.camera.top    = 18;
-sunLight.shadow.camera.bottom = -18;
-scene.add(sunLight);
+/* ═══════════════════════════════════════════════════════════════
+   LIVE SCREEN TEXTURE  (clean Apple-style minimal UI)
+═══════════════════════════════════════════════════════════════ */
+function createMacScreenTexture(){
+  const c = document.createElement('canvas');
+  c.width = 1024; c.height = 640;
+  const ctx = c.getContext('2d');
 
-const fillLight = new THREE.DirectionalLight(0x4466bb, 0.9);
-fillLight.position.set(18, 6, 8);
-scene.add(fillLight);
+  function paint(){
+    // Soft gradient background (Apple-style)
+    const grad = ctx.createLinearGradient(0, 0, 1024, 640);
+    grad.addColorStop(0, '#0a0a1a');
+    grad.addColorStop(0.5, '#1a1a3a');
+    grad.addColorStop(1, '#2a1a3a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1024, 640);
 
-const ambLight  = new THREE.AmbientLight(0x220d00, 0.7);
-scene.add(ambLight);
+    // Menu bar
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillRect(0, 0, 1024, 30);
+    ctx.fillStyle = '#fff';
+    ctx.font = '500 14px -apple-system,system-ui,sans-serif';
+    ctx.fillText('🍎  Pratik More', 16, 20);
+    ctx.font = '12px -apple-system,system-ui,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    const now = new Date();
+    const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    ctx.fillText(time, 970, 20);
 
-const rimLight  = new THREE.DirectionalLight(0xff4400, 0.8);
-rimLight.position.set(0, 18, -15);
-scene.add(rimLight);
+    // Big centered text
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#fff';
+    ctx.font = '500 78px -apple-system,system-ui,sans-serif';
+    ctx.fillText('SecOps.', 512, 320);
 
-// Cyber point light — cyan glow (starts off, fades in on scroll)
-const cyberLight = new THREE.PointLight(0x00ffcc, 0, 30);
-cyberLight.position.set(0, 6, 0);
-scene.add(cyberLight);
+    ctx.font = '300 22px -apple-system,system-ui,sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('Engineered to defend at scale.', 512, 360);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TRUCK BUILDER
-// ─────────────────────────────────────────────────────────────────────────────
-const truckGroup  = new THREE.Group();
-scene.add(truckGroup);
-const solidMeshes = [];   // all solid geometry
-const wheelMeshes = [];   // subset: rotating wheels
+    // Lime accent pill
+    ctx.fillStyle = '#c1ff00';
+    const pillX = 462, pillY = 410, pillW = 100, pillH = 32;
+    ctx.beginPath();
+    ctx.roundRect(pillX, pillY, pillW, pillH, 16);
+    ctx.fill();
+    ctx.fillStyle = '#0a0a0a';
+    ctx.font = '600 13px -apple-system,system-ui,sans-serif';
+    ctx.fillText('LIVE', 512, 431);
 
-// Materials
-const mats = {
-  trailer : new THREE.MeshStandardMaterial({ color: 0x777777, roughness: 0.4, metalness: 0.75 }),
-  cab     : new THREE.MeshStandardMaterial({ color: 0x222233, roughness: 0.3, metalness: 0.9  }),
-  chrome  : new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.1, metalness: 1.0  }),
-  glass   : new THREE.MeshStandardMaterial({ color: 0x6699cc, roughness: 0.0, metalness: 0.05, transparent: true, opacity: 0.65 }),
-  headlt  : new THREE.MeshStandardMaterial({ color: 0xfffce8, emissive: 0xffffaa, emissiveIntensity: 2.5 }),
-  taillt  : new THREE.MeshStandardMaterial({ color: 0xff2200, emissive: 0xff0000, emissiveIntensity: 2.0 }),
-  tire    : new THREE.MeshStandardMaterial({ color: 0x101010, roughness: 0.95 }),
-  rim     : new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.15, metalness: 0.9  }),
-};
+    ctx.textAlign = 'left';
+    tex.needsUpdate = true;
+  }
 
-function addPart(geo, mat, x, y, z, rx=0, ry=0, rz=0) {
-  const m = new THREE.Mesh(geo, mat);
-  m.position.set(x, y, z);
-  m.rotation.set(rx, ry, rz);
-  m.castShadow  = true;
-  m.receiveShadow = true;
-  truckGroup.add(m);
-  solidMeshes.push(m);
-  return m;
+  const tex = new THREE.CanvasTexture(c);
+  paint();
+  setInterval(paint, 30000); // refresh time
+  return tex;
 }
 
-// ── TRAILER ──
-addPart(new THREE.BoxGeometry(9.0, 3.3, 2.7), mats.trailer, -3.5, 0.95, 0);
-// Ribs on trailer side
-for (let x = -7.8; x < 0.4; x += 1.1) {
-  addPart(new THREE.BoxGeometry(0.07, 3.3, 0.09), mats.chrome, x, 0.95, 1.36);
-  addPart(new THREE.BoxGeometry(0.07, 3.3, 0.09), mats.chrome, x, 0.95, -1.36);
-}
-// Trailer underframe
-addPart(new THREE.BoxGeometry(9.0, 0.14, 2.5), mats.chrome, -3.5, -0.7, 0);
-// Landing gear
-addPart(new THREE.BoxGeometry(0.12, 0.9, 0.12), mats.chrome, -5.8, -0.85, 1.1);
-addPart(new THREE.BoxGeometry(0.12, 0.9, 0.12), mats.chrome, -5.8, -0.85, -1.1);
-addPart(new THREE.BoxGeometry(0.5, 0.1, 0.12), mats.chrome, -5.8, -1.28, 1.1);
-addPart(new THREE.BoxGeometry(0.5, 0.1, 0.12), mats.chrome, -5.8, -1.28, -1.1);
-// Tail lights
-addPart(new THREE.BoxGeometry(0.07, 0.32, 0.28), mats.taillt, -7.99, 1.55, 1.1);
-addPart(new THREE.BoxGeometry(0.07, 0.32, 0.28), mats.taillt, -7.99, 1.55, -1.1);
+/* ═══════════════════════════════════════════════════════════════
+   1) MacBook (premium, lid open ~115°)
+═══════════════════════════════════════════════════════════════ */
+function makeMacBook(lidAngleDeg = 115, withScreenContent = true){
+  const g = new THREE.Group();
 
-// ── CAB BODY ──
-addPart(new THREE.BoxGeometry(2.9, 3.1, 2.6), mats.cab, 2.5, 0.85, 0);
-// Cab roof
-addPart(new THREE.BoxGeometry(2.6, 0.2, 2.5), mats.cab, 2.4, 2.5, 0);
-// Air deflector — slopes forward
-addPart(new THREE.BoxGeometry(2.4, 0.18, 2.5), mats.cab, 2.6, 3.35, 0);
-addPart(new THREE.BoxGeometry(0.14, 0.9, 2.4), mats.cab, 3.85, 2.9, 0, 0.32, 0, 0);
-// Cab windshield
-addPart(new THREE.BoxGeometry(0.1, 1.55, 2.2), mats.glass, 3.75, 1.65, 0, 0.22, 0, 0);
-// Side windows
-addPart(new THREE.BoxGeometry(1.1, 0.8, 0.06), mats.glass, 3.1, 2.0, 1.31);
-addPart(new THREE.BoxGeometry(1.1, 0.8, 0.06), mats.glass, 3.1, 2.0, -1.31);
+  const W = 4.4, D = 3.0, baseH = 0.18;
+  const lidThickness = 0.14;
 
-// ── HOOD ──
-addPart(new THREE.BoxGeometry(1.7, 1.05, 2.5), mats.cab, 4.8, -0.1, 0);
-addPart(new THREE.BoxGeometry(1.5, 0.22, 2.35), mats.cab, 4.75, 0.54, 0, 0.09, 0, 0);
-// Grille
-addPart(new THREE.BoxGeometry(0.14, 1.2, 2.5), mats.chrome, 5.68, -0.05, 0);
-for (let y = -0.35; y <= 0.42; y += 0.22) {
-  addPart(new THREE.BoxGeometry(0.15, 0.07, 2.3), new THREE.MeshStandardMaterial({color:0x444444,roughness:0.4,metalness:0.8}), 5.67, y, 0);
-}
-// Bumper
-addPart(new THREE.BoxGeometry(0.26, 0.55, 2.6), mats.chrome, 5.75, -0.75, 0);
-addPart(new THREE.BoxGeometry(0.3, 0.6, 0.28), mats.chrome, 5.73, -0.75, 1.22);
-addPart(new THREE.BoxGeometry(0.3, 0.6, 0.28), mats.chrome, 5.73, -0.75, -1.22);
-// Headlights
-addPart(new THREE.BoxGeometry(0.14, 0.32, 0.38), mats.headlt, 5.7, 0.38, 1.0);
-addPart(new THREE.BoxGeometry(0.14, 0.32, 0.38), mats.headlt, 5.7, 0.38, -1.0);
-// Running lights
-addPart(new THREE.BoxGeometry(0.09, 0.12, 0.12), mats.headlt, 5.69, -0.4, 0.85);
-addPart(new THREE.BoxGeometry(0.09, 0.12, 0.12), mats.headlt, 5.69, -0.4, -0.85);
-// Cab marker lights
-[-1.0,-0.5,0,0.5,1.0].forEach(z => addPart(new THREE.BoxGeometry(0.07,0.07,0.07), mats.headlt, 3.82, 3.48, z));
-
-// ── EXHAUST STACKS ──
-[0.92, -0.92].forEach(z => {
-  const stackG = new THREE.CylinderGeometry(0.092, 0.105, 3.1, 16);
-  addPart(stackG, mats.chrome, 1.7, 3.55, z);
-  const capG = new THREE.CylinderGeometry(0.15, 0.092, 0.28, 16);
-  addPart(capG, mats.chrome, 1.7, 5.13, z);
-});
-
-// ── FUEL TANKS ──
-const ftg = new THREE.CylinderGeometry(0.4, 0.4, 2.3, 20);
-ftg.rotateZ(Math.PI/2);
-addPart(ftg, mats.chrome, 2.5, -0.38, 1.33);
-addPart(ftg, mats.chrome, 2.5, -0.38, -1.33);
-
-// ── FIFTH WHEEL ──
-const fwg = new THREE.CylinderGeometry(0.5, 0.5, 0.22, 22);
-addPart(fwg, mats.chrome, 0.8, -0.12, 0);
-
-// ── WHEELS ──
-const tireGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.45, 28);
-tireGeo.rotateX(Math.PI / 2);
-const rimGeo  = new THREE.CylinderGeometry(0.3, 0.3, 0.46, 20);
-rimGeo.rotateX(Math.PI / 2);
-const wheelY  = -0.61;
-
-function addWheel(x, z) {
-  const t = addPart(tireGeo, mats.tire, x, wheelY, z);
-  const r = addPart(rimGeo,  mats.rim,  x, wheelY, z);
-  wheelMeshes.push(t, r);
-}
-// Front steer
-addWheel(4.7,  1.4); addWheel(4.7, -1.4);
-// Drive axles
-addWheel(2.5,  1.28); addWheel(2.5, 1.58); addWheel(2.5, -1.28); addWheel(2.5, -1.58);
-addWheel(1.15, 1.28); addWheel(1.15, 1.58); addWheel(1.15,-1.28); addWheel(1.15,-1.58);
-// Trailer axles
-addWheel(-4.2, 1.28); addWheel(-4.2, 1.58); addWheel(-4.2,-1.28); addWheel(-4.2,-1.58);
-addWheel(-5.8, 1.28); addWheel(-5.8, 1.58); addWheel(-5.8,-1.28); addWheel(-5.8,-1.58);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// WIREFRAME OVERLAY (white edges, starts invisible)
-// ─────────────────────────────────────────────────────────────────────────────
-const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-const wireGroup = new THREE.Group();
-scene.add(wireGroup);
-
-solidMeshes.forEach(mesh => {
-  const edges = new THREE.LineSegments(
-    new THREE.EdgesGeometry(mesh.geometry, 10),
-    wireMat.clone()
+  // Base
+  const base = new THREE.Mesh(
+    new RoundedBoxGeometry(W, baseH, D, 6, 0.08),
+    matAluminum
   );
-  // copy transform from mesh relative to truck group
-  edges.position.copy(mesh.position);
-  edges.rotation.copy(mesh.rotation);
-  edges.scale.copy(mesh.scale);
-  wireGroup.add(edges);
-});
+  g.add(base);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CONTAINER YARD — wireframe boxes (aerial phase)
-// ─────────────────────────────────────────────────────────────────────────────
-const yardGroup = new THREE.Group();
-scene.add(yardGroup);
-yardGroup.position.set(0, 0, 0);
+  // Keyboard well (inset, dark)
+  const kbWell = new THREE.Mesh(
+    new RoundedBoxGeometry(W * 0.86, 0.02, D * 0.6, 4, 0.04),
+    new THREE.MeshPhysicalMaterial({color: '#16161a', metalness: 0.3, roughness: 0.6})
+  );
+  kbWell.position.set(0, baseH/2 + 0.001, -D*0.18);
+  g.add(kbWell);
 
-const containerWireMat = new THREE.LineBasicMaterial({ color: 0x00ddff, transparent: true, opacity: 0 });
-
-function addContainer(x, y, z, w, h, d, mat) {
-  const geo   = new THREE.BoxGeometry(w, h, d);
-  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), mat.clone());
-  edges.position.set(x, y, z);
-  // Add horizontal interior shelves look
-  const slabMat = mat.clone();
-  slabMat.opacity *= 0.4;
-  for (let yOff = -h/2 + h/5; yOff < h/2; yOff += h/5) {
-    const slabGeo   = new THREE.BoxGeometry(w, 0.02, d);
-    const slabEdges = new THREE.LineSegments(new THREE.EdgesGeometry(slabGeo), slabMat);
-    slabEdges.position.set(x, y + yOff, z);
-    yardGroup.add(slabEdges);
-  }
-  yardGroup.add(edges);
-  return edges;
-}
-
-// Scattered containers in yard (visible from above)
-const cMat = containerWireMat;
-addContainer(-18,  1.5,  8,  8, 3.2, 2.6, cMat);
-addContainer(-18,  1.5, -8,  8, 3.2, 2.6, cMat);
-addContainer(-28,  1.5,  4,  8, 3.2, 2.6, cMat);
-addContainer(-28,  1.5, -4,  8, 3.2, 2.6, cMat);
-addContainer( 18,  1.5,  6,  8, 3.2, 2.6, cMat);
-addContainer( 18,  1.5, -6,  8, 3.2, 2.6, cMat);
-addContainer( 28,  1.5,  0,  8, 3.2, 2.6, cMat);
-// Stacked second row
-addContainer(-18,  4.8,  8,  8, 3.2, 2.6, cMat);
-addContainer(-28,  4.8,  4,  8, 3.2, 2.6, cMat);
-addContainer( 18,  4.8,  6,  8, 3.2, 2.6, cMat);
-// Warehouse building wireframe
-addContainer(-40, 5, 0, 14, 10, 20, cMat);
-addContainer( 40, 4, 0, 10,  8, 16, cMat);
-
-// A second wireframe truck in the yard
-const truckWire2 = new THREE.Group();
-scene.add(truckWire2);
-const tw2mat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 });
-function addTruckWire(x, y, z, w, h, d) {
-  const geo   = new THREE.BoxGeometry(w, h, d);
-  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), tw2mat.clone());
-  edges.position.set(x, y, z);
-  truckWire2.add(edges);
-}
-// Offset second truck
-truckWire2.position.set(-15, 0, 12);
-truckWire2.rotation.y = Math.PI / 2;
-addTruckWire(-3.5, 0.95, 0, 9, 3.3, 2.6);
-addTruckWire( 2.5, 0.85, 0, 2.9, 3.0, 2.5);
-addTruckWire( 4.7, -0.1, 0, 1.6, 1.0, 2.4);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PARTICLE SYSTEM — sampled from truck surface, explodes on scroll
-// ─────────────────────────────────────────────────────────────────────────────
-const PARTICLE_COUNT = 9000;
-
-// Collect all truck vertex positions (world space)
-truckGroup.updateMatrixWorld(true);
-const srcPositions = [];
-solidMeshes.forEach(mesh => {
-  const posAttr = mesh.geometry.attributes.position;
-  if (!posAttr) return;
-  const wm = mesh.matrixWorld;
-  for (let i = 0; i < posAttr.count; i++) {
-    const v = new THREE.Vector3(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i));
-    v.applyMatrix4(wm);
-    srcPositions.push(v);
-  }
-});
-
-const pPositions = new Float32Array(PARTICLE_COUNT * 3);
-const pVelocities = []; // explosion vectors
-const pOrigins    = []; // original truck positions
-
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-  const src = srcPositions[Math.floor(Math.random() * srcPositions.length)];
-  // Add slight jitter around vertex
-  const jx = src.x + (Math.random() - 0.5) * 0.35;
-  const jy = src.y + (Math.random() - 0.5) * 0.35;
-  const jz = src.z + (Math.random() - 0.5) * 0.35;
-
-  pPositions[i*3]   = jx;
-  pPositions[i*3+1] = jy;
-  pPositions[i*3+2] = jz;
-
-  pOrigins.push(jx, jy, jz);
-
-  // Explosion: radially outward + upward
-  const rx = (Math.random() - 0.5) * 22;
-  const ry = Math.random() * 14 + 1;
-  const rz = (Math.random() - 0.5) * 22;
-  pVelocities.push(rx, ry, rz);
-}
-
-const pGeo = new THREE.BufferGeometry();
-pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
-
-const pMat = new THREE.PointsMaterial({
-  color      : 0xffffff,
-  size       : 0.12,
-  sizeAttenuation: true,
-  transparent: true,
-  opacity    : 0
-});
-
-const particles = new THREE.Points(pGeo, pMat);
-scene.add(particles);
-
-// Ambient star-field (always visible after dark bg)
-const starCount = 3000;
-const starPos   = new Float32Array(starCount * 3);
-for (let i = 0; i < starCount; i++) {
-  starPos[i*3]   = (Math.random() - 0.5) * 300;
-  starPos[i*3+1] = Math.random() * 80 + 5;
-  starPos[i*3+2] = (Math.random() - 0.5) * 300;
-}
-const starGeo = new THREE.BufferGeometry();
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, sizeAttenuation: true, transparent: true, opacity: 0 });
-scene.add(new THREE.Points(starGeo, starMat));
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GRID FLOOR (dark grid, visible from above)
-// ─────────────────────────────────────────────────────────────────────────────
-const gridHelper = new THREE.GridHelper(200, 40, 0x222222, 0x222222);
-gridHelper.position.y = Y_GROUND + 0.02;
-gridHelper.material.transparent = true;
-gridHelper.material.opacity = 0;
-scene.add(gridHelper);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SCROLL-DRIVEN ANIMATION via GSAP ScrollTrigger
-// ─────────────────────────────────────────────────────────────────────────────
-
-// State that render loop reads
-let scrollProgress = 0;  // 0 → 1 across the whole page
-
-ScrollTrigger.create({
-  trigger : 'body',
-  start   : 'top top',
-  end     : 'bottom bottom',
-  scrub   : 0.6,
-  onUpdate: self => { scrollProgress = self.progress; }
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RENDER LOOP — drive everything from scrollProgress
-// ─────────────────────────────────────────────────────────────────────────────
-const clock = new THREE.Clock();
-
-// Camera keyframes
-const CAM = {
-  // Phase 1: side view — sunset, truck driving
-  p1: { pos: new THREE.Vector3(12, 4, 24),  look: new THREE.Vector3(0, 1.5, 0) },
-  // Phase 2: pull back, slight rise
-  p2: { pos: new THREE.Vector3(16, 7, 20),  look: new THREE.Vector3(0, 1.5, 0) },
-  // Phase 3: aerial looking down at yard
-  p3: { pos: new THREE.Vector3(0,  40, 12), look: new THREE.Vector3(0, 0,   0) },
-  // Phase 4: front close wireframe (like frame 6)
-  p4: { pos: new THREE.Vector3(-6, 10, 18), look: new THREE.Vector3(0, 1.5, 0) },
-};
-
-const tmpPos  = new THREE.Vector3();
-const tmpLook = new THREE.Vector3();
-
-function lerp(a, b, t) { return a + (b - a) * t; }
-function clamp01(v) { return Math.max(0, Math.min(1, v)); }
-function smoothstep(t) { t = clamp01(t); return t * t * (3 - 2 * t); }
-function invLerp(a, b, v) { return clamp01((v - a) / (b - a)); }
-function phase(start, end, s) { return smoothstep(invLerp(start, end, s)); }
-
-function animate() {
-  requestAnimationFrame(animate);
-  const delta = clock.getDelta();
-  const time  = clock.getElapsedTime();
-  const sp    = scrollProgress;  // 0..1
-
-  // ── Rotate wheels ──
-  const roadSpeed = 14;
-  wheelMeshes.forEach(w => { w.rotation.z -= roadSpeed * delta * 0.35; });
-
-  // ── Truck gentle bounce ──
-  truckGroup.position.y = Math.sin(time * 12) * 0.025;
-  wireGroup.position.y  = truckGroup.position.y;
-
-  // ── Scroll road (only in phase 1) ──
-  const roadPhase = phase(0, 0.15, sp);
-  // (we just animate truck position to simulate movement)
-  // Actually let's scroll the ground instead
-  groundMesh.position.x = -((time * roadSpeed) % 200);
-
-  // ─ PHASE 0→0.15: Sunset, side view ─
-  const p01 = phase(0, 0.15, sp);
-  skyMesh.material.opacity = lerp(1, 1, p01);
-
-  // ─ PHASE 0.15→0.35: Begin rise, particles appear, sun dims ─
-  const p15_35 = phase(0.15, 0.35, sp);
-  // Truck solid fades
-  const solidAlpha = 1 - p15_35;
-  solidMeshes.forEach(m => {
-    if (m.material.transparent || solidAlpha < 1) {
-      m.material.transparent = true;
-      m.material.opacity = m.material === mats.glass
-        ? solidAlpha * 0.65
-        : solidAlpha;
+  // Keys (subtle low-profile grid)
+  const keyMat = new THREE.MeshPhysicalMaterial({color: '#0e0e10', metalness: 0.4, roughness: 0.45});
+  const keyRows = 4, keyCols = 14;
+  const keySize = 0.21, keyGap = 0.27;
+  const kbX = -(keyCols-1)/2 * keyGap;
+  const kbZ = -D*0.18 - (keyRows-1)/2 * keyGap;
+  for(let r=0; r<keyRows; r++){
+    for(let c=0; c<keyCols; c++){
+      const k = new THREE.Mesh(
+        new RoundedBoxGeometry(keySize, 0.025, keySize, 2, 0.018),
+        keyMat
+      );
+      k.position.set(kbX + c*keyGap, baseH/2 + 0.015, kbZ + r*keyGap);
+      g.add(k);
     }
-  });
-  // Particles appear and start lifting
-  pMat.opacity = p15_35;
-
-  const pPos = pGeo.attributes.position.array;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const t = p15_35;
-    pPos[i*3]   = lerp(pOrigins[i*3],   pOrigins[i*3]   + pVelocities[i*3]   * t, t * t);
-    pPos[i*3+1] = lerp(pOrigins[i*3+1], pOrigins[i*3+1] + pVelocities[i*3+1] * t, t * t);
-    pPos[i*3+2] = lerp(pOrigins[i*3+2], pOrigins[i*3+2] + pVelocities[i*3+2] * t, t * t);
-  }
-  pGeo.attributes.position.needsUpdate = true;
-
-  // Wireframe of truck appears as solid fades
-  wireGroup.children.forEach(l => { l.material.opacity = p15_35 * 0.9; });
-  // Also second wireframe truck
-  truckWire2.children.forEach(l => { l.material.opacity = p15_35; });
-
-  // Sky fades to dark
-  skyMesh.material.opacity = 1 - p15_35;
-  // Cyber light fades in
-  cyberLight.intensity = p15_35 * 6;
-  // Stars appear
-  starMat.opacity = p15_35 * 0.7;
-
-  // Lighting transitions
-  sunLight.intensity  = lerp(4.5, 0.3, p15_35);
-  fillLight.intensity = lerp(0.9, 0.1, p15_35);
-  ambLight.intensity  = lerp(0.7, 0.08, p15_35);
-
-  // ─ PHASE 0.35→0.55: Aerial / container yard ─
-  const p35_55 = phase(0.35, 0.55, sp);
-  // Show grid floor
-  gridHelper.material.opacity = p35_55 * 0.5;
-  // Show container yard wireframes
-  yardGroup.traverse(child => {
-    if (child.material) child.material.opacity = p35_55 * 0.75;
-  });
-  // Particles drift upward and slow
-  if (sp > 0.35) {
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      pPos[i*3+1] += 0.005 * (Math.random() - 0.5);
-    }
-    pGeo.attributes.position.needsUpdate = true;
   }
 
-  // ─ Camera interpolation ─
-  if (sp < 0.15) {
-    // Side view
-    tmpPos.copy(CAM.p1);
-    tmpLook.copy(CAM.p1.look);
-  } else if (sp < 0.35) {
-    const t = phase(0.15, 0.35, sp);
-    tmpPos.lerpVectors(CAM.p1.pos, CAM.p2.pos, t);
-    tmpLook.lerpVectors(CAM.p1.look, CAM.p2.look, t);
-  } else if (sp < 0.55) {
-    const t = phase(0.35, 0.55, sp);
-    tmpPos.lerpVectors(CAM.p2.pos, CAM.p3.pos, t);
-    tmpLook.lerpVectors(CAM.p2.look, CAM.p3.look, t);
-  } else {
-    const t = phase(0.55, 0.75, sp);
-    tmpPos.lerpVectors(CAM.p3.pos, CAM.p4.pos, t);
-    tmpLook.lerpVectors(CAM.p3.look, CAM.p4.look, t);
-  }
+  // Trackpad (large, lighter dark, glossy)
+  const trackpad = new THREE.Mesh(
+    new RoundedBoxGeometry(W * 0.45, 0.02, D * 0.28, 4, 0.04),
+    new THREE.MeshPhysicalMaterial({color: '#1f1f22', metalness: 0.4, roughness: 0.25, clearcoat: 0.6})
+  );
+  trackpad.position.set(0, baseH/2 + 0.011, D*0.28);
+  g.add(trackpad);
 
-  // Smooth camera
-  camera.position.lerp(tmpPos, 0.04);
+  // ── HINGE / LID ─────────────────────────────────
+  const hinge = new THREE.Group();
+  hinge.position.set(0, baseH/2, -D/2); // back-top edge of base
+  g.add(hinge);
 
-  // Compute look target direction
-  const lookDelta = new THREE.Vector3().subVectors(tmpLook, camera.position).normalize();
-  const currentLook = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
-  const newLook = new THREE.Vector3().lerpVectors(currentLook, lookDelta, 0.04).normalize();
-  camera.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,-1), newLook.length() > 0 ? newLook : new THREE.Vector3(0,0,-1));
+  // Lid panel — origin at bottom-back so it can pivot from the hinge
+  const lidGeo = new RoundedBoxGeometry(W, lidThickness, D, 6, 0.08);
+  // Shift geometry so bottom face & back face are at origin
+  lidGeo.translate(0, lidThickness/2, D/2);
+  const lid = new THREE.Mesh(lidGeo, matAluminum);
+  hinge.add(lid);
 
-  // ── Truck group moves slightly left as if driving ──
-  if (sp < 0.3) {
-    truckGroup.position.x = Math.sin(time * 0.08) * 0.6;
-    wireGroup.position.x  = truckGroup.position.x;
-  }
-
-  renderer.render(scene, camera);
-}
-animate();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// UI ANIMATIONS
-// ─────────────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-
-  // Intersection fade-in
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-  // Tool badges
-  ScrollTrigger.create({
-    trigger: '.tools-grid', start: 'top 85%',
-    onEnter:     () => gsap.to('.tool-badge', { opacity:1, y:0, scale:1, duration:0.5, stagger:0.05, ease:'back.out(1.7)' }),
-    onLeaveBack: () => gsap.to('.tool-badge', { opacity:0, y:20, scale:0.8, duration:0.3, stagger:0.03 })
-  });
-
-  // Skill bars
-  ScrollTrigger.create({
-    trigger: '.skill-box', start: 'top 85%',
-    onEnter: () => {
-      gsap.to('.skill-box', { opacity:1, y:0, scale:1, duration:0.6, stagger:0.1, ease:'back.out(1.5)' });
-      document.querySelectorAll('.progress').forEach(bar => {
-        gsap.to(bar, { width: bar.dataset.width+'%', duration:1.6, ease:'power2.out', delay:0.2 });
-      });
-    }
-  });
-
-  // Cards
-  gsap.utils.toArray('.exp-card, .project-card').forEach(card => {
-    gsap.fromTo(card,
-      { opacity:0, y:60, scale:0.95 },
-      { scrollTrigger:{ trigger:card, start:'top 88%', toggleActions:'play none none reverse' },
-        opacity:1, y:0, scale:1, duration:0.8, ease:'back.out(1.4)' }
+  // Screen face (front of lid) — recessed slightly
+  if(withScreenContent){
+    const screenMat = new THREE.MeshBasicMaterial({
+      map: createMacScreenTexture()
+    });
+    const screen = new THREE.Mesh(
+      new THREE.PlaneGeometry(W * 0.92, D * 0.86),
+      screenMat
     );
+    // Screen sits on the FRONT face of the lid (when lid is open, front faces forward+down)
+    screen.position.set(0, lidThickness + 0.001, D/2 - D*0.07);
+    screen.rotation.x = Math.PI/2; // face out from the front of the lid
+    hinge.add(screen);
+
+    // Screen bezel (slightly darker frame around screen)
+    const bezel = new THREE.Mesh(
+      new THREE.PlaneGeometry(W * 0.99, D * 0.93),
+      new THREE.MeshBasicMaterial({color: '#0a0a0a'})
+    );
+    bezel.position.set(0, lidThickness + 0.0005, D/2 - D*0.07);
+    bezel.rotation.x = Math.PI/2;
+    hinge.add(bezel);
+
+    // Notch / camera
+    const notch = new THREE.Mesh(
+      new THREE.BoxGeometry(0.4, 0.005, 0.08),
+      new THREE.MeshBasicMaterial({color: '#000'})
+    );
+    notch.position.set(0, lidThickness + 0.002, D/2 - 0.05);
+    hinge.add(notch);
+  }
+
+  // Apple-style minimal logo on the back of the lid
+  const logo = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3, 32),
+    new THREE.MeshPhysicalMaterial({color: '#dcdce0', metalness: 0.7, roughness: 0.4})
+  );
+  // Back face of lid = -Y in lid-local space (under the panel)
+  logo.position.set(0, -0.001, D/2);
+  logo.rotation.x = -Math.PI/2;
+  hinge.add(logo);
+
+  // Rotate hinge to open the lid (rotation around X axis)
+  // 0 rad = closed (lid flat on top of base, extending forward)
+  // -π/2 = lid straight up vertical
+  // Apple shows MacBook at ~115°-120° from base plane
+  // Convert: 0° = closed, 90° = straight up, 110° = leaning back slightly
+  const openRad = -(lidAngleDeg * Math.PI / 180);
+  hinge.rotation.x = openRad;
+
+  return g;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2) iPhone (premium vertical, space black)
+═══════════════════════════════════════════════════════════════ */
+function makeiPhone(){
+  const g = new THREE.Group();
+  const W = 1.3, H = 2.65, T = 0.13;
+
+  // Body
+  const body = new THREE.Mesh(
+    new RoundedBoxGeometry(W, H, T, 8, 0.18),
+    matSpaceBlack
+  );
+  g.add(body);
+
+  // Glass front
+  const front = new THREE.Mesh(
+    new THREE.PlaneGeometry(W * 0.96, H * 0.97),
+    matGlass
+  );
+  front.position.z = T/2 + 0.001;
+  g.add(front);
+
+  // Screen (subtle wallpaper gradient)
+  const wallpaperCanvas = document.createElement('canvas');
+  wallpaperCanvas.width = 256; wallpaperCanvas.height = 512;
+  const wctx = wallpaperCanvas.getContext('2d');
+  const wgrad = wctx.createLinearGradient(0, 0, 256, 512);
+  wgrad.addColorStop(0, '#1a0a2e');
+  wgrad.addColorStop(0.5, '#3a1e5a');
+  wgrad.addColorStop(1, '#6a2e7a');
+  wctx.fillStyle = wgrad;
+  wctx.fillRect(0, 0, 256, 512);
+  // time
+  wctx.fillStyle = '#fff';
+  wctx.font = '600 60px -apple-system,system-ui,sans-serif';
+  wctx.textAlign = 'center';
+  wctx.fillText('9:41', 128, 110);
+  wctx.font = '400 18px -apple-system,system-ui,sans-serif';
+  wctx.fillText('Monday, 9 June', 128, 135);
+  const wallpaperTex = new THREE.CanvasTexture(wallpaperCanvas);
+  const screen = new THREE.Mesh(
+    new THREE.PlaneGeometry(W * 0.92, H * 0.93),
+    new THREE.MeshBasicMaterial({map: wallpaperTex})
+  );
+  screen.position.z = T/2 + 0.002;
+  g.add(screen);
+
+  // Dynamic island (pill)
+  const island = new THREE.Mesh(
+    new RoundedBoxGeometry(0.36, 0.1, 0.004, 2, 0.045),
+    new THREE.MeshBasicMaterial({color: '#000'})
+  );
+  island.position.set(0, H*0.4, T/2 + 0.004);
+  g.add(island);
+
+  // Camera bump on back (rounded square plate)
+  const camPlate = new THREE.Mesh(
+    new RoundedBoxGeometry(0.55, 0.55, 0.05, 4, 0.08),
+    new THREE.MeshPhysicalMaterial({color: '#2c2c30', metalness: 0.7, roughness: 0.35})
+  );
+  camPlate.position.set(-W*0.27, H*0.34, -T/2 - 0.02);
+  g.add(camPlate);
+
+  // 3 lenses
+  const lensPos = [[-0.13, 0.1], [-0.41, 0.1], [-0.27, -0.16]];
+  lensPos.forEach(([x,y])=>{
+    const ring = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.11, 0.11, 0.06, 24),
+      new THREE.MeshPhysicalMaterial({color: '#1a1a1c', metalness: 0.85, roughness: 0.3})
+    );
+    ring.rotation.x = Math.PI/2;
+    ring.position.set(x, y + H*0.34, -T/2 - 0.05);
+    g.add(ring);
+    const glass = new THREE.Mesh(
+      new THREE.CircleGeometry(0.08, 24),
+      new THREE.MeshPhysicalMaterial({color: '#0a0a14', metalness: 0.95, roughness: 0.05, clearcoat: 1.0})
+    );
+    glass.position.set(x, y + H*0.34, -T/2 - 0.08);
+    glass.rotation.y = Math.PI;
+    g.add(glass);
   });
 
-  // Metric counters
-  ScrollTrigger.create({
-    trigger: '.metrics-banner', start: 'top 82%',
-    onEnter: () => {
-      document.querySelectorAll('.metric-card h2[data-target]').forEach(el => {
-        gsap.to({ v:0 }, {
-          v: parseInt(el.dataset.target), duration:2, ease:'power2.out',
-          onUpdate: function() { el.textContent = Math.round(this.targets()[0].v) + (el.dataset.suffix || ''); }
-        });
+  // Flash
+  const flash = new THREE.Mesh(
+    new THREE.CircleGeometry(0.05, 16),
+    new THREE.MeshBasicMaterial({color: '#fff5e0'})
+  );
+  flash.position.set(-W*0.07, H*0.27, -T/2 - 0.05);
+  g.add(flash);
+
+  // Side button & volume buttons (small bumps)
+  for(let i=0;i<3;i++){
+    const btn = new THREE.Mesh(
+      new RoundedBoxGeometry(0.025, 0.18, 0.06, 2, 0.012),
+      new THREE.MeshPhysicalMaterial({color: '#b0b0b3', metalness: 0.9, roughness: 0.3})
+    );
+    btn.position.set(-W/2 - 0.01, [0.4, 0.15, -0.1][i], 0);
+    g.add(btn);
+  }
+  // Power button on right
+  const power = new THREE.Mesh(
+    new RoundedBoxGeometry(0.025, 0.32, 0.06, 2, 0.012),
+    new THREE.MeshPhysicalMaterial({color: '#b0b0b3', metalness: 0.9, roughness: 0.3})
+  );
+  power.position.set(W/2 + 0.01, 0.3, 0);
+  g.add(power);
+
+  return g;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3) Apple Watch (premium silver)
+═══════════════════════════════════════════════════════════════ */
+function makeWatch(){
+  const g = new THREE.Group();
+  const W = 1.0, H = 1.2, T = 0.32;
+
+  // Body (rounded rect with curved profile)
+  const body = new THREE.Mesh(
+    new RoundedBoxGeometry(W, H, T, 8, 0.22),
+    matAluminum
+  );
+  g.add(body);
+
+  // Display (slightly recessed darker rectangle)
+  const display = new THREE.Mesh(
+    new RoundedBoxGeometry(W * 0.85, H * 0.86, 0.025, 4, 0.16),
+    new THREE.MeshBasicMaterial({color: '#000'})
+  );
+  display.position.z = T/2 + 0.005;
+  g.add(display);
+
+  // Watch face (canvas texture)
+  const wcvs = document.createElement('canvas');
+  wcvs.width = 256; wcvs.height = 320;
+  const wctx = wcvs.getContext('2d');
+  wctx.fillStyle = '#050505';
+  wctx.fillRect(0,0,256,320);
+  // big time
+  wctx.fillStyle = '#fff';
+  wctx.font = '700 80px -apple-system,system-ui,sans-serif';
+  wctx.textAlign = 'center';
+  wctx.fillText('9:41', 128, 170);
+  // small label
+  wctx.font = '500 18px -apple-system,system-ui,sans-serif';
+  wctx.fillStyle = '#c1ff00';
+  wctx.fillText('SECURE', 128, 220);
+  // mini activity ring
+  wctx.strokeStyle = '#ff3060';
+  wctx.lineWidth = 8;
+  wctx.beginPath();
+  wctx.arc(128, 80, 28, -Math.PI/2, Math.PI*1.5, false);
+  wctx.stroke();
+  const faceTex = new THREE.CanvasTexture(wcvs);
+  const face = new THREE.Mesh(
+    new THREE.PlaneGeometry(W*0.82, H*0.83),
+    new THREE.MeshBasicMaterial({map: faceTex})
+  );
+  face.position.z = T/2 + 0.02;
+  g.add(face);
+
+  // Digital crown (cylinder with ridges)
+  const crown = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.09, 0.09, 0.14, 24),
+    matAluminum
+  );
+  crown.rotation.z = Math.PI/2;
+  crown.position.set(W/2 + 0.05, 0.18, 0);
+  g.add(crown);
+  // Crown red ring (cellular indicator)
+  const crownRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.09, 0.012, 8, 24),
+    new THREE.MeshBasicMaterial({color: '#ff3030'})
+  );
+  crownRing.position.set(W/2 + 0.05, 0.18, 0);
+  crownRing.rotation.y = Math.PI/2;
+  g.add(crownRing);
+
+  // Side button
+  const sideBtn = new THREE.Mesh(
+    new RoundedBoxGeometry(0.06, 0.22, 0.06, 2, 0.02),
+    matAluminum
+  );
+  sideBtn.position.set(W/2 + 0.025, -0.18, 0);
+  g.add(sideBtn);
+
+  // Bands (top and bottom)
+  function makeBand(yPos){
+    const band = new THREE.Mesh(
+      new RoundedBoxGeometry(W*0.75, 0.85, 0.18, 4, 0.06),
+      matRubber
+    );
+    band.position.set(0, yPos, 0);
+    return band;
+  }
+  g.add(makeBand(0.95));
+  g.add(makeBand(-0.95));
+
+  return g;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4) AirPods Pro in open case
+═══════════════════════════════════════════════════════════════ */
+function makeAirPods(){
+  const g = new THREE.Group();
+  const cW = 1.5, cH = 1.3, cD = 0.7;
+
+  // Case body (rounded pebble)
+  const caseBody = new THREE.Mesh(
+    new RoundedBoxGeometry(cW, cH, cD, 8, 0.32),
+    matCeramic
+  );
+  g.add(caseBody);
+
+  // ── Case lid (hinged) ─────────────────────
+  const lidHinge = new THREE.Group();
+  lidHinge.position.set(0, cH/2, -cD/2);
+  g.add(lidHinge);
+
+  const lidGeo = new RoundedBoxGeometry(cW, 0.5, cD, 8, 0.25);
+  lidGeo.translate(0, 0.25, cD/2); // pivot at bottom-back
+  const lid = new THREE.Mesh(lidGeo, matCeramic);
+  lidHinge.add(lid);
+
+  // Inner lid (slight tone)
+  const inner = new THREE.Mesh(
+    new RoundedBoxGeometry(cW*0.9, 0.04, cD*0.85, 4, 0.1),
+    new THREE.MeshPhysicalMaterial({color: '#e0e0e0', roughness: 0.55})
+  );
+  inner.position.set(0, 0.02, cD/2);
+  lidHinge.add(inner);
+
+  // Open the lid ~115°
+  lidHinge.rotation.x = -(115 * Math.PI / 180);
+
+  // Status LED on case front
+  const led = new THREE.Mesh(
+    new THREE.CircleGeometry(0.035, 16),
+    new THREE.MeshBasicMaterial({color: '#7defff'})
+  );
+  led.position.set(0, 0.15, cD/2 + 0.001);
+  g.add(led);
+
+  // Hinge bar (back)
+  const hingeBar = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, cW*0.4, 12),
+    new THREE.MeshPhysicalMaterial({color: '#aaa', metalness: 0.85, roughness: 0.2})
+  );
+  hingeBar.rotation.z = Math.PI/2;
+  hingeBar.position.set(0, cH/2 - 0.02, -cD/2 + 0.02);
+  g.add(hingeBar);
+
+  // ── Two AirPods sticking up from inside the case ──
+  function makeEarbud(){
+    const e = new THREE.Group();
+    // Body (sphere-like blob)
+    const body = new THREE.Mesh(
+      new THREE.SphereGeometry(0.18, 24, 18),
+      matCeramic
+    );
+    body.scale.set(1.05, 0.85, 1.05);
+    body.position.y = 0.18;
+    e.add(body);
+
+    // Tip (smaller, darker for Pro silicone)
+    const tip = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 16, 12),
+      new THREE.MeshPhysicalMaterial({color: '#1a1a1a', roughness: 0.6})
+    );
+    tip.scale.set(1.1, 0.6, 1.1);
+    tip.position.set(0, 0.12, 0.13);
+    e.add(tip);
+
+    // Stem (capsule down)
+    const stem = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.075, 0.55, 8, 16),
+      matCeramic
+    );
+    stem.position.y = -0.18;
+    e.add(stem);
+
+    // Mic mesh on stem
+    const micMesh = new THREE.Mesh(
+      new THREE.CircleGeometry(0.04, 16),
+      new THREE.MeshPhysicalMaterial({color: '#888', roughness: 0.4, metalness: 0.5})
+    );
+    micMesh.position.set(0, -0.4, 0.075);
+    e.add(micMesh);
+
+    return e;
+  }
+
+  const leftBud = makeEarbud();
+  leftBud.position.set(-0.32, 0.05, 0);
+  leftBud.rotation.z = 0.12;
+  g.add(leftBud);
+
+  const rightBud = makeEarbud();
+  rightBud.position.set(0.32, 0.05, 0);
+  rightBud.rotation.z = -0.12;
+  g.add(rightBud);
+
+  return g;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO SCENE — MacBook floating on dark cinematic stage
+═══════════════════════════════════════════════════════════════ */
+function buildHeroScene(){
+  const canvas = document.getElementById('hero-canvas');
+  const scene = new THREE.Scene();
+
+  // Cinematic dark background (Apple Vision Pro vibe)
+  const bgCanvas = document.createElement('canvas');
+  bgCanvas.width = 1024; bgCanvas.height = 1024;
+  const bctx = bgCanvas.getContext('2d');
+  const bgrad = bctx.createRadialGradient(512, 600, 50, 512, 600, 800);
+  bgrad.addColorStop(0, '#3a2a4a');
+  bgrad.addColorStop(0.3, '#1a1428');
+  bgrad.addColorStop(0.7, '#080610');
+  bgrad.addColorStop(1, '#020205');
+  bctx.fillStyle = bgrad;
+  bctx.fillRect(0, 0, 1024, 1024);
+  // Subtle warm corner glow
+  const warmGrad = bctx.createRadialGradient(900, 200, 0, 900, 200, 500);
+  warmGrad.addColorStop(0, 'rgba(255,140,80,0.18)');
+  warmGrad.addColorStop(1, 'rgba(255,140,80,0)');
+  bctx.fillStyle = warmGrad;
+  bctx.fillRect(0,0,1024,1024);
+  scene.background = new THREE.CanvasTexture(bgCanvas);
+
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
+  camera.position.set(0, 0.8, 9);
+
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  // Apple-style studio environment for reflections
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Lighting — soft Apple studio
+  scene.add(new THREE.AmbientLight('#fff', 0.4));
+  const key = new THREE.DirectionalLight('#fff', 1.2);
+  key.position.set(-4, 6, 5);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight('#a8b0ff', 0.5);
+  fill.position.set(5, 2, -3);
+  scene.add(fill);
+  const rim = new THREE.DirectionalLight('#ffa080', 0.4);
+  rim.position.set(0, 2, -8);
+  scene.add(rim);
+
+  // The hero MacBook
+  const macbook = makeMacBook(115, true);
+  macbook.position.y = 0;
+  scene.add(macbook);
+
+  // Soft contact shadow plane below
+  const shadowCanvas = document.createElement('canvas');
+  shadowCanvas.width = 256; shadowCanvas.height = 256;
+  const sctx = shadowCanvas.getContext('2d');
+  const sgrad = sctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+  sgrad.addColorStop(0, 'rgba(0,0,0,0.55)');
+  sgrad.addColorStop(0.6, 'rgba(0,0,0,0.15)');
+  sgrad.addColorStop(1, 'rgba(0,0,0,0)');
+  sctx.fillStyle = sgrad;
+  sctx.fillRect(0,0,256,256);
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(7, 4.5),
+    new THREE.MeshBasicMaterial({map: shadowTex, transparent: true, depthWrite: false})
+  );
+  shadow.rotation.x = -Math.PI/2;
+  shadow.position.y = -1.0;
+  scene.add(shadow);
+
+  // Subtle floor reflection (the device above the floor)
+  // (Already handled by environment map reflections on aluminum)
+
+  // Floating subtle particles (premium dust motes)
+  const dustGeo = new THREE.BufferGeometry();
+  const dustCount = 40;
+  const dustPos = new Float32Array(dustCount*3);
+  for(let i=0;i<dustCount;i++){
+    dustPos[i*3]   = (Math.random()-.5)*10;
+    dustPos[i*3+1] = (Math.random()-.5)*5;
+    dustPos[i*3+2] = (Math.random()-.5)*6;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dust = new THREE.Points(dustGeo,
+    new THREE.PointsMaterial({color:'#fff5e0', size:0.04, transparent:true, opacity:0.5}));
+  scene.add(dust);
+
+  // Animation — elegant slow orbit
+  let t = 0;
+  function animate(){
+    t += 0.003;
+    // Gentle orbit
+    camera.position.x = Math.sin(t*0.5) * 4.5;
+    camera.position.z = Math.cos(t*0.5) * 6 + 3;
+    camera.position.y = 0.8 + Math.sin(t*0.4) * 0.2;
+    camera.lookAt(0, -0.2, 0);
+
+    // MacBook gentle hover
+    macbook.position.y = Math.sin(t*0.8) * 0.05;
+    macbook.rotation.y = Math.sin(t*0.3) * 0.08;
+
+    dust.rotation.y += 0.0004;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCROLL SCENE — MacBook morphs and dissolves into grid
+═══════════════════════════════════════════════════════════════ */
+function buildScrollScene(){
+  const canvas = document.getElementById('scene2-canvas');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#000');
+
+  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+  camera.position.set(0, 0.5, 9);
+
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  scene.add(new THREE.AmbientLight('#fff', 0.5));
+  const k = new THREE.DirectionalLight('#fff', 1.0);
+  k.position.set(-3, 5, 4);
+  scene.add(k);
+  const r = new THREE.DirectionalLight('#7defff', 0.6);
+  r.position.set(4, 2, -3);
+  scene.add(r);
+
+  // The MacBook again (will be animated open and dissolve)
+  const mac = makeMacBook(115, true);
+  mac.position.y = 0;
+  scene.add(mac);
+  const hinge = mac.children.find(c => c.children.length > 0 && c.position.z < 0);
+
+  // Grid floor for phase 3
+  const grid = new THREE.GridHelper(80, 40, '#1a3340', '#0d1820');
+  grid.position.y = -2;
+  grid.material.transparent = true;
+  grid.material.opacity = 0;
+  scene.add(grid);
+
+  // Sparks at grid intersections
+  const sparksGeo = new THREE.BufferGeometry();
+  const SC = 80;
+  const sparkPos = new Float32Array(SC*3);
+  for(let i=0; i<SC; i++){
+    sparkPos[i*3] = (Math.floor(Math.random()*40)-20)*2;
+    sparkPos[i*3+1] = -1.95;
+    sparkPos[i*3+2] = (Math.floor(Math.random()*40)-20)*2;
+  }
+  sparksGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+  const sparks = new THREE.Points(sparksGeo,
+    new THREE.PointsMaterial({color:'#fff', size:0.18, transparent:true, opacity:0}));
+  scene.add(sparks);
+
+  // Scroll-driven progression
+  const sceneEl = document.querySelector('.scroll-scene');
+  let progress = 0;
+  function updateScroll(){
+    const rect = sceneEl.getBoundingClientRect();
+    const total = sceneEl.offsetHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    progress = Math.max(0, Math.min(1, scrolled / total));
+
+    if(progress < 0.4){
+      // Phase 1: orbit the MacBook
+      const p = progress / 0.4;
+      camera.position.x = Math.sin(p*Math.PI*0.6) * 5;
+      camera.position.y = 0.8 + p*1.5;
+      camera.position.z = 7 - p*1;
+      camera.lookAt(0, -0.2, 0);
+      mac.visible = true;
+      mac.traverse(o => { if(o.material && o.material.opacity !== undefined) { o.material.transparent = false; o.material.opacity = 1; } });
+      grid.material.opacity = 0;
+      grid.visible = false;
+      sparks.material.opacity = 0;
+    }
+    else if(progress < 0.75){
+      // Phase 2: pull up over MacBook, fade it out
+      const p = (progress - 0.4) / 0.35;
+      camera.position.x = 5 - p*5;
+      camera.position.y = 2.3 + p*3;
+      camera.position.z = 6 - p*5;
+      camera.lookAt(0, -0.5 - p*0.5, -p*4);
+      mac.visible = true;
+      mac.traverse(o => {
+        if(o.material){
+          o.material.transparent = true;
+          o.material.opacity = Math.max(0, 1 - p*1.2);
+        }
       });
-    }
-  });
-
-  // Terminal typewriter
-  const terminalText = document.getElementById('terminal-text');
-  const terminalBox  = document.getElementById('terminal');
-  const lines = [
-    '> Initializing SecOps Profile...',
-    '> Connecting to threat intelligence API...',
-    '> Securing AI-driven workflows...',
-    '> Access Granted: Welcome to Pratik\'s Workspace.'
-  ];
-  let lineIdx = 0, charIdx = 0, hasTyped = false;
-
-  const typeLine = () => {
-    if (lineIdx < lines.length) {
-      if (charIdx === 0) {
-        const p = document.createElement('p');
-        p.className = 'tline';
-        terminalText.insertBefore(p, terminalText.lastChild);
+      if(p > 0.2){
+        grid.visible = true;
+        grid.material.opacity = Math.min(1, (p-0.2)*1.8);
       }
-      const pEls = terminalText.getElementsByClassName('tline');
-      if (charIdx < lines[lineIdx].length) {
-        pEls[pEls.length-1].innerHTML += lines[lineIdx].charAt(charIdx++);
-        setTimeout(typeLine, 35);
-      } else {
-        lineIdx++; charIdx = 0;
-        setTimeout(typeLine, 500);
-      }
-    } else {
-      const pEls = terminalText.getElementsByClassName('tline');
-      if (pEls.length) {
-        pEls[pEls.length-1].style.color = '#fff';
-        pEls[pEls.length-1].style.fontWeight = '600';
-      }
+      sparks.material.opacity = p * 0.9;
     }
-  };
+    else {
+      // Phase 3: low slide along the grid
+      const p = (progress - 0.75) / 0.25;
+      camera.position.x = 0;
+      camera.position.y = 5.3 - p*5;
+      camera.position.z = 1 - p*4;
+      camera.lookAt(0, -1, -5 - p*3);
+      mac.visible = false;
+      grid.visible = true;
+      grid.material.opacity = 1;
+      sparks.material.opacity = 0.9;
+    }
 
-  const termObs = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !hasTyped) {
-      hasTyped = true;
-      terminalText.innerHTML = '<span class="cursor"></span>';
-      setTimeout(typeLine, 600);
-    }
-  }, { threshold: 0.4 });
-  if (terminalBox) termObs.observe(terminalBox);
+    // Scroll text steps
+    document.querySelectorAll('.scroll-text').forEach((el, i) => {
+      const step = i / 3;
+      const active = progress >= step && progress < step + .35;
+      el.classList.toggle('on', active);
+    });
+  }
+  window.addEventListener('scroll', updateScroll, {passive:true});
+  updateScroll();
+
+  function animate(){
+    mac.rotation.y += 0.003;
+    sparks.rotation.y += 0.001;
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   FEATURE-PANEL MINI SCENES (one premium device per panel)
+═══════════════════════════════════════════════════════════════ */
+function buildFeatureCanvas(canvas, sceneType){
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#0a0a0a');
+
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  new ResizeObserver(resize).observe(canvas);
+
+  // Studio lighting
+  scene.add(new THREE.AmbientLight('#fff', 0.4));
+  const k = new THREE.DirectionalLight('#fff', 1.0);
+  k.position.set(-3, 5, 4);
+  scene.add(k);
+  const r = new THREE.DirectionalLight('#a8c0ff', 0.4);
+  r.position.set(3, 2, -3);
+  scene.add(r);
+  const rim = new THREE.DirectionalLight('#c1ff00', 0.25);
+  rim.position.set(0, -2, -4);
+  scene.add(rim);
+
+  // Soft contact shadow
+  const shadowCanvas = document.createElement('canvas');
+  shadowCanvas.width = 256; shadowCanvas.height = 256;
+  const sctx = shadowCanvas.getContext('2d');
+  const sg = sctx.createRadialGradient(128,128,5,128,128,110);
+  sg.addColorStop(0, 'rgba(0,0,0,0.65)');
+  sg.addColorStop(0.5, 'rgba(0,0,0,0.2)');
+  sg.addColorStop(1, 'rgba(0,0,0,0)');
+  sctx.fillStyle = sg;
+  sctx.fillRect(0,0,256,256);
+  const shadowTex = new THREE.CanvasTexture(shadowCanvas);
+  const shadow = new THREE.Mesh(
+    new THREE.PlaneGeometry(5, 3),
+    new THREE.MeshBasicMaterial({map: shadowTex, transparent: true, depthWrite: false})
+  );
+  shadow.rotation.x = -Math.PI/2;
+  shadow.position.y = -1.5;
+  scene.add(shadow);
+
+  let object;
+  if(sceneType === 'macbook'){
+    object = makeMacBook(118, true);
+    object.scale.setScalar(0.85);
+    camera.position.set(0, 1.2, 7);
+    object.position.y = -0.3;
+  }
+  else if(sceneType === 'iphone'){
+    object = makeiPhone();
+    object.scale.setScalar(1.4);
+    camera.position.set(0, 0.5, 6);
+    object.position.y = -0.2;
+    object.rotation.y = 0.2;
+  }
+  else if(sceneType === 'watch'){
+    object = makeWatch();
+    object.scale.setScalar(1.6);
+    camera.position.set(0, 0.5, 6);
+    object.position.y = -0.3;
+    object.rotation.x = -0.15;
+  }
+  else if(sceneType === 'airpods'){
+    object = makeAirPods();
+    object.scale.setScalar(1.5);
+    camera.position.set(0, 1, 6);
+    object.position.y = -0.3;
+    object.rotation.x = -0.15;
+  }
+  scene.add(object);
+
+  camera.lookAt(0, 0, 0);
+
+  let t = 0;
+  function animate(){
+    t += 0.006;
+    object.rotation.y = Math.sin(t*0.4) * 0.4;
+    object.position.y += Math.sin(t*1.2) * 0.001;
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════ */
+buildHeroScene();
+buildScrollScene();
+document.querySelectorAll('.feat-canvas').forEach(c => {
+  buildFeatureCanvas(c, c.dataset.scene);
 });
 
-// Scroll progress bar
-window.addEventListener('scroll', () => {
-  const pct = window.scrollY / Math.max(1, document.body.scrollHeight - innerHeight);
-  document.getElementById('scroll-bar').style.width = (pct * 100) + '%';
-}, { passive: true });
+/* ─── Reveal observer ─── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('on');
+      e.target.querySelectorAll('.sk').forEach(s => s.classList.add('on'));
+    }
+  });
+},{threshold:.12});
+document.querySelectorAll('.rv, .statement, .sk').forEach(el => io.observe(el));
 
-// Resize
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
+/* ─── Counter animation ─── */
+document.querySelectorAll('.count').forEach(el => {
+  const ob = new IntersectionObserver(en => {
+    if(en[0].isIntersecting){
+      const target = +el.dataset.t;
+      let n = 0;
+      const inc = target/55;
+      const t = setInterval(() => {
+        n += inc;
+        if(n >= target){ n = target; clearInterval(t); }
+        el.textContent = Math.floor(n);
+      }, 18);
+      ob.unobserve(el);
+    }
+  },{threshold:.5});
+  ob.observe(el);
 });
 </script>
 </body>
