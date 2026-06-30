@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pratik More — SecOps</title>
+<title>Pratik More AI & ML Engineer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
   --ease:cubic-bezier(.22,1,.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-font-smoothing:antialiased}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:auto}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:#0a0a0c}
 ::-webkit-scrollbar-thumb{background:#222;border-radius:4px}
@@ -22,13 +22,11 @@ html{-webkit-font-smoothing:antialiased}
 body{font-family:'Bricolage Grotesque',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;font-weight:400}
 body.loading{overflow:hidden;height:100vh}
 
-/* subtle film grain — lightweight, no heavy blend */
 .grain{position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:.035;mix-blend-mode:overlay}
 .grain::after{content:'';position:absolute;inset:-150%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grainShift 10s steps(6) infinite}
 @keyframes grainShift{0%,100%{transform:translate(0,0)}33%{transform:translate(-4%,3%)}66%{transform:translate(3%,-4%)}}
 .vignette{position:fixed;inset:0;z-index:8999;pointer-events:none;box-shadow:inset 0 0 180px 50px rgba(0,0,0,.5)}
 
-/* PRELOADER */
 #preloader{position:fixed;inset:0;z-index:10000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s var(--ease),visibility .8s}
 #preloader.done{opacity:0;visibility:hidden}
 .pre-logo{font-size:clamp(2.5rem,6vw,5rem);font-weight:600;letter-spacing:-.04em;color:#fff;line-height:1;display:flex;align-items:center;gap:.1em;overflow:hidden}
@@ -42,7 +40,6 @@ body.loading{overflow:hidden;height:100vh}
 .pre-bar .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));box-shadow:0 0 12px var(--cyan)}
 .pre-pct{font-family:'Geist Mono',monospace;font-size:11px;color:var(--grey);margin-top:14px;letter-spacing:.1em}
 
-/* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:22px 5vw;transition:background .4s,padding .4s,transform .8s var(--ease);transform:translateY(-120%)}
 nav.in{transform:translateY(0)}
 nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 5vw}
@@ -54,11 +51,10 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .nav-links a:hover{color:#fff}
 .nav-links a:hover::after{width:100%}
 
-/* HERO */
 #hero{position:relative;height:100vh;width:100%;overflow:hidden}
 #hero-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
 .hero-grid{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;pointer-events:none}
-.hero-side{max-width:30vw}
+.hero-side{max-width:32vw}
 .hero-side .small{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1rem,1.6vw,1.4rem);color:var(--cyan);font-weight:400;margin-bottom:6px;opacity:0;transform:translateY(20px)}
 .hero-side .big{font-size:clamp(2rem,4.5vw,4rem);font-weight:600;letter-spacing:-.03em;line-height:1;color:#fff;opacity:0;transform:translateY(24px)}
 .hero-side.right{text-align:right}
@@ -77,7 +73,6 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .scroll-hint .mouse::before{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:var(--cyan);border-radius:2px;animation:scrollDot 1.6s infinite}
 @keyframes scrollDot{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}80%{opacity:0;transform:translate(-50%,10px)}}
 
-/* ABOUT (character zoom) */
 .section-pad{padding:14vh 5vw;position:relative}
 .about-split{display:grid;grid-template-columns:1.1fr 1fr;gap:5vw;align-items:center;min-height:80vh}
 #about-canvas{width:100%;height:70vh;display:block}
@@ -90,7 +85,6 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .about-stat .k{font-family:'Geist Mono',monospace;font-size:11px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
 .about-stat .v{font-size:clamp(1.2rem,1.6vw,1.6rem);font-weight:600;color:#fff;letter-spacing:-.02em}
 
-/* WHAT I DO (desk diorama) */
 .whatido{position:relative;min-height:100vh;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;gap:3vw;padding:10vh 5vw}
 #desk-canvas{width:100%;height:80vh;display:block}
 .whatido-title{position:absolute;left:5vw;bottom:14vh;font-size:clamp(3rem,7vw,6.5rem);font-weight:700;letter-spacing:-.04em;line-height:.9;z-index:2;pointer-events:none}
@@ -104,7 +98,6 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .do-card .tags{display:flex;flex-wrap:wrap;gap:7px}
 .do-card .tag{font-family:'Geist Mono',monospace;font-size:10.5px;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#bbb;letter-spacing:.04em}
 
-/* CAREER */
 .section-eyebrow{font-family:'Geist Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
 .section-eyebrow::before{content:'// ';opacity:.5}
 .section-title{font-size:clamp(2.4rem,5vw,4.2rem);font-weight:600;letter-spacing:-.035em;line-height:1;margin-bottom:70px}
@@ -118,7 +111,6 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .career-row .desc{color:#aaa;font-size:14.5px;line-height:1.7;font-weight:300}
 .career-row .desc strong{color:#fff;font-weight:500}
 
-/* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
 .metric{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:48px 40px;position:relative;transition:border-color .3s}
 .metric:hover{border-color:rgba(92,225,230,.3)}
@@ -127,7 +119,6 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .metric .val .pct{color:var(--cyan);font-size:.7em}
 .metric .det{font-size:13px;color:#777;margin-top:14px;line-height:1.5}
 
-/* WORK */
 .work-row{display:grid;grid-template-columns:80px 1.2fr 1.5fr;gap:40px;padding:50px 0;border-top:1px solid rgba(255,255,255,.1);align-items:center;transition:background .3s}
 .work-row:last-child{border-bottom:1px solid rgba(255,255,255,.1)}
 .work-row:hover{background:rgba(255,255,255,.015)}
@@ -137,18 +128,15 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .work-row .winfo p{font-size:14px;color:#999;line-height:1.6;font-weight:300;margin-bottom:14px}
 .work-row .winfo .wtags{display:flex;flex-wrap:wrap;gap:7px}
 .work-row .winfo .wtag{font-family:'Geist Mono',monospace;font-size:10px;padding:4px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.12);color:#aaa;letter-spacing:.04em}
-.work-row .wimg{border-radius:12px;overflow:hidden;aspect-ratio:16/10;position:relative;border:1px solid rgba(255,255,255,.08)}
-.work-row .wimg img{width:100%;height:100%;object-fit:cover;filter:saturate(.7) brightness(.8);transition:transform .8s var(--ease),filter .5s}
-.work-row:hover .wimg img{transform:scale(1.05);filter:saturate(1) brightness(.95)}
+.work-row .wimg{border-radius:12px;overflow:hidden;aspect-ratio:16/10;position:relative;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,#0d0d12,#15151c)}
+.work-row .wimg .wviz{width:100%;height:100%;display:block}
 .work-row .wimpact{position:absolute;top:12px;left:12px;font-family:'Geist Mono',monospace;font-size:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(92,225,230,.3);color:var(--cyan);padding:5px 11px;border-radius:14px;letter-spacing:.05em;z-index:2}
 
-/* TECHSTACK (3D spheres) */
 .techstack{position:relative;height:140vh;background:#000}
 #tech-canvas{position:sticky;top:0;left:0;width:100%;height:100vh;display:block;z-index:1}
 .tech-title{position:absolute;top:18vh;left:0;right:0;text-align:center;font-size:clamp(2.4rem,6vw,5rem);font-weight:600;letter-spacing:-.02em;z-index:2;pointer-events:none;color:#fff}
 .tech-hint{position:absolute;bottom:12vh;left:0;right:0;text-align:center;font-family:'Geist Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.2em;text-transform:uppercase;z-index:2;pointer-events:none}
 
-/* CONTACT */
 #contact{padding:18vh 5vw 8vh;position:relative}
 .contact-eyebrow{font-family:'Geist Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:.18em;text-transform:uppercase;margin-bottom:26px}
 #contact h2{font-size:clamp(3.5rem,9vw,8rem);font-weight:600;letter-spacing:-.045em;line-height:.92;margin-bottom:60px}
@@ -196,7 +184,7 @@ footer .l{color:var(--cyan)}
 
 <div id="preloader">
   <div class="pre-logo"><span>PM</span><span class="dot">.</span></div>
-  <div class="pre-sub">Securing the connection</div>
+  <div class="pre-sub">Initialising</div>
   <div class="pre-bar"><div class="fill"></div></div>
   <div class="pre-pct">0%</div>
 </div>
@@ -210,7 +198,6 @@ footer .l{color:var(--cyan)}
   </ul>
 </nav>
 
-<!-- HERO -->
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-grid">
@@ -219,156 +206,180 @@ footer .l{color:var(--cyan)}
       <div class="big">PRATIK<br>MORE</div>
     </div>
     <div class="hero-side right">
-      <div class="small">A Cybersecurity</div>
-      <div class="big"><span class="ghost">ANALYST</span><br>ENGINEER</div>
+      <div class="small">AI &amp; Machine Learning</div>
+      <div class="big"><span class="ghost">BUILDER</span><br>ENGINEER</div>
     </div>
   </div>
   <div class="hero-meta">
-    <span><span class="dot"></span>SecOps · Trust &amp; Safety</span>
-    <span>52.40 N · 1.51 W // Coventry, UK</span>
+    <span><span class="dot"></span>LLMs &middot; ML Pipelines &middot; Automation</span>
+    <span>52.40 N &middot; 1.51 W // Coventry, UK</span>
   </div>
   <div class="scroll-hint"><div class="mouse"></div></div>
 </section>
 
-<!-- ABOUT -->
 <section class="section-pad" id="about">
   <div class="about-split">
     <canvas id="about-canvas"></canvas>
     <div class="about-copy rv">
       <div class="eyebrow">About Me</div>
-      <h2>Cybersecurity analyst building <em>secure systems</em> at scale.</h2>
-      <p>I'm <strong>Pratik More</strong> — a SecOps &amp; Trust-and-Safety specialist with <strong>4.5+ years</strong> protecting platforms, automating incident response, and hunting threats. Currently completing an <strong>MSc Cybersecurity</strong> in the UK.</p>
-      <p>From moderating millions of data points at TikTok to engineering zero-touch ransomware kill-switches — I build secure perimeters, automate the response, and protect the user experience.</p>
+      <h2>I build practical tools powered by <em>AI &amp; machine learning</em>.</h2>
+      <p>I'm <strong>Pratik More</strong> I ship real, working software that uses <strong>LLMs, machine learning and automation</strong> to solve operational problems. From a fraud-detection engine trained on over a million transactions to a fully offline AI voice assistant, I build things that run, not slide decks.</p>
+      <p>I work hands-on with <strong>Python, LLM APIs, and the modern AI dev stack</strong> and I have a strong bias to ship: a rough working version in front of users beats a perfect idea that never launches. Currently completing an <strong>MSc</strong> in the UK.</p>
       <div class="about-stats">
-        <div class="about-stat"><div class="k">Experience</div><div class="v">4.5+ Years</div></div>
+        <div class="about-stat"><div class="k">Focus</div><div class="v">AI / ML / LLMs</div></div>
         <div class="about-stat"><div class="k">Location</div><div class="v">Coventry, UK</div></div>
-        <div class="about-stat"><div class="k">Status</div><div class="v" style="color:var(--cyan)">● Available</div></div>
+        <div class="about-stat"><div class="k">Status</div><div class="v" style="color:var(--cyan)">&#9679; Available</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHAT I DO (desk diorama) -->
 <section class="whatido" id="work">
   <canvas id="desk-canvas"></canvas>
   <div class="whatido-title">WHAT<br><em>I DO</em></div>
   <div class="do-cards rv">
     <div class="do-card">
-      <div class="role">Security Operations</div>
-      <h3>Detection &amp; Response</h3>
-      <p>Engineering zero-touch SOAR workflows with Microsoft Sentinel &amp; Azure Logic Apps. Every alert contained without a human in the loop.</p>
-      <div class="tags"><span class="tag">Sentinel</span><span class="tag">SOAR</span><span class="tag">SIEM</span><span class="tag">Azure</span></div>
+      <div class="role">LLM &amp; AI Engineering</div>
+      <h3>Build with LLMs</h3>
+      <p>I build end-to-end tools on top of large language models local LLMs via Ollama, prompt design for structured output, and AI-assisted development with Claude Code and Cursor to ship fast.</p>
+      <div class="tags"><span class="tag">LLM APIs</span><span class="tag">Ollama</span><span class="tag">Claude Code</span><span class="tag">Prompting</span></div>
     </div>
     <div class="do-card">
-      <div class="role">Risk &amp; Governance</div>
-      <h3>Threat Hunting</h3>
-      <p>Real-time anomaly detection across cloud and on-prem. Behavioural tripwires and ML-driven intrusion detection that flag risk the moment it moves.</p>
-      <div class="tags"><span class="tag">Python</span><span class="tag">ML-IDS</span><span class="tag">RBAC</span><span class="tag">MFA</span></div>
+      <div class="role">Machine Learning</div>
+      <h3>ML That Ships</h3>
+      <p>Feature engineering, model training and calibration with scikit-learn built to run in production-style pipelines, not notebooks. Focused on real outcomes: fewer false positives, less manual effort.</p>
+      <div class="tags"><span class="tag">Python</span><span class="tag">scikit-learn</span><span class="tag">Pandas</span><span class="tag">Random Forest</span></div>
     </div>
   </div>
 </section>
 
-<!-- CAREER -->
 <section class="section-pad">
-  <div class="section-eyebrow">Career &amp; Experience</div>
-  <h2 class="section-title">My career &amp; <em>experience</em></h2>
+  <div class="section-eyebrow">Experience</div>
+  <h2 class="section-title">Background &amp; <em>experience</em></h2>
   <div class="career-list">
     <div class="career-row rv">
+      <div class="yr">NOW</div>
+      <div class="role">AI &amp; ML Project Builder<span class="sub">Independent &middot; 2025&ndash;2026</span></div>
+      <div class="desc">Designing and shipping <strong>AI-powered tools</strong>: an ML fraud-detection engine over <strong>1M+ transactions</strong>, a fully offline <strong>LLM voice assistant</strong> (Phi-3 via Ollama), and an AI forecasting engine that cut error from <strong>~15% to under 5%</strong>. Hands-on with LLM APIs, prompting and AI-assisted development.</div>
+    </div>
+    <div class="career-row rv">
       <div class="yr">2022</div>
-      <div class="role">Lead WFM Analyst<span class="sub">Concentrix Daksh</span></div>
-      <div class="desc">Led business-process analysis across <strong>4 global sites</strong> (India, Vietnam, Egypt, Poland), driving a <strong>15%</strong> resource-utilisation lift. Coordinated <strong>20+ analysts</strong> across time zones and built Python &amp; Excel reporting dashboards for senior leadership.</div>
+      <div class="role">Operations &amp; Data Analyst<span class="sub">Concentrix &middot; Global Account</span></div>
+      <div class="desc">Built <strong>Python &amp; Excel data pipelines</strong> and reporting dashboards across <strong>4 global sites</strong>, driving a <strong>15% efficiency lift</strong>. Worked with large operational datasets, anomaly spotting and automation the foundation for my move into applied ML.</div>
     </div>
     <div class="career-row rv">
       <div class="yr">2019</div>
-      <div class="role">Content Moderator &amp; AI Policy Evaluator<span class="sub">Concentrix · ByteDance (TikTok)</span></div>
-      <div class="desc">Reviewed high-volume content across <strong>EU, MENA &amp; Bangladesh</strong> markets supporting internet governance. Sustained a <strong>95% accuracy</strong> rate via the TCS tool, documenting risk trends and refining detection with global teams.</div>
+      <div class="role">Trust &amp; Safety Analyst<span class="sub">Concentrix &middot; ByteDance (TikTok)</span></div>
+      <div class="desc">Reviewed high-volume content across <strong>EU, MENA &amp; Bangladesh</strong> markets at <strong>95% accuracy</strong>, classifying risk signals at scale the same classification and risk-detection problems I now solve with ML and LLMs.</div>
     </div>
     <div class="career-row rv">
-      <div class="yr">NOW</div>
-      <div class="role">MSc Cybersecurity<span class="sub">United Kingdom · 2026</span></div>
-      <div class="desc">Dissertation on <strong>cloud-native SOAR architecture</strong> — benchmarking automated containment against manual triage, cutting Mean-Time-to-Contain from 380s to 41s. Focus on AI ethics, threat analysis &amp; secure programming.</div>
+      <div class="yr">2026</div>
+      <div class="role">MSc &middot; Applied Research<span class="sub">United Kingdom</span></div>
+      <div class="desc">Built an <strong>automated detection &amp; response system</strong> benchmarking automation against manual processes, cutting mean response time from <strong>380s to 41s</strong>. Heavy focus on automation engineering, data analysis and secure system design.</div>
     </div>
   </div>
 </section>
 
-<!-- METRICS -->
 <section class="section-pad" style="padding-top:0">
   <div class="metrics">
-    <div class="metric rv"><div class="label">// Quality Accuracy</div><div class="val"><span class="count" data-t="95">0</span><span class="pct">%</span></div><div class="det">Content moderation across EU, MENA &amp; Bangladesh — TikTok project.</div></div>
-    <div class="metric rv"><div class="label">// MTTC Reduction</div><div class="val"><span class="count" data-t="89">0</span><span class="pct">%</span></div><div class="det">Mean Time-to-Contain: 380s → 41s via zero-touch SOAR.</div></div>
-    <div class="metric rv"><div class="label">// Global Sites</div><div class="val"><span class="count" data-t="4">0</span></div><div class="det">India · Vietnam · Egypt · Poland — 20+ analysts cross-timezone.</div></div>
+    <div class="metric rv"><div class="label">// Transactions Processed</div><div class="val"><span class="count" data-t="1">0</span><span class="pct">M+</span></div><div class="det">Fraud-detection ML engine large-scale telemetry, automated cleansing &amp; feature engineering.</div></div>
+    <div class="metric rv"><div class="label">// Forecast Error Cut</div><div class="val"><span class="count" data-t="68">0</span><span class="pct">%</span></div><div class="det">AI forecasting engine reduced error ~15% &rarr; under 5% vs traditional methods.</div></div>
+    <div class="metric rv"><div class="label">// Response Time Cut</div><div class="val"><span class="count" data-t="89">0</span><span class="pct">%</span></div><div class="det">Automated response pipeline: mean time 380s &rarr; 41s.</div></div>
   </div>
 </section>
 
-<!-- WORK -->
 <section class="section-pad">
   <div class="section-eyebrow">Selected Projects</div>
   <h2 class="section-title">My <em>Work</em></h2>
   <div class="work-list">
+
     <div class="work-row rv">
       <div class="wnum">01</div>
       <div class="winfo">
-        <h3>Cloud-Native SOAR Engine</h3>
-        <div class="wtype">MSc Dissertation · 2026</div>
-        <p>"Zero-Touch" automated containment with Microsoft Sentinel &amp; Azure Logic Apps to mitigate high-velocity ransomware.</p>
-        <div class="wtags"><span class="wtag">Sentinel</span><span class="wtag">Azure</span><span class="wtag">SOAR</span></div>
+        <h3>Fraud Detection &amp; Risk ML Engine</h3>
+        <div class="wtype">Machine Learning &middot; Python</div>
+        <p>End-to-end ML pipeline over <strong>1.04M+ transactions</strong> that detects fraudulent activity. Engineered behavioural features ("tripwires" like night-time and new-account risk), then trained and calibrated a Random Forest to an 85% confidence threshold to cut false positives and reduce analyst alert fatigue.</p>
+        <div class="wtags"><span class="wtag">Python</span><span class="wtag">scikit-learn</span><span class="wtag">Pandas</span><span class="wtag">Random Forest</span><span class="wtag">Feature Eng</span></div>
       </div>
-      <div class="wimg"><div class="wimpact">↯ MTTC 380s → 41s</div><img src="soar.jpg" alt="SOAR"></div>
+      <div class="wimg"><div class="wimpact">&#8645; 1.04M transactions</div><canvas class="wviz" data-viz="scatter"></canvas></div>
     </div>
+
     <div class="work-row rv">
       <div class="wnum">02</div>
       <div class="winfo">
-        <h3>Vendor Risk &amp; Governance Pipeline</h3>
-        <div class="wtype">Independent · ML</div>
-        <p>Analysed a 167MB dataset to surface compliance risks &amp; vendor fraud, with custom behavioural tripwires flagging high-risk accounts.</p>
-        <div class="wtags"><span class="wtag">Python</span><span class="wtag">Pandas</span><span class="wtag">ML</span></div>
+        <h3>Jarvis Offline LLM Voice Assistant</h3>
+        <div class="wtype">LLM Engineering &middot; Local AI</div>
+        <p>A fully offline, privacy-first voice assistant that runs an LLM entirely on-device. Speech-to-text with <strong>Vosk</strong>, reasoning via <strong>Microsoft Phi-3 on Ollama</strong>, and native text-to-speech a complete listen &rarr; think &rarr; speak loop with zero cloud calls and a voice "kill switch".</p>
+        <div class="wtags"><span class="wtag">LLM</span><span class="wtag">Ollama</span><span class="wtag">Phi-3</span><span class="wtag">Vosk</span><span class="wtag">Python</span></div>
       </div>
-      <div class="wimg"><div class="wimpact">↯ 167MB processed</div><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80" alt="Vendor Risk"></div>
+      <div class="wimg"><div class="wimpact">&#8645; 100% offline LLM</div><canvas class="wviz" data-viz="wave"></canvas></div>
     </div>
+
     <div class="work-row rv">
       <div class="wnum">03</div>
       <div class="winfo">
-        <h3>Secure Web App + ML IDS</h3>
-        <div class="wtype">Academic · 2026</div>
-        <p>Strict RBAC with MFA via Microsoft Authenticator, paired with an ML-powered intrusion detection system mapping live attack vectors.</p>
-        <div class="wtags"><span class="wtag">RBAC</span><span class="wtag">MFA</span><span class="wtag">ML-IDS</span></div>
+        <h3>AI Demand Forecasting Engine</h3>
+        <div class="wtype">Machine Learning &middot; Forecasting</div>
+        <p>A machine-learning forecasting engine that predicts operational demand. Using feature engineering and a Random Forest model, it cut forecast error from <strong>~15% to under 5%</strong> versus traditional methods with scenario modelling for volume spikes and seasonality.</p>
+        <div class="wtags"><span class="wtag">Python</span><span class="wtag">scikit-learn</span><span class="wtag">Time Series</span><span class="wtag">Forecasting</span></div>
       </div>
-      <div class="wimg"><div class="wimpact">↯ 3-tier isolation</div><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80" alt="Secure Web"></div>
+      <div class="wimg"><div class="wimpact">&#8645; 15% &rarr; under 5% error</div><canvas class="wviz" data-viz="forecast"></canvas></div>
     </div>
+
+    <div class="work-row rv">
+      <div class="wnum">04</div>
+      <div class="winfo">
+        <h3>Cloud-Native SOAR &amp; Automation</h3>
+        <div class="wtype">Automation Engineering &middot; Azure</div>
+        <p>An automated orchestration pipeline built natively in Azure that detects an event and triggers an automated response with no human in the loop connecting alerting, logic and containment into one end-to-end workflow. Cut mean response time from 380s to 41s.</p>
+        <div class="wtags"><span class="wtag">Azure</span><span class="wtag">Logic Apps</span><span class="wtag">Automation</span><span class="wtag">KQL</span></div>
+      </div>
+      <div class="wimg"><div class="wimpact">&#8645; 380s &rarr; 41s</div><canvas class="wviz" data-viz="flow"></canvas></div>
+    </div>
+
+    <div class="work-row rv">
+      <div class="wnum">05</div>
+      <div class="winfo">
+        <h3>SIEM &amp; Log Analytics Lab</h3>
+        <div class="wtype">Data &amp; Monitoring &middot; Engineering</div>
+        <p>A multi-system log aggregation and monitoring environment that ingests endpoint telemetry across Linux and Windows, then surfaces anomalies in real time large-scale log analysis and automated alerting on streaming data.</p>
+        <div class="wtags"><span class="wtag">Wazuh</span><span class="wtag">Log Analysis</span><span class="wtag">Linux</span><span class="wtag">Monitoring</span></div>
+      </div>
+      <div class="wimg"><div class="wimpact">&#8645; Multi-OS telemetry</div><canvas class="wviz" data-viz="grid"></canvas></div>
+    </div>
+
   </div>
 </section>
 
-<!-- TECHSTACK (3D spheres) -->
 <section class="techstack">
   <canvas id="tech-canvas"></canvas>
   <div class="tech-title">MY TECHSTACK</div>
-  <div class="tech-hint">Drag to explore · Scroll to continue</div>
+  <div class="tech-hint">Drag to explore &middot; Scroll to continue</div>
 </section>
 
-<!-- CONTACT -->
 <section id="contact">
   <div class="contact-eyebrow">// Get in touch</div>
-  <h2>Let's build something <em>secure.</em></h2>
+  <h2>Let's build something <em>intelligent.</em></h2>
   <div class="contact-grid">
     <div class="contact-links">
       <div class="clabel">Reach me</div>
-      <a href="mailto:morepratik77@gmail.com">Email <span class="arr">↗</span></a>
-      <a href="https://github.com/Pratikm7073" target="_blank">GitHub <span class="arr">↗</span></a>
-      <a href="https://www.linkedin.com/" target="_blank">LinkedIn <span class="arr">↗</span></a>
+      <a href="mailto:morepratik77@gmail.com">Email <span class="arr">&#8599;</span></a>
+      <a href="https://github.com/Pratikm7073" target="_blank" rel="noopener">GitHub <span class="arr">&#8599;</span></a>
+      <a href="https://www.linkedin.com/in/pratik-more-969749249" target="_blank" rel="noopener">LinkedIn <span class="arr">&#8599;</span></a>
     </div>
     <div class="contact-right">
       <div class="credit">Designed &amp; developed by<br><strong>Pratik More</strong></div>
-      <div class="yr">© 2026 · Coventry, UK</div>
+      <div class="yr">&copy; 2026 &middot; Coventry, UK</div>
     </div>
   </div>
 </section>
 
 <footer>
-  <span>© 2026 Pratik More</span>
-  <span><span class="l">PM·SECOPS</span> // All rights reserved</span>
+  <span>&copy; 2026 Pratik More</span>
+  <span><span class="l">PM&middot;AI</span> // All rights reserved</span>
   <span>Coventry, UK</span>
 </footer>
-<!-- ═══════════ 3D ENGINE ═══════════ -->
+
 <script type="importmap">
 {
   "imports":{
@@ -384,7 +395,14 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 const lerp=(a,b,t)=>a+(b-a)*t;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-/* shared studio env (one PMREM, reused) */
+// ---- visibility-gated render manager so only on-screen canvases render ----
+const sceneVisibility=new WeakMap();
+function gate(canvas){
+  let vis=false;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0.01}).observe(canvas);
+  return ()=>vis;
+}
+
 let ENV=null;
 function studioEnv(renderer){
   if(ENV) return ENV;
@@ -400,14 +418,8 @@ function studioEnv(renderer){
   return ENV;
 }
 
-/* ════════════════════════════════════════════════
-   STYLIZED 3D CHARACTER BUST (Memoji-inspired)
-   Built procedurally — cap, head, ears, sweater
-════════════════════════════════════════════════ */
 function makeCharacter(env){
-  // Returns { group, head } so callers can animate the head independently.
   const g=new THREE.Group();
-
   const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:0.55,metalness:0.05,envMap:env,envMapIntensity:0.5});
   const skinDark=new THREE.MeshStandardMaterial({color:0x7d4f33,roughness:0.6,envMap:env,envMapIntensity:0.4});
   const capWhite=new THREE.MeshStandardMaterial({color:0xe8e8ea,roughness:0.38,metalness:0.12,envMap:env,envMapIntensity:0.8});
@@ -417,171 +429,96 @@ function makeCharacter(env){
   const mouthDark=new THREE.MeshStandardMaterial({color:0x2a1818,roughness:0.6});
   const eyeMat=new THREE.MeshStandardMaterial({color:0x0d0d14,roughness:0.18,metalness:0.3,envMap:env,envMapIntensity:0.9});
 
-  /* ---------- BODY (below the neck) ---------- */
-  // Shoulders/torso: a wide rounded mass topping out at ~y=0 so it never reaches the face.
   const torso=new THREE.Mesh(new THREE.SphereGeometry(1.15,40,32),sweater);
-  torso.scale.set(1.35,1.15,0.95);
-  torso.position.y=-0.95;
-  torso.castShadow=true;
-  g.add(torso);
-  // crew-neck collar ring
+  torso.scale.set(1.35,1.15,0.95);torso.position.y=-0.95;torso.castShadow=true;g.add(torso);
   const collar=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.1,16,32),sweater);
-  collar.rotation.x=Math.PI/2;
-  collar.position.y=0.12;
-  collar.scale.set(1,1,0.85);
-  g.add(collar);
-  // neck
+  collar.rotation.x=Math.PI/2;collar.position.y=0.12;collar.scale.set(1,1,0.85);g.add(collar);
   const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.34,24),skin);
-  neck.position.y=0.2;
-  g.add(neck);
+  neck.position.y=0.2;g.add(neck);
 
-  /* ---------- HEAD GROUP (everything moves together) ---------- */
-  const head=new THREE.Group();
-  head.position.y=0.92;          // sits on top of the neck
-  g.add(head);
-
-  // skull — egg shaped (slightly taller than wide)
+  const head=new THREE.Group();head.position.y=0.92;g.add(head);
   const skull=new THREE.Mesh(new THREE.SphereGeometry(0.72,48,48),skin);
-  skull.scale.set(1,1.14,0.98);
-  skull.castShadow=true;
-  head.add(skull);
-  // lower jaw to give a chin
+  skull.scale.set(1,1.14,0.98);skull.castShadow=true;head.add(skull);
   const jaw=new THREE.Mesh(new THREE.SphereGeometry(0.6,40,40),skin);
-  jaw.scale.set(0.92,0.66,0.92);
-  jaw.position.set(0,-0.34,0.04);
-  head.add(jaw);
-
-  // ears (sit at mid-head height, on the sides)
+  jaw.scale.set(0.92,0.66,0.92);jaw.position.set(0,-0.34,0.04);head.add(jaw);
   [-1,1].forEach(s=>{
     const ear=new THREE.Mesh(new THREE.SphereGeometry(0.2,24,24),skin);
-    ear.scale.set(0.55,0.95,0.5);
-    ear.position.set(s*0.72,-0.02,0.02);
-    head.add(ear);
+    ear.scale.set(0.55,0.95,0.5);ear.position.set(s*0.72,-0.02,0.02);head.add(ear);
     const inner=new THREE.Mesh(new THREE.SphereGeometry(0.1,16,16),skinDark);
-    inner.scale.set(0.5,0.9,0.4);
-    inner.position.set(s*0.8,-0.02,0.06);
-    head.add(inner);
+    inner.scale.set(0.5,0.9,0.4);inner.position.set(s*0.8,-0.02,0.06);head.add(inner);
   });
-
-  // brows (thick dark bars) — upper face
   [-1,1].forEach(s=>{
     const brow=new THREE.Mesh(new RoundedBoxGeometry(0.3,0.085,0.09,3,0.04),capDark);
-    brow.position.set(s*0.3,0.12,0.62);
-    brow.rotation.z=-s*0.06;
-    head.add(brow);
+    brow.position.set(s*0.3,0.12,0.62);brow.rotation.z=-s*0.06;head.add(brow);
   });
-  // eyes — just below the brows
   [-1,1].forEach(s=>{
     const eye=new THREE.Mesh(new THREE.SphereGeometry(0.13,24,24),eyeMat);
-    eye.scale.set(1,0.78,0.5);
-    eye.position.set(s*0.3,0.0,0.64);
-    head.add(eye);
-    // tiny catch-light
+    eye.scale.set(1,0.78,0.5);eye.position.set(s*0.3,0.0,0.64);head.add(eye);
     const cl=new THREE.Mesh(new THREE.SphereGeometry(0.028,10,10),new THREE.MeshBasicMaterial({color:0xffffff}));
-    cl.position.set(s*0.3-0.04,0.05,0.74);
-    head.add(cl);
+    cl.position.set(s*0.3-0.04,0.05,0.74);head.add(cl);
   });
-  // nose
   const nose=new THREE.Mesh(new THREE.SphereGeometry(0.16,24,24),skin);
-  nose.scale.set(0.85,0.95,1.05);
-  nose.position.set(0,-0.12,0.72);
-  head.add(nose);
-  // mouth — wide friendly grin (dark cavity + teeth)
+  nose.scale.set(0.85,0.95,1.05);nose.position.set(0,-0.12,0.72);head.add(nose);
   const mouth=new THREE.Mesh(new THREE.SphereGeometry(0.28,24,24),mouthDark);
-  mouth.scale.set(1,0.42,0.4);
-  mouth.position.set(0,-0.42,0.58);
-  head.add(mouth);
+  mouth.scale.set(1,0.42,0.4);mouth.position.set(0,-0.42,0.58);head.add(mouth);
   const teethRow=new THREE.Mesh(new THREE.SphereGeometry(0.25,24,24),teeth);
-  teethRow.scale.set(1,0.3,0.35);
-  teethRow.position.set(0,-0.4,0.62);
-  head.add(teethRow);
+  teethRow.scale.set(1,0.3,0.35);teethRow.position.set(0,-0.4,0.62);head.add(teethRow);
 
-  /* ---------- CAP (parented to head, sits on upper skull) ---------- */
-  const cap=new THREE.Group();
-  cap.position.y=0.18;                // rests on the crown, not over the face
-  head.add(cap);
-  // shallow skullcap dome — radius slightly larger than skull, only the top hemisphere
+  const cap=new THREE.Group();cap.position.y=0.18;head.add(cap);
   const dome=new THREE.Mesh(new THREE.SphereGeometry(0.76,40,28,0,Math.PI*2,0,Math.PI*0.5),capWhite);
-  dome.scale.set(1.03,0.92,1.05);
-  dome.castShadow=true;
-  cap.add(dome);
-  // dark headband at the base of the cap
+  dome.scale.set(1.03,0.92,1.05);dome.castShadow=true;cap.add(dome);
   const band=new THREE.Mesh(new THREE.CylinderGeometry(0.785,0.785,0.12,40,1,true),capDark);
-  band.position.y=0.0;
-  band.scale.set(1.03,1,1.05);
-  cap.add(band);
-  // brim pointing BACKWARDS (-z) — worn backwards
+  band.position.y=0.0;band.scale.set(1.03,1,1.05);cap.add(band);
   const brimShape=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.5,0.06,32,1,false,-Math.PI/2,Math.PI),capWhite);
-  brimShape.position.set(0,0.01,-0.66);
-  brimShape.scale.set(1,1,1.5);
-  cap.add(brimShape);
-  // top button
-  const btn=new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),capWhite);
-  btn.position.y=0.66;
-  cap.add(btn);
+  brimShape.position.set(0,0.01,-0.66);brimShape.scale.set(1,1,1.5);cap.add(brimShape);
+  const btn=new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),capWhite);btn.position.y=0.66;cap.add(btn);
 
   head.userData.cap=cap;
   return { group:g, head };
 }
 
-/* ════════════════════════════════════════════════
-   HERO SCENE — character bust, soft turntable
-════════════════════════════════════════════════ */
 function buildHero(){
   const canvas=document.getElementById('hero-canvas');
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const env=studioEnv(renderer);
   const scene=new THREE.Scene();
-
   const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
   camera.position.set(0,0.7,7.6);
   const lookTarget=new THREE.Vector3(0,0.5,0);
-
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
   resize();addEventListener('resize',resize);
-
-  // lights — pink rim (matches reference magenta glow) + cyan back + soft key
   scene.add(new THREE.AmbientLight(0x404050,0.7));
   const key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(-3,5,4);key.castShadow=true;scene.add(key);
   const pink=new THREE.PointLight(0xe0457b,2.0,18,2);pink.position.set(3.5,2,1.5);scene.add(pink);
   const cyan=new THREE.PointLight(0x5ce1e6,1.5,18,2);cyan.position.set(-3,0.5,-1);scene.add(cyan);
   const fill=new THREE.DirectionalLight(0x8899ff,0.4);fill.position.set(2,-1,3);scene.add(fill);
-
-  const {group:char,head}=makeCharacter(env);
-  char.position.y=-0.6;
-  scene.add(char);
-
-  // pointer-driven subtle head turn
-  let px=0,py=0,tx=0,ty=0;
+  const {group:char,head}=makeCharacter(env);char.position.y=-0.6;scene.add(char);
+  let tx=0,ty=0,px=0,py=0;
   addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);});
-
+  const isVisible=gate(canvas);
   let t=0;
   function frame(){
+    requestAnimationFrame(frame);
+    if(!isVisible()) return;
     t+=0.01;
     px=lerp(px,tx,0.05);py=lerp(py,ty,0.05);
-    // gentle body sway + the head tracks the cursor a bit more
     char.rotation.y=Math.sin(t*0.5)*0.08 + px*0.25;
-    head.rotation.y=px*0.4;
-    head.rotation.x=py*0.22;
+    head.rotation.y=px*0.4;head.rotation.x=py*0.22;
     char.position.y=-0.6+Math.sin(t*1.2)*0.04;
     camera.lookAt(lookTarget);
     renderer.render(scene,camera);
-    requestAnimationFrame(frame);
   }
   frame();
 }
 
-/* ════════════════════════════════════════════════
-   ABOUT SCENE — same character, closer crop, idle
-════════════════════════════════════════════════ */
 function buildAbout(){
   const canvas=document.getElementById('about-canvas');
   if(!canvas) return;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   const env=studioEnv(renderer);
   const scene=new THREE.Scene();
@@ -590,40 +527,31 @@ function buildAbout(){
   const lookTarget=new THREE.Vector3(0,0.6,0);
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
   resize();new ResizeObserver(resize).observe(canvas);
-
   scene.add(new THREE.AmbientLight(0x404050,0.7));
   const key=new THREE.DirectionalLight(0xffffff,1.3);key.position.set(-3,5,4);scene.add(key);
   const pink=new THREE.PointLight(0xe0457b,1.8,16,2);pink.position.set(3,2,1.5);scene.add(pink);
   const cyan=new THREE.PointLight(0x5ce1e6,1.3,16,2);cyan.position.set(-3,0,-1);scene.add(cyan);
-
-  const {group:char,head}=makeCharacter(env);
-  char.position.y=-0.7;
-  scene.add(char);
-
-  let t=0,visible=false;
-  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
+  const {group:char,head}=makeCharacter(env);char.position.y=-0.7;scene.add(char);
+  const isVisible=gate(canvas);
+  let t=0;
   function frame(){
-    t+=0.01;
-    if(visible){
-      char.rotation.y=Math.sin(t*0.4)*0.12;
-      head.rotation.y=Math.sin(t*0.55)*0.18;
-      char.position.y=-0.7+Math.sin(t*1.1)*0.04;
-      camera.lookAt(lookTarget);
-      renderer.render(scene,camera);
-    }
     requestAnimationFrame(frame);
+    if(!isVisible()) return;
+    t+=0.01;
+    char.rotation.y=Math.sin(t*0.4)*0.12;
+    head.rotation.y=Math.sin(t*0.55)*0.18;
+    char.position.y=-0.7+Math.sin(t*1.1)*0.04;
+    camera.lookAt(lookTarget);
+    renderer.render(scene,camera);
   }
   frame();
 }
 
-/* ════════════════════════════════════════════════
-   DESK DIORAMA — character sitting, typing on iMac
-════════════════════════════════════════════════ */
 function buildDesk(){
   const canvas=document.getElementById('desk-canvas');
   if(!canvas) return;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const env=studioEnv(renderer);
@@ -633,16 +561,12 @@ function buildDesk(){
   const deskLook=new THREE.Vector3(0.3,0.4,0);
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(deskLook);}
   resize();new ResizeObserver(resize).observe(canvas);
-
   scene.add(new THREE.AmbientLight(0x404050,0.7));
   const key=new THREE.DirectionalLight(0xffffff,1.2);key.position.set(-4,6,5);key.castShadow=true;
   key.shadow.mapSize.set(1024,1024);key.shadow.camera.near=1;key.shadow.camera.far=30;scene.add(key);
   const pink=new THREE.PointLight(0xe0457b,2.2,20,2);pink.position.set(2,2,2);scene.add(pink);
-  const screenGlow=new THREE.PointLight(0xff5a8a,1.5,8,2);screenGlow.position.set(0.6,1.2,-0.5);scene.add(screenGlow);
-
-  const diorama=new THREE.Group();
-  scene.add(diorama);
-
+  const screenGlow=new THREE.PointLight(0x5ce1e6,1.5,8,2);screenGlow.position.set(0.6,1.2,-0.5);scene.add(screenGlow);
+  const diorama=new THREE.Group();scene.add(diorama);
   const env2=env;
   const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:0.55,envMap:env2,envMapIntensity:0.4});
   const sweater=new THREE.MeshStandardMaterial({color:0x2a2a2e,roughness:0.85,envMap:env2,envMapIntensity:0.2});
@@ -650,119 +574,62 @@ function buildDesk(){
   const capDark=new THREE.MeshStandardMaterial({color:0x1a1a1a,roughness:0.5});
   const deskTop=new THREE.MeshStandardMaterial({color:0xf0f0f2,roughness:0.4,envMap:env2,envMapIntensity:0.5});
   const deskLeg=new THREE.MeshStandardMaterial({color:0x15151a,roughness:0.5,metalness:0.4,envMap:env2});
-  const imacBody=new THREE.MeshStandardMaterial({color:0xe0457b,roughness:0.35,metalness:0.2,envMap:env2,envMapIntensity:0.8});
-  const screenMat=new THREE.MeshStandardMaterial({color:0xff6a9a,emissive:0xff5a8a,emissiveIntensity:0.6,roughness:0.3});
+  const imacBody=new THREE.MeshStandardMaterial({color:0x5ce1e6,roughness:0.35,metalness:0.2,envMap:env2,envMapIntensity:0.8});
+  const screenMat=new THREE.MeshStandardMaterial({color:0x8fe9ec,emissive:0x5ce1e6,emissiveIntensity:0.6,roughness:0.3});
   const chairMat=new THREE.MeshStandardMaterial({color:0xf5f5f5,roughness:0.5,envMap:env2,envMapIntensity:0.4});
   const woodMat=new THREE.MeshStandardMaterial({color:0x6b4a2f,roughness:0.6});
-
-  // ── DESK ──
   const top=new THREE.Mesh(new RoundedBoxGeometry(4.2,0.12,1.8,4,0.04),deskTop);
   top.position.set(0,0,0);top.castShadow=true;top.receiveShadow=true;diorama.add(top);
   [[-1.9,-0.7],[1.9,-0.7],[-1.9,0.7],[1.9,0.7]].forEach(([x,z])=>{
-    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.7,0.1),deskLeg);
-    leg.position.set(x,-0.9,z);leg.castShadow=true;diorama.add(leg);
-  });
-
-  // ── iMAC ──
+    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.7,0.1),deskLeg);leg.position.set(x,-0.9,z);leg.castShadow=true;diorama.add(leg);});
   const screen=new THREE.Mesh(new RoundedBoxGeometry(2.0,1.3,0.12,4,0.05),imacBody);
   screen.position.set(0.4,1.05,-0.4);screen.castShadow=true;diorama.add(screen);
-  const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.1),screenMat);
-  panel.position.set(0.4,1.08,-0.33);diorama.add(panel);
-  const stand=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.35,0.08),imacBody);
-  stand.position.set(0.4,0.42,-0.42);diorama.add(stand);
-  const foot=new THREE.Mesh(new RoundedBoxGeometry(0.7,0.05,0.3,3,0.02),imacBody);
-  foot.position.set(0.4,0.08,-0.4);diorama.add(foot);
-
-  // keyboard
-  const kb=new THREE.Mesh(new RoundedBoxGeometry(1.3,0.06,0.45,3,0.03),new THREE.MeshStandardMaterial({color:0x1a1a1d,roughness:0.5,envMap:env2}));
-  kb.position.set(0.1,0.1,0.45);diorama.add(kb);
-  // phone stand (pink, from reference)
-  const phone=new THREE.Mesh(new RoundedBoxGeometry(0.32,0.6,0.04,4,0.03),imacBody);
-  phone.position.set(1.5,0.42,0.2);phone.rotation.set(-0.3,0,0);diorama.add(phone);
-
-  // ── CHAIR ──
-  const seat=new THREE.Mesh(new RoundedBoxGeometry(1.0,0.12,1.0,4,0.05),chairMat);
-  seat.position.set(0.1,-0.55,1.5);seat.castShadow=true;diorama.add(seat);
-  const backRest=new THREE.Mesh(new RoundedBoxGeometry(1.0,1.1,0.12,4,0.05),chairMat);
-  backRest.position.set(0.1,0.05,2.0);diorama.add(backRest);
+  const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.1),screenMat);panel.position.set(0.4,1.08,-0.33);diorama.add(panel);
+  const stand=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.35,0.08),imacBody);stand.position.set(0.4,0.42,-0.42);diorama.add(stand);
+  const foot=new THREE.Mesh(new RoundedBoxGeometry(0.7,0.05,0.3,3,0.02),imacBody);foot.position.set(0.4,0.08,-0.4);diorama.add(foot);
+  const kb=new THREE.Mesh(new RoundedBoxGeometry(1.3,0.06,0.45,3,0.03),new THREE.MeshStandardMaterial({color:0x1a1a1d,roughness:0.5,envMap:env2}));kb.position.set(0.1,0.1,0.45);diorama.add(kb);
+  const phone=new THREE.Mesh(new RoundedBoxGeometry(0.32,0.6,0.04,4,0.03),imacBody);phone.position.set(1.5,0.42,0.2);phone.rotation.set(-0.3,0,0);diorama.add(phone);
+  const seat=new THREE.Mesh(new RoundedBoxGeometry(1.0,0.12,1.0,4,0.05),chairMat);seat.position.set(0.1,-0.55,1.5);seat.castShadow=true;diorama.add(seat);
+  const backRest=new THREE.Mesh(new RoundedBoxGeometry(1.0,1.1,0.12,4,0.05),chairMat);backRest.position.set(0.1,0.05,2.0);diorama.add(backRest);
   [[-0.4,1.1],[0.6,1.1],[-0.4,1.9],[0.6,1.9]].forEach(([x,z])=>{
-    const cl=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.04,1.0,12),woodMat);
-    cl.position.set(x,-1.05,z);cl.castShadow=true;diorama.add(cl);
-  });
-
-  // ── SEATED CHARACTER (viewed from behind) ──
+    const cl=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.04,1.0,12),woodMat);cl.position.set(x,-1.05,z);cl.castShadow=true;diorama.add(cl);});
   const person=new THREE.Group();
-  // torso leaning toward desk
-  const torso=new THREE.Mesh(new THREE.SphereGeometry(0.66,32,32),sweater);
-  torso.scale.set(1.15,1.25,0.85);torso.position.set(0.1,0.2,0.95);torso.castShadow=true;person.add(torso);
-  // neck
-  const neckS=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.22,0.2,20),skin);
-  neckS.position.set(0.13,0.78,0.82);person.add(neckS);
-  // head (egg)
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.46,40,40),skin);
-  head.scale.set(1,1.12,0.96);head.position.set(0.15,1.05,0.78);head.castShadow=true;person.add(head);
-  // ears
+  const torso=new THREE.Mesh(new THREE.SphereGeometry(0.66,32,32),sweater);torso.scale.set(1.15,1.25,0.85);torso.position.set(0.1,0.2,0.95);torso.castShadow=true;person.add(torso);
+  const neckS=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.22,0.2,20),skin);neckS.position.set(0.13,0.78,0.82);person.add(neckS);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.46,40,40),skin);head.scale.set(1,1.12,0.96);head.position.set(0.15,1.05,0.78);head.castShadow=true;person.add(head);
   [-1,1].forEach(s=>{const ear=new THREE.Mesh(new THREE.SphereGeometry(0.12,16,16),skin);ear.scale.set(0.6,0.95,0.5);ear.position.set(0.15+s*0.45,1.02,0.78);person.add(ear);});
-  // cap dome (sits ON the crown)
-  const dome=new THREE.Mesh(new THREE.SphereGeometry(0.49,32,22,0,Math.PI*2,0,Math.PI*0.5),capWhite);
-  dome.scale.set(1.02,0.92,1.04);dome.position.set(0.15,1.22,0.78);dome.castShadow=true;person.add(dome);
-  // dark band
-  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.08,32,1,true),capDark);
-  band.position.set(0.15,1.13,0.78);band.scale.set(1.02,1,1.04);person.add(band);
-  // brim points toward viewer (-z, i.e. backwards cap seen from behind shows the brim)
-  const brim=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.32,0.05,28,1,false,-Math.PI/2,Math.PI),capWhite);
-  brim.position.set(0.15,1.14,1.2);brim.scale.set(1,1,1.4);person.add(brim);
-
-  // arms reaching to keyboard
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(0.49,32,22,0,Math.PI*2,0,Math.PI*0.5),capWhite);dome.scale.set(1.02,0.92,1.04);dome.position.set(0.15,1.22,0.78);dome.castShadow=true;person.add(dome);
+  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.08,32,1,true),capDark);band.position.set(0.15,1.13,0.78);band.scale.set(1.02,1,1.04);person.add(band);
+  const brim=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.32,0.05,28,1,false,-Math.PI/2,Math.PI),capWhite);brim.position.set(0.15,1.14,1.2);brim.scale.set(1,1,1.4);person.add(brim);
   [-1,1].forEach(s=>{
-    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.12,0.95,16),sweater);
-    arm.position.set(0.1+s*0.42,0.15,0.78);
-    arm.rotation.set(-1.0,0,s*0.25);
-    arm.castShadow=true;person.add(arm);
-    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.13,16,16),skin);
-    hand.position.set(0.1+s*0.32,0.18,0.4);
-    person.add(hand);
-  });
-  // legs under desk
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.12,0.95,16),sweater);arm.position.set(0.1+s*0.42,0.15,0.78);arm.rotation.set(-1.0,0,s*0.25);arm.castShadow=true;person.add(arm);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.13,16,16),skin);hand.position.set(0.1+s*0.32,0.18,0.4);person.add(hand);});
   [-1,1].forEach(s=>{
-    const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.16,0.95,16),sweater);
-    thigh.position.set(0.1+s*0.3,-0.5,1.15);thigh.rotation.x=Math.PI/2;person.add(thigh);
-    const shin=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.13,0.95,16),sweater);
-    shin.position.set(0.1+s*0.3,-1.0,0.75);person.add(shin);
-    const shoe=new THREE.Mesh(new RoundedBoxGeometry(0.26,0.18,0.48,3,0.06),capWhite);
-    shoe.position.set(0.1+s*0.3,-1.42,0.52);shoe.castShadow=true;person.add(shoe);
-  });
-
-  diorama.add(person);
-  diorama.scale.setScalar(0.95);
-  diorama.position.y=0.0;
-
-  let t=0,visible=false;
-  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
+    const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.16,0.95,16),sweater);thigh.position.set(0.1+s*0.3,-0.5,1.15);thigh.rotation.x=Math.PI/2;person.add(thigh);
+    const shin=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.13,0.95,16),sweater);shin.position.set(0.1+s*0.3,-1.0,0.75);person.add(shin);
+    const shoe=new THREE.Mesh(new RoundedBoxGeometry(0.26,0.18,0.48,3,0.06),capWhite);shoe.position.set(0.1+s*0.3,-1.42,0.52);shoe.castShadow=true;person.add(shoe);});
+  diorama.add(person);diorama.scale.setScalar(0.95);diorama.position.y=0.0;
+  const isVisible=gate(canvas);
+  let t=0;
   function frame(){
-    t+=0.01;
-    if(visible){
-      diorama.rotation.y=Math.sin(t*0.3)*0.08;
-      head.rotation.z=Math.sin(t*2)*0.025;
-      person.position.y=Math.sin(t*1.3)*0.015;
-      camera.lookAt(deskLook);
-      renderer.render(scene,camera);
-    }
     requestAnimationFrame(frame);
+    if(!isVisible()) return;
+    t+=0.01;
+    diorama.rotation.y=Math.sin(t*0.3)*0.08;
+    head.rotation.z=Math.sin(t*2)*0.025;
+    person.position.y=Math.sin(t*1.3)*0.015;
+    camera.lookAt(deskLook);
+    renderer.render(scene,camera);
   }
   frame();
 }
 
-/* ════════════════════════════════════════════════
-   TECHSTACK — floating 3D logo spheres (the star)
-════════════════════════════════════════════════ */
 function logoSphereTexture(label,bg,fg){
   const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');
-  // glossy white-ish base with a hint of pearl
   x.fillStyle=bg;x.fillRect(0,0,512,512);
-  // label centered
   x.fillStyle=fg;
-  x.font='700 200px system-ui,sans-serif';
+  const fs=label.length>3?150:200;
+  x.font='700 '+fs+'px system-ui,sans-serif';
   x.textAlign='center';x.textBaseline='middle';
   x.fillText(label,256,266);
   const tex=new THREE.CanvasTexture(c);tex.anisotropy=8;
@@ -772,136 +639,134 @@ function logoSphereTexture(label,bg,fg){
 function buildTech(){
   const canvas=document.getElementById('tech-canvas');
   if(!canvas) return;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const env=studioEnv(renderer);
-  const scene=new THREE.Scene();
-  scene.background=new THREE.Color(0x000000);
-
-  const camera=new THREE.PerspectiveCamera(45,1,0.1,100);
-  camera.position.set(0,0,14);
-
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x000000);
+  const camera=new THREE.PerspectiveCamera(45,1,0.1,100);camera.position.set(0,0,14);
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();addEventListener('resize',resize);
-
-  // bright studio for that pearl-white look
   scene.add(new THREE.AmbientLight(0xffffff,0.6));
-  const key=new THREE.DirectionalLight(0xffffff,2.0);key.position.set(-5,8,6);key.castShadow=true;
-  key.shadow.mapSize.set(1024,1024);scene.add(key);
+  const key=new THREE.DirectionalLight(0xffffff,2.0);key.position.set(-5,8,6);key.castShadow=true;key.shadow.mapSize.set(1024,1024);scene.add(key);
   const fill=new THREE.DirectionalLight(0xcdd8ff,0.8);fill.position.set(6,2,2);scene.add(fill);
   const warm=new THREE.PointLight(0xffd0c0,0.8,40,2);warm.position.set(0,-4,6);scene.add(warm);
-
-  // skill set → label + brand tint
+  // AI / ML focused stack
   const stack=[
-    {l:'Py',bg:'#f5f5f7',fg:'#3776AB'},   // Python
-    {l:'TS',bg:'#3178c6',fg:'#ffffff'},   // TypeScript
-    {l:'SQL',bg:'#f5f5f7',fg:'#00758F'},  // SQL
-    {l:'Az',bg:'#f5f5f7',fg:'#0078D4'},   // Azure
-    {l:'PS',bg:'#f5f5f7',fg:'#5391FE'},   // PowerShell
-    {l:'Pd',bg:'#f5f5f7',fg:'#150458'},   // Pandas
-    {l:'np',bg:'#f5f5f7',fg:'#013243'},   // NumPy
-    {l:'PBI',bg:'#f5f5f7',fg:'#F2C811'},  // PowerBI
-    {l:'Lx',bg:'#f5f5f7',fg:'#FCC624'},   // Linux
-    {l:'git',bg:'#f5f5f7',fg:'#F05032'},  // Git
-    {l:'SOAR',bg:'#5ce1e6',fg:'#08323a'}, // SOAR
-    {l:'IDS',bg:'#f5f5f7',fg:'#8b6dff'},  // IDS
-    {l:'IAM',bg:'#f5f5f7',fg:'#e0457b'},  // IAM
-    {l:'KQL',bg:'#f5f5f7',fg:'#0078D4'},  // KQL
+    {l:'Py',bg:'#f5f5f7',fg:'#3776AB'},
+    {l:'LLM',bg:'#5ce1e6',fg:'#08323a'},
+    {l:'GPT',bg:'#f5f5f7',fg:'#10a37f'},
+    {l:'skl',bg:'#f5f5f7',fg:'#F7931E'},
+    {l:'Pd',bg:'#f5f5f7',fg:'#150458'},
+    {l:'np',bg:'#f5f5f7',fg:'#013243'},
+    {l:'Olm',bg:'#f5f5f7',fg:'#000000'},
+    {l:'API',bg:'#8b6dff',fg:'#ffffff'},
+    {l:'SQL',bg:'#f5f5f7',fg:'#00758F'},
+    {l:'git',bg:'#f5f5f7',fg:'#F05032'},
+    {l:'Az',bg:'#f5f5f7',fg:'#0078D4'},
+    {l:'PBI',bg:'#f5f5f7',fg:'#F2C811'},
+    {l:'RF',bg:'#f5f5f7',fg:'#2e7d32'},
+    {l:'NLP',bg:'#f5f5f7',fg:'#e0457b'},
   ];
-
-  const group=new THREE.Group();
-  scene.add(group);
-  const spheres=[];
-  const tmp=new THREE.Vector3();
-
-  stack.forEach((s,i)=>{
+  const group=new THREE.Group();scene.add(group);
+  const spheres=[];const tmp=new THREE.Vector3();
+  stack.forEach((s)=>{
     const r=0.7+Math.random()*0.7;
     const tex=logoSphereTexture(s.l,s.bg,s.fg);
-    const mat=new THREE.MeshPhysicalMaterial({
-      map:tex,roughness:0.25,metalness:0.0,
-      clearcoat:0.8,clearcoatRoughness:0.15,
-      envMap:env,envMapIntensity:1.0,
-      sheen:0.4,sheenColor:new THREE.Color(0xffffff),
-    });
+    const mat=new THREE.MeshPhysicalMaterial({map:tex,roughness:0.25,metalness:0.0,clearcoat:0.8,clearcoatRoughness:0.15,envMap:env,envMapIntensity:1.0,sheen:0.4,sheenColor:new THREE.Color(0xffffff)});
     const m=new THREE.Mesh(new THREE.SphereGeometry(r,48,48),mat);
-    // initial scattered position in a flat-ish cluster
-    const ang=Math.random()*Math.PI*2;
-    const rad=2+Math.random()*5;
-    m.position.set(Math.cos(ang)*rad, (Math.random()-0.5)*5, (Math.random()-0.5)*4);
+    const ang=Math.random()*Math.PI*2;const rad=2+Math.random()*5;
+    m.position.set(Math.cos(ang)*rad,(Math.random()-0.5)*5,(Math.random()-0.5)*4);
     m.castShadow=true;m.receiveShadow=true;
-    m.userData={
-      r,
-      spin:new THREE.Vector3((Math.random()-0.5)*0.01,(Math.random()-0.5)*0.012,(Math.random()-0.5)*0.008),
-      vel:new THREE.Vector3((Math.random()-0.5)*0.01,(Math.random()-0.5)*0.01,(Math.random()-0.5)*0.008),
-      home:m.position.clone(),
-      phase:Math.random()*Math.PI*2,
-    };
+    m.userData={r,spin:new THREE.Vector3((Math.random()-0.5)*0.01,(Math.random()-0.5)*0.012,(Math.random()-0.5)*0.008),vel:new THREE.Vector3((Math.random()-0.5)*0.01,(Math.random()-0.5)*0.01,(Math.random()-0.5)*0.008),home:m.position.clone()};
     group.add(m);spheres.push(m);
   });
-
-  // gentle physics: float + soft collision repulsion + return-to-cluster
-  let visible=false;
-  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.02}).observe(canvas);
-
-  // drag to rotate the whole cluster
+  const isVisible=gate(canvas);
   let dragging=false,lx=0,ly=0,rotX=0,rotY=0,trX=0,trY=0;
   canvas.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;canvas.style.cursor='grabbing';});
   addEventListener('pointerup',()=>{dragging=false;canvas.style.cursor='grab';});
-  addEventListener('pointermove',e=>{
-    if(!dragging) return;
-    trY+=(e.clientX-lx)*0.005; trX+=(e.clientY-ly)*0.005;
-    trX=clamp(trX,-0.6,0.6);
-    lx=e.clientX;ly=e.clientY;
-  });
+  addEventListener('pointermove',e=>{if(!dragging) return;trY+=(e.clientX-lx)*0.005;trX+=(e.clientY-ly)*0.005;trX=clamp(trX,-0.6,0.6);lx=e.clientX;ly=e.clientY;});
   canvas.style.cursor='grab';
-
-  // scroll parallax: cluster drifts slightly as section scrolls
-  const sec=document.querySelector('.techstack');
-
   let t=0;
   function frame(){
-    t+=0.016;
-    if(visible){
-      rotX=lerp(rotX,trX,0.08);rotY=lerp(rotY,trY,0.08);
-      group.rotation.x=rotX;
-      group.rotation.y=rotY + t*0.04; // slow auto-spin
-
-      // float + collisions
-      for(let i=0;i<spheres.length;i++){
-        const a=spheres[i],ad=a.userData;
-        // bobbing
-        a.position.addScaledVector(ad.vel,1);
-        // soft pull back toward home so they stay clustered
-        tmp.copy(ad.home).sub(a.position).multiplyScalar(0.0015);
-        ad.vel.add(tmp);
-        ad.vel.multiplyScalar(0.99);
-        // spin
-        a.rotation.x+=ad.spin.x;a.rotation.y+=ad.spin.y;a.rotation.z+=ad.spin.z;
-      }
-      // pairwise repulsion (keeps them from overlapping → bubble look)
-      for(let i=0;i<spheres.length;i++){
-        for(let j=i+1;j<spheres.length;j++){
-          const a=spheres[i],b=spheres[j];
-          tmp.copy(a.position).sub(b.position);
-          const d=tmp.length();const min=a.userData.r+b.userData.r;
-          if(d<min&&d>0.0001){
-            tmp.multiplyScalar((min-d)/d*0.5*0.5);
-            a.position.add(tmp);b.position.sub(tmp);
-          }
-        }
-      }
-      renderer.render(scene,camera);
-    }
     requestAnimationFrame(frame);
+    if(!isVisible()) return;
+    t+=0.016;
+    rotX=lerp(rotX,trX,0.08);rotY=lerp(rotY,trY,0.08);
+    group.rotation.x=rotX;group.rotation.y=rotY + t*0.04;
+    for(let i=0;i<spheres.length;i++){
+      const a=spheres[i],ad=a.userData;
+      a.position.addScaledVector(ad.vel,1);
+      tmp.copy(ad.home).sub(a.position).multiplyScalar(0.0015);
+      ad.vel.add(tmp);ad.vel.multiplyScalar(0.99);
+      a.rotation.x+=ad.spin.x;a.rotation.y+=ad.spin.y;a.rotation.z+=ad.spin.z;
+    }
+    for(let i=0;i<spheres.length;i++){
+      for(let j=i+1;j<spheres.length;j++){
+        const a=spheres[i],b=spheres[j];
+        tmp.copy(a.position).sub(b.position);
+        const d=tmp.length();const min=a.userData.r+b.userData.r;
+        if(d<min&&d>0.0001){tmp.multiplyScalar((min-d)/d*0.25);a.position.add(tmp);b.position.sub(tmp);}
+      }
+    }
+    renderer.render(scene,camera);
   }
   frame();
 }
 
-/* ════════════════════════════════════════════════
-   PRELOADER + BOOT  (native scroll, no smoothing)
-════════════════════════════════════════════════ */
+// ---- lightweight 2D canvas visualisations for the project cards ----
+function buildProjectViz(){
+  document.querySelectorAll('.wviz').forEach(cv=>{
+    const type=cv.dataset.viz;
+    const ctx=cv.getContext('2d');
+    function size(){const r=cv.getBoundingClientRect();cv.width=r.width*Math.min(devicePixelRatio,2);cv.height=r.height*Math.min(devicePixelRatio,2);}
+    size();new ResizeObserver(size).observe(cv);
+    let vis=false;new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0.05}).observe(cv);
+    let t=0;
+    const cyan='#5ce1e6',violet='#8b6dff',pink='#e0457b';
+    function frame(){
+      requestAnimationFrame(frame);
+      if(!vis) return;
+      t+=0.02;
+      const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+      if(type==='scatter'){
+        for(let i=0;i<70;i++){
+          const seed=i*999;const x=(Math.sin(seed)*0.5+0.5)*W;const y=(Math.cos(seed*1.3)*0.5+0.5)*H;
+          const fraud=(i%7===0);ctx.beginPath();ctx.arc(x,y,fraud?5:3,0,7);ctx.fillStyle=fraud?pink:cyan;ctx.globalAlpha=fraud?0.9:0.35;ctx.fill();
+        }
+        ctx.globalAlpha=1;
+      }else if(type==='wave'){
+        ctx.strokeStyle=cyan;ctx.lineWidth=2;ctx.beginPath();
+        for(let x=0;x<W;x++){const a=Math.sin(x*0.02+t*2)*Math.sin(x*0.005+t);ctx.lineTo(x,H/2+a*H*0.25);}ctx.stroke();
+        ctx.strokeStyle=violet;ctx.globalAlpha=0.5;ctx.beginPath();
+        for(let x=0;x<W;x++){const a=Math.sin(x*0.03-t*1.5)*0.6;ctx.lineTo(x,H/2+a*H*0.18);}ctx.stroke();ctx.globalAlpha=1;
+      }else if(type==='forecast'){
+        ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=2;ctx.beginPath();
+        for(let x=0;x<W;x++){ctx.lineTo(x,H*0.6+Math.sin(x*0.04)*H*0.12);}ctx.stroke();
+        ctx.strokeStyle=cyan;ctx.lineWidth=3;ctx.beginPath();
+        for(let x=0;x<W;x++){const base=H*0.6+Math.sin(x*0.04)*H*0.12;const conv=Math.min(1,x/W+0.1);ctx.lineTo(x,base+ (Math.sin(x*0.04+1)*H*0.12)*(1-conv)*0.0 );}ctx.stroke();
+        ctx.fillStyle=cyan;for(let x=0;x<W;x+=W/8){const y=H*0.6+Math.sin(x*0.04)*H*0.12;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();}
+      }else if(type==='flow'){
+        const nodes=[[0.15,0.5],[0.4,0.3],[0.4,0.7],[0.65,0.5],[0.88,0.5]];
+        ctx.strokeStyle='rgba(92,225,230,.4)';ctx.lineWidth=2;
+        const edges=[[0,1],[0,2],[1,3],[2,3],[3,4]];
+        edges.forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(nodes[a][0]*W,nodes[a][1]*H);ctx.lineTo(nodes[b][0]*W,nodes[b][1]*H);ctx.stroke();});
+        edges.forEach(([a,b],i)=>{const p=(Math.sin(t*2+i)*0.5+0.5);const x=lerp(nodes[a][0],nodes[b][0],p)*W;const y=lerp(nodes[a][1],nodes[b][1],p)*H;ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fillStyle=cyan;ctx.fill();});
+        nodes.forEach((n,i)=>{ctx.beginPath();ctx.arc(n[0]*W,n[1]*H,i===4?10:8,0,7);ctx.fillStyle=i===4?pink:violet;ctx.fill();});
+      }else if(type==='grid'){
+        const cols=10,rows=6;const cw=W/cols,ch=H/rows;
+        for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){
+          const v=Math.sin(i*0.6+j*0.5+t*2)*0.5+0.5;ctx.fillStyle=v>0.8?pink:(v>0.5?cyan:'rgba(255,255,255,.08)');ctx.globalAlpha=v>0.5?0.7:0.3;
+          ctx.fillRect(i*cw+2,j*ch+2,cw-4,ch-4);
+        }
+        ctx.globalAlpha=1;
+      }
+    }
+    frame();
+  });
+}
+
 function runPreloader(done){
   const pre=document.getElementById('preloader');
   const fill=pre.querySelector('.fill');
@@ -931,21 +796,22 @@ function boot(){
   buildAbout();
   buildDesk();
   buildTech();
-
-  // nav scrolled state
+  buildProjectViz();
   const nav=document.querySelector('nav');
   addEventListener('scroll',()=>{nav.classList.toggle('scrolled',scrollY>40);},{passive:true});
-
-  // reveals
   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');}}),{threshold:.15});
   document.querySelectorAll('.rv').forEach(el=>io.observe(el));
-
-  // counters
   document.querySelectorAll('.count').forEach(el=>{
-    const ob=new IntersectionObserver(en=>{if(en[0].isIntersecting){const tg=+el.dataset.t;let n=0;const inc=tg/50;const t=setInterval(()=>{n+=inc;if(n>=tg){n=tg;clearInterval(t);}el.textContent=Math.floor(n);},20);ob.unobserve(el);}},{threshold:.5});
+    const ob=new IntersectionObserver(en=>{if(en[0].isIntersecting){const tg=+el.dataset.t;let n=0;const inc=Math.max(1,tg/50);const t=setInterval(()=>{n+=inc;if(n>=tg){n=tg;clearInterval(t);}el.textContent=Math.floor(n);},20);ob.unobserve(el);}},{threshold:.5});
     ob.observe(el);
   });
 }
+
+// ===== BUG FIX 1: stop the browser restoring old scroll position on refresh =====
+if('scrollRestoration' in history){history.scrollRestoration='manual';}
+window.scrollTo(0,0);
+addEventListener('beforeunload',()=>window.scrollTo(0,0));
+addEventListener('load',()=>{window.scrollTo(0,0);});
 
 runPreloader(boot);
 </script>
