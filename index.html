@@ -170,17 +170,11 @@ footer .l{color:var(--cyan)}
 .rv{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .rv.on{opacity:1;transform:translateY(0)}
 
-/* ─── AMBIENT BACKGROUND (orbs + dot grid, CSS-only) ── */
+/* ─── AMBIENT BACKGROUND (WebGL nebula + starfield) ── */
 section,footer{position:relative;z-index:1}
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg-layer::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(120vw 120vh at 50% 40%,#000 30%,transparent 80%)}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);mix-blend-mode:screen;will-change:transform}
-.orb.cy{width:58vw;height:58vw;background:radial-gradient(circle,rgba(92,225,230,.5),transparent 60%);top:-16%;left:-14%;animation:drift1 30s ease-in-out infinite alternate}
-.orb.vi{width:50vw;height:50vw;background:radial-gradient(circle,rgba(139,109,255,.45),transparent 60%);bottom:-14%;right:-12%;animation:drift2 36s ease-in-out infinite alternate}
-.orb.pk{width:40vw;height:40vw;background:radial-gradient(circle,rgba(224,69,123,.4),transparent 60%);top:42%;left:54%;animation:drift3 26s ease-in-out infinite alternate}
-@keyframes drift1{to{transform:translate(9vw,7vh) scale(1.12)}}
-@keyframes drift2{to{transform:translate(-8vw,-6vh) scale(1.08)}}
-@keyframes drift3{to{transform:translate(-6vw,5vh) scale(1.15)}}
+#bg3d{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+.bg-layer::before{content:'';position:absolute;inset:0;z-index:2;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(120vw 120vh at 50% 40%,#000 30%,transparent 80%)}
 
 /* techstack gets a designed backdrop instead of flat black */
 .techstack{background:radial-gradient(70vw 70vh at 50% 32%,#12121e 0%,#08080e 55%,#050508 100%)}
@@ -218,7 +212,38 @@ section,footer{position:relative;z-index:1}
 nav{background:rgba(10,10,16,.35);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid rgba(255,255,255,.07)}
 nav.scrolled{background:rgba(8,8,12,.6)}
 
+/* ─── ABOUT PHOTO ───────────────────────────────────── */
+.about-photo{float:right;width:clamp(110px,10vw,150px);aspect-ratio:3/4;object-fit:cover;border-radius:16px;border:1px solid rgba(255,255,255,.22);margin:0 0 16px 20px;box-shadow:0 14px 36px rgba(0,0,0,.5);transform:rotate(3deg);transition:transform .4s var(--ease)}
+.about-photo:hover{transform:rotate(0deg) scale(1.04)}
+
+/* ─── PROJECT LINKS ─────────────────────────────────── */
+.work-row .wlinks{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.work-row .wlink{font-family:'Geist Mono',monospace;font-size:11px;color:var(--cyan);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(92,225,230,.35);padding:6px 13px;border-radius:16px;transition:background .25s,border-color .25s;display:inline-flex;align-items:center;gap:6px}
+.work-row .wlink:hover{background:rgba(92,225,230,.14);border-color:var(--cyan)}
+
+/* ─── GESTURE CONTROL UI ────────────────────────────── */
+#gestureBtn{position:fixed;right:22px;bottom:22px;z-index:9600;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.08em;color:#fff;background:rgba(10,10,16,.6);border:1px solid rgba(92,225,230,.45);border-radius:30px;padding:12px 20px;cursor:pointer;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;gap:9px;transition:border-color .3s,box-shadow .3s,transform .3s var(--ease)}
+#gestureBtn:hover{border-color:var(--cyan);box-shadow:0 0 22px rgba(92,225,230,.35);transform:translateY(-2px)}
+#gestureBtn .gb-dot{width:8px;height:8px;border-radius:50%;background:#555;transition:background .3s,box-shadow .3s}
+#gestureBtn.live .gb-dot{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+#gestureHud{position:fixed;right:22px;bottom:78px;z-index:9600;width:216px;border-radius:18px;overflow:hidden;background:rgba(8,8,14,.78);border:1px solid rgba(92,225,230,.35);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.6);opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .4s var(--ease),transform .4s var(--ease)}
+#gestureHud.on{opacity:1;transform:translateY(0);pointer-events:auto}
+#gestureHud video{width:100%;height:140px;object-fit:cover;transform:scaleX(-1);display:block;background:#000}
+#gestureHud .g-status{font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--cyan);letter-spacing:.06em;padding:10px 14px 4px;text-transform:uppercase}
+#gestureHud .g-help{font-family:'Geist Mono',monospace;font-size:10px;color:#999;line-height:1.7;padding:2px 14px 10px}
+#gestureHud .g-help b{color:#ddd;font-weight:500}
+#gestureHud .g-priv{font-family:'Geist Mono',monospace;font-size:9px;color:#666;padding:0 14px 12px;letter-spacing:.04em}
+#handCursor{position:fixed;left:0;top:0;z-index:9500;width:42px;height:42px;margin:-21px 0 0 -21px;pointer-events:none;display:none}
+#handCursor .hc-ring{position:absolute;inset:0;border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 18px rgba(92,225,230,.6),inset 0 0 10px rgba(92,225,230,.3);transition:transform .12s,border-color .12s}
+#handCursor .hc-core{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--cyan)}
+#handCursor.pinch .hc-ring{transform:scale(.55);border-color:var(--pink);box-shadow:0 0 24px rgba(224,69,123,.8)}
+#handCursor .hc-pulse{position:absolute;inset:0;border:2px solid var(--pink);border-radius:50%;opacity:0;transform:scale(1)}
+#handCursor.burst .hc-pulse{animation:hcBurst .5s var(--ease)}
+@keyframes hcBurst{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.6)}}
+
 @media(max-width:980px){
+  #gestureHud{width:180px}
+  .about-photo{float:none;display:block;margin:0 auto 20px;transform:rotate(0)}
   nav{padding:16px 5vw}
   .nav-links{gap:20px}
   .hero-grid{flex-direction:column;justify-content:center;text-align:center;gap:40vh}
@@ -241,7 +266,16 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 
 <div class="grain"></div>
 <div class="vignette"></div>
-<div class="bg-layer"><div class="orb cy"></div><div class="orb vi"></div><div class="orb pk"></div></div>
+<div class="bg-layer"><canvas id="bg3d"></canvas></div>
+
+<button id="gestureBtn" type="button"><span class="gb-dot"></span>✋ Gesture Control</button>
+<div id="gestureHud">
+  <video id="gestureCam" playsinline muted></video>
+  <div class="g-status" id="gStatus">Starting camera…</div>
+  <div class="g-help"><b>Move palm</b> steer the cosmos · <b>Hand top/bottom</b> scroll · <b>Swipe fast</b> jump section · <b>Pinch</b> click / shockwave</div>
+  <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
+</div>
+<div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div></div>
 
 <div id="preloader">
   <div class="pre-logo"><span>PM</span><span class="dot">.</span></div>
@@ -284,6 +318,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
   <div class="about-split">
     <canvas id="about-canvas"></canvas>
     <div class="about-copy rv">
+      <img class="about-photo" src="download.jfif" alt="Pratik More in Coventry, UK">
       <div class="eyebrow">About Me</div>
       <h2>Cybersecurity analyst building <em>secure systems</em> at scale.</h2>
       <p>I'm <strong>Pratik More</strong> a SecOps &amp; Trust-and-Safety specialist with <strong>4.5+ years</strong> protecting platforms, automating incident response, and hunting threats. Currently completing an <strong>MSc Cybersecurity</strong> in the UK.</p>
@@ -361,26 +396,62 @@ nav.scrolled{background:rgba(8,8,12,.6)}
         <div class="wtype">MSc Dissertation · 2026</div>
         <p>"Zero-Touch" automated containment with Microsoft Sentinel &amp; Azure Logic Apps to mitigate high-velocity ransomware.</p>
         <div class="wtags"><span class="wtag">Sentinel</span><span class="wtag">Azure</span><span class="wtag">SOAR</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/Azure-Sentinel-SOAR-Automation" target="_blank" rel="noopener">GitHub ↗</a></div>
       </div>
-      <div class="wimg"><div class="wimpact">↯ MTTC 380s → 41s</div><img src="soar.jpg" alt="SOAR"></div>
+      <div class="wimg"><div class="wimpact">↯ MTTC 380s → 41s</div><img src="soar.jpg.jpeg" alt="SOAR battle-station"></div>
     </div>
     <div class="work-row rv">
       <div class="wnum">02</div>
+      <div class="winfo">
+        <h3>Enterprise SIEM &amp; Incident Response Lab</h3>
+        <div class="wtype">Wazuh · Home Lab</div>
+        <p>Multi-OS SIEM lab ingesting Windows &amp; Linux endpoint logs. Detected simulated SSH brute-force (MITRE ATT&amp;CK T1110) and fired an Active Response that auto-banned the attacker's IP at the firewall.</p>
+        <div class="wtags"><span class="wtag">Wazuh</span><span class="wtag">MITRE ATT&amp;CK</span><span class="wtag">VirtualBox</span><span class="wtag">Bash</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/Wazuh-SIEM-Home-Lab" target="_blank" rel="noopener">GitHub ↗</a></div>
+      </div>
+      <div class="wimg"><div class="wimpact">↯ Auto IP ban on attack</div><img src="https://raw.githubusercontent.com/pratikm7073/wazuh-siem-home-lab/main/dashboard.PNG" alt="Wazuh SIEM dashboard"></div>
+    </div>
+    <div class="work-row rv">
+      <div class="wnum">03</div>
+      <div class="winfo">
+        <h3>AI-Enhanced WFM Capacity Planning Engine</h3>
+        <div class="wtype">Python · ML Forecasting</div>
+        <p>Random Forest demand forecaster over 12 months of multi-site contact-centre data, cutting forecast error from ~15.5% to ~4.6% MAPE vs the traditional method — plus Erlang C capacity model and an interactive dashboard.</p>
+        <div class="wtags"><span class="wtag">scikit-learn</span><span class="wtag">Pandas</span><span class="wtag">Erlang C</span><span class="wtag">Power BI</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/ai-wfm-capacity-planning-engine" target="_blank" rel="noopener">GitHub ↗</a><a class="wlink" href="https://pratikm7073.github.io/WFM_Dashboard.html" target="_blank" rel="noopener">Live Dashboard ↗</a></div>
+      </div>
+      <div class="wimg"><div class="wimpact">↯ MAPE 15.5% → 4.6%</div><img src="https://raw.githubusercontent.com/pratikm7073/ai-wfm-capacity-planning-engine/main/ai_forecast_comparison.png" alt="AI vs traditional forecast"></div>
+    </div>
+    <div class="work-row rv">
+      <div class="wnum">04</div>
+      <div class="winfo">
+        <h3>Jarvis-AI — Offline Voice Assistant</h3>
+        <div class="wtype">Local LLM · Zero-Trust</div>
+        <p>Fully offline voice assistant: Vosk speech recognition, Microsoft Phi-3 reasoning via Ollama, and native text-to-speech — not a single byte leaves the machine. Voice kill-switch included.</p>
+        <div class="wtags"><span class="wtag">Python</span><span class="wtag">Ollama</span><span class="wtag">Phi-3</span><span class="wtag">Vosk</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/Jarvis-AI" target="_blank" rel="noopener">GitHub ↗</a></div>
+      </div>
+      <div class="wimg"><div class="wimpact">↯ 100% offline LLM</div><img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=900&q=80" alt="Jarvis AI assistant"></div>
+    </div>
+    <div class="work-row rv">
+      <div class="wnum">05</div>
       <div class="winfo">
         <h3>Vendor Risk &amp; Governance Pipeline</h3>
         <div class="wtype">Independent · ML</div>
         <p>Analysed a 167MB dataset to surface compliance risks &amp; vendor fraud, with custom behavioural tripwires flagging high-risk accounts.</p>
         <div class="wtags"><span class="wtag">Python</span><span class="wtag">Pandas</span><span class="wtag">ML</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/ecommerce-vendor-risk-pipeline" target="_blank" rel="noopener">GitHub ↗</a></div>
       </div>
       <div class="wimg"><div class="wimpact">↯ 167MB processed</div><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80" alt="Vendor Risk"></div>
     </div>
     <div class="work-row rv">
-      <div class="wnum">03</div>
+      <div class="wnum">06</div>
       <div class="winfo">
         <h3>Secure Web App + ML IDS</h3>
         <div class="wtype">Academic · 2026</div>
         <p>Strict RBAC with MFA via Microsoft Authenticator, paired with an ML-powered intrusion detection system mapping live attack vectors.</p>
         <div class="wtags"><span class="wtag">RBAC</span><span class="wtag">MFA</span><span class="wtag">ML-IDS</span></div>
+        <div class="wlinks"><a class="wlink" href="https://github.com/Pratikm7073/secure-login-system-MFA" target="_blank" rel="noopener">GitHub ↗</a></div>
       </div>
       <div class="wimg"><div class="wimpact">↯ 3-tier isolation</div><img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80" alt="Secure Web"></div>
     </div>
@@ -403,7 +474,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       <div class="clabel">Reach me</div>
       <a href="mailto:morepratik77@gmail.com">Email <span class="arr">↗</span></a>
       <a href="https://github.com/Pratikm7073" target="_blank">GitHub <span class="arr">↗</span></a>
-      <a href="https://www.linkedin.com/" target="_blank">LinkedIn <span class="arr">↗</span></a>
+      <a href="https://linkedin.com/in/pratik-more-969749249" target="_blank">LinkedIn <span class="arr">↗</span></a>
     </div>
     <div class="contact-right">
       <div class="credit">Designed &amp; developed by<br><strong>Pratik More</strong></div>
@@ -1120,6 +1191,294 @@ function buildTech(){
 }
 
 /* ════════════════════════════════════════════════
+   DEEP-SPACE BACKGROUND nebula shader + parallax
+   starfield behind the whole page (fixed layer)
+════════════════════════════════════════════════ */
+function buildBackground(){
+  const canvas=document.getElementById('bg3d');
+  if(!canvas||matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(60,1,0.1,120);
+  camera.position.z=16;
+
+  /* fullscreen domain-warped fbm nebula (renders behind stars) */
+  const uni={
+    uTime:{value:0},
+    uAspect:{value:1},
+    uPar:{value:new THREE.Vector2(0,0)},
+    uHue:{value:0},
+    uPulse:{value:new THREE.Vector4(.5,.5,0,0)}, // x,y (uv), strength, age
+  };
+  const nebula=new THREE.Mesh(
+    new THREE.PlaneGeometry(2,2),
+    new THREE.ShaderMaterial({
+      uniforms:uni,depthWrite:false,depthTest:false,
+      vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.999,1.0);}`,
+      fragmentShader:`
+        precision highp float;varying vec2 vUv;
+        uniform float uTime,uAspect,uHue;uniform vec2 uPar;uniform vec4 uPulse;
+        float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}
+        float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+          return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);}
+        float fbm(vec2 p){float v=0.,a=.5;mat2 r=mat2(.8,.6,-.6,.8);
+          for(int i=0;i<5;i++){v+=a*noise(p);p=r*p*2.02;a*=.5;}return v;}
+        vec3 pal(float t){ // cyan → violet → pink, matching site accents
+          vec3 cy=vec3(.36,.88,.90),vi=vec3(.545,.427,1.0),pk=vec3(.878,.27,.48);
+          t=fract(t);
+          return t<.5? mix(cy,vi,smoothstep(0.,.5,t)) : mix(vi,pk,smoothstep(.5,1.,t));}
+        void main(){
+          vec2 p=(vUv-.5)*vec2(uAspect,1.);
+          p+=uPar*.09;
+          float t=uTime*.022;
+          vec2 q=vec2(fbm(p*1.5+t),fbm(p*1.5-t*.7+5.2));
+          vec2 r=vec2(fbm(p*2.1+q*1.9+t*.5),fbm(p*2.1+q*1.9-t*.3+8.1));
+          float f=fbm(p*1.9+r*1.7);
+          /* expanding shockwave ripple (pinch gesture) */
+          vec2 pc=(uPulse.xy-.5)*vec2(uAspect,1.);
+          float d=distance(p,pc);
+          float ring=exp(-34.*abs(d-uPulse.w*.85))*uPulse.z;
+          f+=ring*.7;
+          float lum=smoothstep(.28,.92,f);
+          vec3 col=vec3(.012,.012,.022);
+          col=mix(col,pal(f*.6+uHue)*.55,lum);
+          col+=pal(f*.6+uHue+.08)*pow(lum,3.)*.55;   // hot cores
+          col+=pal(uHue+.45)*ring*.9;                 // ripple glow
+          col*=1.-dot(p,p)*.42;                       // vignette
+          gl_FragColor=vec4(col,1.);
+        }`
+    })
+  );
+  nebula.frustumCulled=false;nebula.renderOrder=-1;
+  scene.add(nebula);
+
+  /* soft round star sprite */
+  function starTex(){
+    const c=document.createElement('canvas');c.width=64;c.height=64;const x=c.getContext('2d');
+    const g=x.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.35,'rgba(255,255,255,.55)');g.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=g;x.fillRect(0,0,64,64);
+    return new THREE.CanvasTexture(c);
+  }
+  const sTex=starTex();
+
+  /* three depth layers of drifting stars (real 3D parallax) */
+  const group=new THREE.Group();scene.add(group);
+  const layers=[];
+  [[520,26,.10,0xffffff,.9],[340,20,.17,0xbfe9ff,.8],[160,14,.30,0xd9ccff,.9]].forEach(([n,spread,size,color,op])=>{
+    const geo=new THREE.BufferGeometry();
+    const pos=new Float32Array(n*3),vel=new Float32Array(n*3);
+    for(let i=0;i<n;i++){
+      pos[i*3]=(Math.random()-.5)*spread*2.4;
+      pos[i*3+1]=(Math.random()-.5)*spread*1.5;
+      pos[i*3+2]=(Math.random()-.5)*spread-4;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    const mat=new THREE.PointsMaterial({map:sTex,color,size,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true});
+    const pts=new THREE.Points(geo,mat);
+    group.add(pts);layers.push({geo,mat,vel,n,baseOp:op});
+  });
+
+  function resize(){
+    const w=innerWidth,h=innerHeight;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h;camera.updateProjectionMatrix();
+    uni.uAspect.value=w/h;
+  }
+  resize();addEventListener('resize',resize);
+
+  /* pointer parallax mouse by default, gesture can override */
+  const par={x:0,y:0,tx:0,ty:0};
+  addEventListener('mousemove',e=>{
+    if(gestureDrives) return;
+    par.tx=(e.clientX/innerWidth-.5)*2;par.ty=(e.clientY/innerHeight-.5)*2;
+  },{passive:true});
+  /* device tilt parallax on mobile */
+  addEventListener('deviceorientation',e=>{
+    if(e.gamma==null||gestureDrives) return;
+    par.tx=clamp(e.gamma/28,-1,1);par.ty=clamp((e.beta-48)/28,-1,1);
+  },{passive:true});
+  let gestureDrives=false;
+
+  let pulseAge=9,pulseStr=0;
+  const clock=new THREE.Clock();
+  const tmpV=new THREE.Vector3();
+  function frame(){
+    const dt=Math.min(clock.getDelta(),.05);
+    const t=uni.uTime.value+=dt;
+    const k=1-Math.pow(.002,dt);
+    par.x=lerp(par.x,par.tx,k);par.y=lerp(par.y,par.ty,k);
+    uni.uPar.value.set(par.x,par.y);
+    /* scroll = travel through the field + slow hue drift */
+    const sc=scrollY/Math.max(1,document.body.scrollHeight-innerHeight);
+    uni.uHue.value=sc*.35+t*.004;
+    camera.position.x=par.x*1.6;
+    camera.position.y=-par.y*1.1-sc*2.2;
+    camera.lookAt(0,camera.position.y*.9,0);
+    camera.rotation.z+=Math.sin(t*.05)*.02;
+    group.rotation.y=t*.006+par.x*.05;
+    /* star drift + shockwave impulses */
+    pulseAge+=dt;
+    uni.uPulse.value.z=pulseStr*Math.exp(-pulseAge*1.6);
+    uni.uPulse.value.w=pulseAge;
+    layers.forEach((L,li)=>{
+      const p=L.geo.attributes.position.array;
+      for(let i=0;i<L.n;i++){
+        p[i*3]+=(L.vel[i*3]+Math.sin(t*.14+i)* .0016)*dt*60;
+        p[i*3+1]+=(L.vel[i*3+1]+Math.cos(t*.11+i*1.7)*.0013)*dt*60;
+        p[i*3+2]+=L.vel[i*3+2]*dt*60;
+        L.vel[i*3]*=Math.pow(.5,dt);L.vel[i*3+1]*=Math.pow(.5,dt);L.vel[i*3+2]*=Math.pow(.5,dt);
+      }
+      L.geo.attributes.position.needsUpdate=true;
+      L.mat.opacity=L.baseOp*(.82+Math.sin(t*(1.1+li*.5))*.18);
+    });
+    renderer.render(scene,camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+
+  return {
+    setPointer(nx,ny){gestureDrives=true;par.tx=clamp(nx,-1,1);par.ty=clamp(ny,-1,1);},
+    releasePointer(){gestureDrives=false;},
+    pulse(cx,cy){ // cx,cy in [0..1] viewport coords (y down)
+      pulseAge=0;pulseStr=1;
+      uni.uPulse.value.x=cx;uni.uPulse.value.y=1-cy;
+      /* radial impulse on near-layer stars around the pulse point */
+      tmpV.set(cx*2-1,-(cy*2-1),.5).unproject(camera).sub(camera.position).normalize();
+      const dist=-camera.position.z/tmpV.z||10;
+      const wp=camera.position.clone().addScaledVector(tmpV,Math.abs(dist));
+      layers.forEach(L=>{
+        const p=L.geo.attributes.position.array;
+        for(let i=0;i<L.n;i++){
+          const dx=p[i*3]-wp.x,dy=p[i*3+1]-wp.y;
+          const d=Math.hypot(dx,dy);
+          if(d<7&&d>.001){const f=(1-d/7)*.5;L.vel[i*3]+=dx/d*f;L.vel[i*3+1]+=dy/d*f;}
+        }
+      });
+    },
+  };
+}
+
+/* ════════════════════════════════════════════════
+   GESTURE CONTROL webcam hand tracking (MediaPipe)
+   palm = cursor/parallax · top/bottom = scroll
+   fast swipe = jump section · pinch = click + shockwave
+════════════════════════════════════════════════ */
+function setupGestures(bg){
+  const btn=document.getElementById('gestureBtn');
+  const hud=document.getElementById('gestureHud');
+  const video=document.getElementById('gestureCam');
+  const status=document.getElementById('gStatus');
+  const cursor=document.getElementById('handCursor');
+  if(!btn) return;
+
+  let active=false,stream=null,hands=null,loopTimer=null,busy=false;
+  let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
+  let pinched=false,lastX=null,lastT=0,swipeCool=0;
+
+  const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('load fail '+src));document.head.appendChild(s);});
+
+  function sections(){return [...document.querySelectorAll('section')];}
+  function jumpSection(dir){
+    const secs=sections();const mid=scrollY+innerHeight/2;
+    let idx=0;
+    secs.forEach((s,i)=>{if(s.offsetTop<=mid)idx=i;});
+    const next=secs[clamp(idx+dir,0,secs.length-1)];
+    next&&next.scrollIntoView({behavior:'smooth'});
+  }
+  function scrollLoop(){
+    scrollVel*=0.92;
+    if(Math.abs(scrollVel)>.4){scrollBy(0,scrollVel);}
+    scrollRaf=active?requestAnimationFrame(scrollLoop):null;
+  }
+
+  function onResults(r){
+    busy=false;
+    const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
+    if(!lm){cursor.style.display='none';status.textContent='Show your palm ✋';scrollVel*=.9;return;}
+    status.textContent='Tracking ✋';
+    /* palm centre (middle-finger MCP), mirrored */
+    const palm=lm[9];
+    const nx=1-palm.x, ny=palm.y;
+    const px=nx*innerWidth, py=ny*innerHeight;
+    smX=lerp(smX,px,.35);smY=lerp(smY,py,.35);
+    cursor.style.display='block';
+    cursor.style.transform=`translate(${smX}px,${smY}px)`;
+    /* parallax: hand steers the cosmos */
+    bg&&bg.setPointer(nx*2-1,ny*2-1);
+    /* vertical zones → scroll */
+    if(ny<.28) scrollVel=lerp(scrollVel,-(0.28-ny)*90,.2);
+    else if(ny>.72) scrollVel=lerp(scrollVel,(ny-0.72)*90,.2);
+    else scrollVel*=.85;
+    /* fast horizontal swipe → jump section */
+    const now=performance.now();
+    if(lastX!=null){
+      const vx=(nx-lastX)/Math.max(.001,(now-lastT)/1000); // screens/sec
+      if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
+    }
+    lastX=nx;lastT=now;
+    /* pinch: thumb tip ↔ index tip, normalised by hand size */
+    const dx=lm[4].x-lm[8].x,dy=lm[4].y-lm[8].y;
+    const hand=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1;
+    const ratio=Math.hypot(dx,dy)/hand;
+    if(ratio<.38&&!pinched){
+      pinched=true;
+      cursor.classList.add('pinch','burst');
+      setTimeout(()=>cursor.classList.remove('burst'),520);
+      bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
+      const el=document.elementFromPoint(smX,smY);
+      const link=el&&el.closest&&el.closest('a');
+      if(link) link.click();
+    }else if(ratio>.5&&pinched){pinched=false;cursor.classList.remove('pinch');}
+  }
+
+  async function start(){
+    btn.disabled=true;status.textContent='Loading hand model…';hud.classList.add('on');
+    try{
+      if(!window.Hands) await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js');
+      stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
+      video.srcObject=stream;await video.play();
+      hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
+      hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});
+      hands.onResults(onResults);
+      active=true;btn.classList.add('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gestures ON';
+      status.textContent='Show your palm ✋';
+      loopTimer=setInterval(async()=>{
+        if(busy||video.readyState<2) return;
+        busy=true;
+        try{await hands.send({image:video});}catch(e){busy=false;}
+      },66); // ~15fps: smooth + cheap
+      scrollRaf=requestAnimationFrame(scrollLoop);
+    }catch(err){
+      status.textContent=err.name==='NotAllowedError'?'Camera permission denied':'Could not start gestures';
+      setTimeout(stop,2200);
+    }
+    btn.disabled=false;
+  }
+  function stop(){
+    active=false;
+    loopTimer&&clearInterval(loopTimer);loopTimer=null;
+    scrollRaf&&cancelAnimationFrame(scrollRaf);scrollRaf=null;
+    stream&&stream.getTracks().forEach(t=>t.stop());stream=null;
+    hands&&hands.close&&hands.close();hands=null;
+    hud.classList.remove('on');cursor.style.display='none';
+    btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
+    bg&&bg.releasePointer();
+    lastX=null;pinched=false;scrollVel=0;
+  }
+  btn.addEventListener('click',()=>active?stop():start());
+
+  /* iOS: unlock tilt parallax on first tap */
+  if(typeof DeviceOrientationEvent!=='undefined'&&DeviceOrientationEvent.requestPermission){
+    addEventListener('touchend',function req(){
+      DeviceOrientationEvent.requestPermission().catch(()=>{});
+      removeEventListener('touchend',req);
+    },{once:true});
+  }
+}
+
+/* ════════════════════════════════════════════════
    PRELOADER + BOOT  (native scroll, no smoothing)
 ════════════════════════════════════════════════ */
 function runPreloader(done){
@@ -1193,6 +1552,8 @@ function proximityReveal(){
 }
 
 function boot(){
+  const bg=buildBackground();
+  setupGestures(bg);
   buildHero();
   buildAbout();
   buildDesk();
