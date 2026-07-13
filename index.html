@@ -241,8 +241,43 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 #handCursor.burst .hc-pulse{animation:hcBurst .5s var(--ease)}
 @keyframes hcBurst{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.6)}}
 
+/* ─── SOC STATUS CHIP (desk scene) ──────────────────── */
+#socStatus{position:absolute;top:7vh;left:5vw;z-index:3;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(92,225,230,.35);background:rgba(8,10,16,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:9px 16px;border-radius:20px;transition:color .4s,border-color .4s}
+#socStatus.alert{color:#ff4d61;border-color:rgba(255,77,97,.55);animation:socPulse .45s infinite alternate}
+#socStatus.ok{color:#39d98a;border-color:rgba(57,217,138,.5)}
+@keyframes socPulse{from{box-shadow:0 0 10px rgba(255,43,69,.2)}to{box-shadow:0 0 30px rgba(255,43,69,.6)}}
+
+/* ─── PROJECT SUMMARY MODAL ─────────────────────────── */
+#projModal{position:fixed;inset:0;z-index:9400;display:flex;align-items:center;justify-content:center;padding:4vh 4vw;opacity:0;pointer-events:none;transition:opacity .35s var(--ease)}
+#projModal.open{opacity:1;pointer-events:auto}
+#projModal .pm-backdrop{position:absolute;inset:0;background:rgba(3,3,6,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.pm-card{position:relative;width:min(760px,94vw);max-height:88vh;display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:linear-gradient(150deg,rgba(28,30,44,.92),rgba(12,13,20,.96));border:1px solid rgba(92,225,230,.3);box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 60px rgba(92,225,230,.08);transform:translateY(26px) scale(.96);transition:transform .45s var(--ease)}
+#projModal.open .pm-card{transform:translateY(0) scale(1)}
+.pm-media{position:relative;aspect-ratio:16/7;flex:none;overflow:hidden;background:#0a0c14}
+.pm-media img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)}
+.pm-media::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(12,13,20,.95),transparent 55%)}
+.pm-impact{position:absolute;bottom:14px;left:20px;z-index:2;font-family:'Geist Mono',monospace;font-size:11px;color:var(--cyan);border:1px solid rgba(92,225,230,.4);background:rgba(0,0,0,.5);padding:6px 12px;border-radius:16px;letter-spacing:.06em}
+.pm-body{padding:26px 30px 30px;overflow-y:auto}
+.pm-type{font-family:'Geist Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px}
+.pm-title{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:600;letter-spacing:-.02em;margin-bottom:14px}
+.pm-desc{font-size:15px;color:#b9bec8;line-height:1.65;font-weight:300;margin-bottom:18px}
+.pm-points{list-style:none;margin:0 0 20px;display:flex;flex-direction:column;gap:9px}
+.pm-points li{font-size:13.5px;color:#9aa3b0;line-height:1.5;padding-left:22px;position:relative}
+.pm-points li::before{content:'▸';position:absolute;left:0;color:var(--cyan)}
+.pm-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.pm-tags span{font-family:'Geist Mono',monospace;font-size:10.5px;padding:5px 11px;border-radius:16px;border:1px solid rgba(255,255,255,.14);color:#aab;letter-spacing:.04em}
+.pm-links{display:flex;gap:12px;flex-wrap:wrap}
+.pm-links a{font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--ink);background:var(--cyan);padding:11px 20px;border-radius:22px;font-weight:600;transition:transform .25s var(--ease),box-shadow .25s}
+.pm-links a:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(92,225,230,.35)}
+.pm-links a.ghost{background:transparent;color:var(--cyan);border:1px solid rgba(92,225,230,.45)}
+.pm-close{position:absolute;top:14px;right:14px;z-index:3;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.45);color:#fff;font-size:20px;cursor:pointer;backdrop-filter:blur(8px);transition:border-color .25s,transform .25s}
+.pm-close:hover{border-color:var(--pink);transform:rotate(90deg)}
+.work-row{cursor:pointer}
+
 @media(max-width:980px){
   #gestureHud{width:180px}
+  #socStatus{top:2vh;font-size:10px}
+  .pm-body{padding:20px}
   .about-photo{float:none;display:block;margin:0 auto 20px;transform:rotate(0)}
   nav{padding:16px 5vw}
   .nav-links{gap:20px}
@@ -272,10 +307,26 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Move palm</b> steer the cosmos · <b>Hand top/bottom</b> scroll · <b>Swipe fast</b> jump section · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Move palm</b> steer the cosmos · <b>Hand top/bottom</b> scroll · <b>✊ Fist</b> turbo scroll · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open its summary · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
 <div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div></div>
+
+<div id="projModal" aria-hidden="true">
+  <div class="pm-backdrop"></div>
+  <div class="pm-card">
+    <button class="pm-close" type="button" aria-label="Close">×</button>
+    <div class="pm-media"><img src="" alt=""><div class="pm-impact"></div></div>
+    <div class="pm-body">
+      <div class="pm-type"></div>
+      <h3 class="pm-title"></h3>
+      <p class="pm-desc"></p>
+      <ul class="pm-points"></ul>
+      <div class="pm-tags"></div>
+      <div class="pm-links"></div>
+    </div>
+  </div>
+</div>
 
 <div id="preloader">
   <div class="pre-logo"><span>PM</span><span class="dot">.</span></div>
@@ -334,6 +385,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 
 <!-- WHAT I DO (desk diorama) -->
 <section class="whatido" id="work">
+  <div id="socStatus">● SOC LIVE — ALL SYSTEMS NOMINAL</div>
   <canvas id="desk-canvas"></canvas>
   <div class="whatido-title">WHAT<br><em>I DO</em></div>
   <div class="do-cards rv">
@@ -389,7 +441,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
   <div class="section-eyebrow">Selected Projects</div>
   <h2 class="section-title">My <em>Work</em></h2>
   <div class="work-list">
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="soar">
       <div class="wnum">01</div>
       <div class="winfo">
         <h3>Cloud-Native SOAR Engine</h3>
@@ -400,7 +452,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       </div>
       <div class="wimg"><div class="wimpact">↯ MTTC 380s → 41s</div><img src="soar.jpg.jpeg" alt="SOAR battle-station"></div>
     </div>
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="wazuh">
       <div class="wnum">02</div>
       <div class="winfo">
         <h3>Enterprise SIEM &amp; Incident Response Lab</h3>
@@ -411,7 +463,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       </div>
       <div class="wimg"><div class="wimpact">↯ Auto IP ban on attack</div><img src="https://raw.githubusercontent.com/pratikm7073/wazuh-siem-home-lab/main/dashboard.PNG" alt="Wazuh SIEM dashboard"></div>
     </div>
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="wfm">
       <div class="wnum">03</div>
       <div class="winfo">
         <h3>AI-Enhanced WFM Capacity Planning Engine</h3>
@@ -422,7 +474,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       </div>
       <div class="wimg"><div class="wimpact">↯ MAPE 15.5% → 4.6%</div><img src="https://raw.githubusercontent.com/pratikm7073/ai-wfm-capacity-planning-engine/main/ai_forecast_comparison.png" alt="AI vs traditional forecast"></div>
     </div>
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="jarvis">
       <div class="wnum">04</div>
       <div class="winfo">
         <h3>Jarvis-AI — Offline Voice Assistant</h3>
@@ -433,7 +485,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       </div>
       <div class="wimg"><div class="wimpact">↯ 100% offline LLM</div><img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=900&q=80" alt="Jarvis AI assistant"></div>
     </div>
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="vendor">
       <div class="wnum">05</div>
       <div class="winfo">
         <h3>Vendor Risk &amp; Governance Pipeline</h3>
@@ -444,7 +496,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       </div>
       <div class="wimg"><div class="wimpact">↯ 167MB processed</div><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80" alt="Vendor Risk"></div>
     </div>
-    <div class="work-row rv">
+    <div class="work-row rv" data-proj="ids">
       <div class="wnum">06</div>
       <div class="winfo">
         <h3>Secure Web App + ML IDS</h3>
@@ -554,7 +606,7 @@ function makeCodeScreen(){
     rows.push(segs);
   }
   function paint(t){
-    const g=x.createLinearGradient(0,0,0,400);g.addColorStop(0,'#160710');g.addColorStop(1,'#1e0b16');
+    const g=x.createLinearGradient(0,0,0,400);g.addColorStop(0,'#071018');g.addColorStop(1,'#0a1826');
     x.fillStyle=g;x.fillRect(0,0,640,400);
     x.fillStyle='rgba(255,255,255,.06)';x.fillRect(0,0,640,34);
     ['#ff5f57','#febc2e','#28c840'].forEach((cc,i)=>{x.fillStyle=cc;x.beginPath();x.arc(22+i*22,17,6,0,7);x.fill();});
@@ -852,175 +904,392 @@ function buildAbout(){
 }
 
 /* ════════════════════════════════════════════════
-   DESK DIORAMA character sitting, typing on iMac
+   SOC COMMAND CENTER cinematic ops scene with live
+   screens + a recurring intrusion→containment story
 ════════════════════════════════════════════════ */
+function makeTermScreen(){
+  const W=768,H=448;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const tex=new THREE.CanvasTexture(c);tex.anisotropy=4;
+  const rnd=a=>a[Math.floor(Math.random()*a.length)];
+  const ips=['185.220.101.4','45.155.205.86','103.94.157.2','91.240.118.172','198.51.100.23','203.0.113.66'];
+  const calmTpl=[
+    ()=>[`sshd[${1000+(Math.random()*9e3|0)}]: session opened for user secops`,'#8fb8a8'],
+    ()=>[`sentinel ▸ analytics rule evaluated · 0 hits`,'#5ce1e6'],
+    ()=>[`agent[win10-ep] ▸ heartbeat OK · cpu ${2+(Math.random()*9|0)}% · mem ${30+(Math.random()*20|0)}%`,'#7f96a8'],
+    ()=>[`kql ▸ SigninLogs | where ResultType != 0 · ${Math.random()*3|0} rows`,'#8b9fff'],
+    ()=>[`firewall ▸ allow 443/tcp outbound · policy corp-web`,'#7f96a8'],
+    ()=>[`edr ▸ scheduled scan complete · 0 detections`,'#8fb8a8'],
+    ()=>[`logic-app ▸ playbook 'zero-touch-contain' armed`,'#5ce1e6'],
+  ];
+  let lines=[],lastLine=0,atkIp=ips[0],prevState='calm';
+  function push(s,cc){lines.push([s,cc]);if(lines.length>17)lines.shift();}
+  function paint(t,state){
+    const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#04090d');g.addColorStop(1,'#071119');
+    x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.fillStyle='rgba(255,255,255,.015)';
+    for(let y=0;y<H;y+=4)x.fillRect(0,y,W,1);
+    x.fillStyle='rgba(255,255,255,.05)';x.fillRect(0,0,W,36);
+    ['#ff5f57','#febc2e','#28c840'].forEach((cc,i)=>{x.fillStyle=cc;x.beginPath();x.arc(24+i*24,18,6.5,0,7);x.fill();});
+    x.fillStyle='rgba(255,255,255,.6)';x.font='600 14px monospace';
+    x.fillText('siem — live tail · sentinel / wazuh',84,23);
+    x.fillStyle=state==='alert'?'#ff4d61':'#39d98a';
+    x.beginPath();x.arc(W-30,18,5,0,7);x.fill();
+    const cad=state==='alert'?0.14:0.55;
+    if(t-lastLine>cad+Math.random()*.3){
+      lastLine=t;
+      if(state==='alert'){
+        if(prevState!=='alert')atkIp=rnd(ips);
+        push(...rnd([
+          [`⚠ sshd: FAILED password root from ${atkIp} (${3+(Math.random()*20|0)} in 10s)`,'#ff4d61'],
+          [`sentinel ▸ INCIDENT #41${(Math.random()*90|0)+10} · T1110 BRUTE FORCE`,'#ff4d61'],
+          [`soar ▸ playbook 'zero-touch-contain' RUNNING…`,'#ffd07a'],
+        ]));
+      }else if(state==='contained'&&prevState==='alert'){
+        push(`✓ active-response ▸ ${atkIp} BANNED at firewall`,'#39d98a');
+        push(`✓ incident closed · MTTC 41s · zero human touch`,'#39d98a');
+      }else{
+        const l=rnd(calmTpl)();push(l[0],l[1]);
+      }
+      prevState=state;
+    }
+    x.font='13px monospace';
+    lines.forEach((l,i)=>{
+      x.globalAlpha=.35+.65*(i/Math.max(1,lines.length-1));
+      x.fillStyle=l[1];
+      x.fillText(l[0].slice(0,88),18,64+i*21);
+    });
+    x.globalAlpha=1;
+    if(state==='alert'){
+      const p=.55+Math.sin(t*10)*.45;
+      x.fillStyle=`rgba(255,30,60,${.14*p})`;x.fillRect(0,0,W,H);
+      x.fillStyle='rgba(120,0,12,.92)';x.fillRect(0,H-62,W,62);
+      x.strokeStyle=`rgba(255,77,97,${p})`;x.lineWidth=3;x.strokeRect(2,2,W-4,H-4);
+      x.fillStyle=`rgba(255,225,230,${.6+.4*p})`;x.font='700 24px monospace';
+      x.fillText('⚠ INTRUSION DETECTED — SSH BRUTE FORCE (T1110)',20,H-22);
+    }else if(state==='contained'){
+      x.fillStyle='rgba(16,110,64,.9)';x.fillRect(0,H-62,W,62);
+      x.fillStyle='#c9ffe6';x.font='700 24px monospace';
+      x.fillText('✓ THREAT CONTAINED — IP BANNED · MTTC 41s',20,H-22);
+    }
+    tex.needsUpdate=true;
+  }
+  paint(0,'calm');
+  return {tex,paint};
+}
+
+function makeMapScreen(){
+  const W=768,H=448;
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const tex=new THREE.CanvasTexture(c);tex.anisotropy=4;
+  /* dotted pseudo-continents */
+  const blobs=[[120,150,55,140],[105,225,40,80],[150,300,42,90],[350,140,60,150],[385,235,40,90],[420,300,30,50],[520,160,80,220],[610,200,50,110],[640,300,36,60],[700,330,26,40],[560,120,40,70],[260,120,30,40]];
+  const dots=[];
+  blobs.forEach(([bx,by,r,n])=>{for(let i=0;i<n;i++){const a=Math.random()*7,d=Math.sqrt(Math.random())*r;dots.push([bx+Math.cos(a)*d*1.4,by+Math.sin(a)*d*.7]);}});
+  const hq=[380,150];
+  let pings=[],lastPing=0;
+  function paint(t,state){
+    x.fillStyle='#050d1a';x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(92,225,230,.05)';x.lineWidth=1;
+    for(let gx=0;gx<W;gx+=48){x.beginPath();x.moveTo(gx,34);x.lineTo(gx,H);x.stroke();}
+    for(let gy=34;gy<H;gy+=48){x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke();}
+    x.fillStyle='rgba(80,140,190,.5)';
+    dots.forEach(d=>x.fillRect(d[0],d[1],2.4,2.4));
+    /* radar sweep */
+    const ang=t*.9;
+    x.save();x.translate(W/2,H/2+16);
+    const sw=x.createLinearGradient(0,0,Math.cos(ang)*W,Math.sin(ang)*W);
+    sw.addColorStop(0,'rgba(92,225,230,.16)');sw.addColorStop(1,'rgba(92,225,230,0)');
+    x.fillStyle=sw;x.beginPath();x.moveTo(0,0);x.arc(0,0,W*.75,ang-.55,ang);x.closePath();x.fill();
+    x.restore();
+    /* pings + attack arcs */
+    const cad=state==='alert'?.22:1.3;
+    if(t-lastPing>cad){lastPing=t;const d=dots[Math.random()*dots.length|0];
+      pings.push({x:d[0],y:d[1],t0:t,red:state==='alert'||Math.random()<.15});}
+    pings=pings.filter(p=>t-p.t0<2.2);
+    pings.forEach(p=>{
+      const a=(t-p.t0)/2.2,col=p.red?'255,64,90':'92,225,230';
+      x.strokeStyle=`rgba(${col},${1-a})`;x.lineWidth=1.6;
+      x.beginPath();x.arc(p.x,p.y,3+a*26,0,7);x.stroke();
+      x.fillStyle=`rgba(${col},${.9-a*.7})`;x.beginPath();x.arc(p.x,p.y,2.6,0,7);x.fill();
+      if(p.red){
+        x.strokeStyle=`rgba(255,64,90,${.55*(1-a)})`;x.lineWidth=1.2;
+        x.beginPath();x.moveTo(p.x,p.y);
+        x.quadraticCurveTo((p.x+hq[0])/2,Math.min(p.y,hq[1])-70,hq[0],hq[1]);x.stroke();
+      }
+    });
+    x.fillStyle='#5ce1e6';x.beginPath();x.arc(hq[0],hq[1],4,0,7);x.fill();
+    x.strokeStyle=`rgba(92,225,230,${.5+Math.sin(t*3)*.3})`;x.lineWidth=1.4;
+    x.beginPath();x.arc(hq[0],hq[1],9,0,7);x.stroke();
+    x.fillStyle='rgba(255,255,255,.04)';x.fillRect(0,0,W,34);
+    x.fillStyle='rgba(255,255,255,.6)';x.font='600 13px monospace';
+    x.fillText('GLOBAL THREAT MAP — LIVE FEED',18,22);
+    if(state==='alert'){x.fillStyle=`rgba(255,30,60,${.08+Math.sin(t*9)*.05})`;x.fillRect(0,0,W,H);}
+    tex.needsUpdate=true;
+  }
+  paint(0,'calm');
+  return {tex,paint};
+}
+
 function buildDesk(){
   const canvas=document.getElementById('desk-canvas');
   if(!canvas) return;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const env=studioEnv(renderer);
   const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(40,1,0.1,100);
-  camera.position.set(0.3,2.3,7.2);
-  const deskLook=new THREE.Vector3(0.3,0.4,0);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(deskLook);}
+  const camera=new THREE.PerspectiveCamera(36,1,0.1,100);
+  camera.position.set(-1.8,2.1,8.2);
+  const look=new THREE.Vector3(0.1,0.95,-0.2);
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();new ResizeObserver(resize).observe(canvas);
 
-  scene.add(new THREE.AmbientLight(0x404050,0.7));
-  const key=new THREE.DirectionalLight(0xffffff,1.2);key.position.set(-4,6,5);key.castShadow=true;
-  key.shadow.mapSize.set(512,512);key.shadow.camera.near=1;key.shadow.camera.far=30;scene.add(key);
-  const pink=new THREE.PointLight(0xe0457b,2.2,20,2);pink.position.set(2,2,2);scene.add(pink);
-  const screenGlow=new THREE.PointLight(0xff5a8a,1.5,8,2);screenGlow.position.set(0.6,1.2,-0.5);scene.add(screenGlow);
+  /* dark room lit almost entirely by the screens */
+  scene.add(new THREE.AmbientLight(0x1c2436,2.1));
+  const key=new THREE.DirectionalLight(0x7d94c8,0.55);key.position.set(-5,7,4);
+  key.castShadow=true;key.shadow.mapSize.set(1024,1024);scene.add(key);
+  const glowC=new THREE.PointLight(0xbfefff,3.0,8,2);glowC.position.set(0.1,1.6,0.6);scene.add(glowC);
+  const glowL=new THREE.PointLight(0x35c8ff,1.5,6,2);glowL.position.set(-1.7,1.5,0.3);scene.add(glowL);
+  const glowR=new THREE.PointLight(0x6da8ff,1.3,6,2);glowR.position.set(1.9,1.5,0.3);scene.add(glowR);
+  const rim=new THREE.PointLight(0x5ce1e6,2.2,12,2);rim.position.set(0,2.6,-3);scene.add(rim);
+  const alarm=new THREE.PointLight(0xff2233,0,16,2);alarm.position.set(0,3.1,0);scene.add(alarm);
 
-  const diorama=new THREE.Group();
-  scene.add(diorama);
+  const D=new THREE.Group();scene.add(D);
 
-  const env2=env;
-  const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:0.55,envMap:env2,envMapIntensity:0.4});
-  const sweater=new THREE.MeshStandardMaterial({color:0x2a2a2e,roughness:0.85,envMap:env2,envMapIntensity:0.2});
-  const capWhite=new THREE.MeshStandardMaterial({color:0xe8e8ea,roughness:0.4,envMap:env2,envMapIntensity:0.6});
-  const capDark=new THREE.MeshStandardMaterial({color:0x1a1a1a,roughness:0.5});
-  const deskTop=new THREE.MeshStandardMaterial({color:0xf0f0f2,roughness:0.4,envMap:env2,envMapIntensity:0.5});
-  const deskLeg=new THREE.MeshStandardMaterial({color:0x15151a,roughness:0.5,metalness:0.4,envMap:env2});
-  const imacBody=new THREE.MeshStandardMaterial({color:0xe0457b,roughness:0.35,metalness:0.2,envMap:env2,envMapIntensity:0.8});
-  const screenMat=new THREE.MeshStandardMaterial({color:0xff6a9a,emissive:0xff5a8a,emissiveIntensity:0.6,roughness:0.3});
-  const chairMat=new THREE.MeshStandardMaterial({color:0xf5f5f5,roughness:0.5,envMap:env2,envMapIntensity:0.4});
-  const woodMat=new THREE.MeshStandardMaterial({color:0x6b4a2f,roughness:0.6});
+  const walnut=new THREE.MeshPhysicalMaterial({color:0x2a1c12,roughness:.42,metalness:.05,clearcoat:.55,clearcoatRoughness:.25,envMap:env,envMapIntensity:.8});
+  const alu=new THREE.MeshStandardMaterial({color:0x9aa2ad,roughness:.35,metalness:.85,envMap:env,envMapIntensity:.9});
+  const matte=new THREE.MeshStandardMaterial({color:0x0c0d12,roughness:.6,metalness:.25,envMap:env,envMapIntensity:.4});
+  const hoodie=new THREE.MeshStandardMaterial({color:0x1d2432,roughness:.92,envMap:env,envMapIntensity:.15});
+  const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:.55,envMap:env,envMapIntensity:.4});
+  const meshFab=new THREE.MeshStandardMaterial({color:0x22262e,roughness:.85,envMap:env,envMapIntensity:.2});
 
-  // ── DESK ──
-  const top=new THREE.Mesh(new RoundedBoxGeometry(4.2,0.12,1.8,4,0.04),deskTop);
-  top.position.set(0,0,0);top.castShadow=true;top.receiveShadow=true;diorama.add(top);
-  [[-1.9,-0.7],[1.9,-0.7],[-1.9,0.7],[1.9,0.7]].forEach(([x,z])=>{
-    const leg=new THREE.Mesh(new THREE.BoxGeometry(0.1,1.7,0.1),deskLeg);
-    leg.position.set(x,-0.9,z);leg.castShadow=true;diorama.add(leg);
+  /* server-rack backdrop with blinking LEDs */
+  const rackC=document.createElement('canvas');rackC.width=512;rackC.height=256;const rx=rackC.getContext('2d');
+  const rackTex=new THREE.CanvasTexture(rackC);
+  const leds=[];for(let i=0;i<90;i++)leds.push([20+(i%15)*33,42+((i/15)|0)*35,Math.random()]);
+  function paintRack(t){
+    rx.fillStyle='#05070c';rx.fillRect(0,0,512,256);
+    rx.strokeStyle='rgba(255,255,255,.05)';
+    for(let y=24;y<256;y+=35)rx.strokeRect(8,y,496,27);
+    leds.forEach(l=>{const on=Math.sin(t*2+l[2]*40)>0.55;
+      rx.fillStyle=on?(l[2]<.12?'#ff4d61':l[2]<.5?'#39d98a':'#2fb8d8'):'rgba(255,255,255,.05)';
+      rx.fillRect(l[0],l[1],5,3);});
+    rackTex.needsUpdate=true;
+  }
+  paintRack(0);
+  const rack=new THREE.Mesh(new THREE.PlaneGeometry(7.4,3.7),new THREE.MeshBasicMaterial({map:rackTex,transparent:true,opacity:.55}));
+  rack.position.set(0.1,1.4,-3.4);D.add(rack);
+
+  /* desk */
+  const top=new THREE.Mesh(new RoundedBoxGeometry(5.4,0.11,2.0,4,0.045),walnut);
+  top.castShadow=true;top.receiveShadow=true;D.add(top);
+  [-2.45,2.45].forEach(lx=>{
+    const leg=new THREE.Mesh(new RoundedBoxGeometry(0.14,1.24,1.7,3,0.05),matte);
+    leg.position.set(lx,-0.62,0);leg.castShadow=true;D.add(leg);
   });
+  /* under-desk LED strip (colour follows threat state) */
+  const ledMat=new THREE.MeshBasicMaterial({color:0x5ce1e6});
+  const strip=new THREE.Mesh(new THREE.BoxGeometry(5.1,0.03,0.03),ledMat);
+  strip.position.set(0,-0.08,1.0);D.add(strip);
+  const stripGlow=new THREE.PointLight(0x5ce1e6,1.1,4,2);stripGlow.position.set(0,-0.5,1.2);scene.add(stripGlow);
 
-  // ── iMAC ──
-  const screen=new THREE.Mesh(new RoundedBoxGeometry(2.0,1.3,0.12,4,0.05),imacBody);
-  screen.position.set(0.4,1.05,-0.4);screen.castShadow=true;diorama.add(screen);
-  const codeScreen=makeCodeScreen();
-  const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.8,1.1),new THREE.MeshBasicMaterial({map:codeScreen.tex}));
-  panel.position.set(0.4,1.08,-0.33);diorama.add(panel);
-  const stand=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.35,0.08),imacBody);
-  stand.position.set(0.4,0.42,-0.42);diorama.add(stand);
-  const foot=new THREE.Mesh(new RoundedBoxGeometry(0.7,0.05,0.3,3,0.02),imacBody);
-  foot.position.set(0.4,0.08,-0.4);diorama.add(foot);
+  /* triple-monitor battle station */
+  const termScr=makeTermScreen(),mapScr=makeMapScreen(),codeScr=makeCodeScreen();
+  function monitor(w,h,tex){
+    const g=new THREE.Group();
+    const bez=new THREE.Mesh(new RoundedBoxGeometry(w+0.07,h+0.07,0.055,3,0.02),matte);
+    bez.castShadow=true;g.add(bez);
+    const scr=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex}));
+    scr.position.z=0.032;g.add(scr);
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,0.6,12),alu);
+    arm.position.set(0,-h/2-0.28,-0.05);g.add(arm);
+    const foot=new THREE.Mesh(new RoundedBoxGeometry(0.5,0.035,0.26,3,0.015),alu);
+    foot.position.set(0,-h/2-0.56,-0.02);g.add(foot);
+    return g;
+  }
+  const mC=monitor(2.55,1.12,termScr.tex);mC.position.set(0.05,1.28,-0.52);D.add(mC);
+  const mL=monitor(1.5,0.95,mapScr.tex);mL.position.set(-2.0,1.2,-0.32);mL.rotation.y=0.42;D.add(mL);
+  const mR=monitor(1.5,0.95,codeScr.tex);mR.position.set(2.1,1.2,-0.32);mR.rotation.y=-0.42;D.add(mR);
 
-  // keyboard
-  const kb=new THREE.Mesh(new RoundedBoxGeometry(1.3,0.06,0.45,3,0.03),new THREE.MeshStandardMaterial({color:0x1a1a1d,roughness:0.5,envMap:env2}));
-  kb.position.set(0.1,0.1,0.45);diorama.add(kb);
-  // phone stand (pink, from reference)
-  const phone=new THREE.Mesh(new RoundedBoxGeometry(0.32,0.6,0.04,4,0.03),imacBody);
-  phone.position.set(1.5,0.42,0.2);phone.rotation.set(-0.3,0,0);diorama.add(phone);
+  /* keyboard + RGB underglow + mouse */
+  const kb=new THREE.Mesh(new RoundedBoxGeometry(1.5,0.055,0.5,3,0.024),matte);
+  kb.position.set(0.05,0.095,0.52);kb.rotation.x=0.05;kb.castShadow=true;D.add(kb);
+  const kglowMat=new THREE.MeshBasicMaterial({color:0x8b6dff,transparent:true,opacity:.8});
+  const kglow=new THREE.Mesh(new THREE.PlaneGeometry(1.56,0.56),kglowMat);
+  kglow.rotation.x=-Math.PI/2;kglow.position.set(0.05,0.056,0.52);D.add(kglow);
+  const keyC=document.createElement('canvas');keyC.width=256;keyC.height=96;const kx=keyC.getContext('2d');
+  kx.fillStyle='#0c0d12';kx.fillRect(0,0,256,96);
+  for(let r=0;r<5;r++)for(let col=0;col<14;col++){kx.fillStyle='#181a22';kx.fillRect(6+col*17.6,6+r*17,14,13);}
+  const keys=new THREE.Mesh(new THREE.PlaneGeometry(1.42,0.44),new THREE.MeshStandardMaterial({map:new THREE.CanvasTexture(keyC),roughness:.7}));
+  keys.rotation.x=-Math.PI/2+0.05;keys.position.set(0.05,0.127,0.52);D.add(keys);
+  const mouse=new THREE.Mesh(new THREE.SphereGeometry(0.09,20,16),matte);
+  mouse.scale.set(1,0.55,1.5);mouse.position.set(1.0,0.1,0.62);D.add(mouse);
 
-  // ── CHAIR ──
-  const seat=new THREE.Mesh(new RoundedBoxGeometry(1.0,0.12,1.0,4,0.05),chairMat);
-  seat.position.set(0.1,-0.55,1.5);seat.castShadow=true;diorama.add(seat);
-  const backRest=new THREE.Mesh(new RoundedBoxGeometry(1.0,1.1,0.12,4,0.05),chairMat);
-  backRest.position.set(0.1,0.05,2.0);diorama.add(backRest);
-  [[-0.4,1.1],[0.6,1.1],[-0.4,1.9],[0.6,1.9]].forEach(([x,z])=>{
-    const cl=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.04,1.0,12),woodMat);
-    cl.position.set(x,-1.05,z);cl.castShadow=true;diorama.add(cl);
+  /* coffee + steam */
+  const mugMat=new THREE.MeshStandardMaterial({color:0xe0457b,roughness:.4,envMap:env,envMapIntensity:.6});
+  const mug=new THREE.Mesh(new THREE.CylinderGeometry(0.09,0.08,0.2,20),mugMat);
+  mug.position.set(-1.35,0.16,0.55);mug.castShadow=true;D.add(mug);
+  const handle=new THREE.Mesh(new THREE.TorusGeometry(0.055,0.016,10,20),mugMat);
+  handle.position.set(-1.44,0.16,0.55);D.add(handle);
+  const steamTex=(()=>{const s=document.createElement('canvas');s.width=64;s.height=64;const sx=s.getContext('2d');
+    const g2=sx.createRadialGradient(32,32,2,32,32,30);g2.addColorStop(0,'rgba(255,255,255,.5)');g2.addColorStop(1,'rgba(255,255,255,0)');
+    sx.fillStyle=g2;sx.fillRect(0,0,64,64);return new THREE.CanvasTexture(s);})();
+  const steam=[];
+  for(let i=0;i<7;i++){
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:steamTex,transparent:true,opacity:0,depthWrite:false}));
+    sp.scale.setScalar(0.14);sp.position.set(-1.35,0.3,0.55);sp.userData={ph:i/7};
+    D.add(sp);steam.push(sp);
+  }
+
+  /* headset on stand */
+  const hsStand=new THREE.Mesh(new THREE.CylinderGeometry(0.02,0.03,0.5,10),alu);
+  hsStand.position.set(-2.25,0.3,0.35);D.add(hsStand);
+  const hsBase=new THREE.Mesh(new THREE.CylinderGeometry(0.12,0.14,0.03,16),alu);
+  hsBase.position.set(-2.25,0.06,0.35);D.add(hsBase);
+  const hsBand=new THREE.Mesh(new THREE.TorusGeometry(0.13,0.022,10,24,Math.PI),matte);
+  hsBand.position.set(-2.25,0.56,0.35);D.add(hsBand);
+  [-1,1].forEach(s=>{const cup=new THREE.Mesh(new THREE.SphereGeometry(0.06,14,14),matte);
+    cup.scale.set(1,1.25,0.7);cup.position.set(-2.25+s*0.13,0.5,0.35);D.add(cup);});
+
+  /* modern task chair */
+  const chair=new THREE.Group();
+  const seat=new THREE.Mesh(new RoundedBoxGeometry(0.95,0.1,0.9,4,0.05),meshFab);
+  seat.position.set(0.05,-0.5,1.65);seat.castShadow=true;chair.add(seat);
+  const back=new THREE.Mesh(new RoundedBoxGeometry(0.92,1.25,0.1,4,0.05),meshFab);
+  back.position.set(0.05,0.15,2.12);back.rotation.x=0.12;chair.add(back);
+  const hr=new THREE.Mesh(new RoundedBoxGeometry(0.5,0.22,0.09,3,0.04),meshFab);
+  hr.position.set(0.05,0.92,2.2);hr.rotation.x=0.15;chair.add(hr);
+  [-1,1].forEach(s=>{
+    const ar=new THREE.Mesh(new RoundedBoxGeometry(0.09,0.06,0.5,2,0.02),matte);
+    ar.position.set(0.05+s*0.5,-0.18,1.7);chair.add(ar);
+    const arp=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.3,8),matte);
+    arp.position.set(0.05+s*0.5,-0.36,1.7);chair.add(arp);
   });
+  const post=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.05,0.6,12),alu);
+  post.position.set(0.05,-0.85,1.65);chair.add(post);
+  for(let i=0;i<5;i++){
+    const a=i/5*Math.PI*2;
+    const spk=new THREE.Mesh(new RoundedBoxGeometry(0.5,0.04,0.08,2,0.02),alu);
+    spk.position.set(0.05+Math.cos(a)*0.25,-1.16,1.65+Math.sin(a)*0.25);
+    spk.rotation.y=-a;chair.add(spk);
+    const wh=new THREE.Mesh(new THREE.SphereGeometry(0.05,10,10),matte);
+    wh.position.set(0.05+Math.cos(a)*0.48,-1.19,1.65+Math.sin(a)*0.48);chair.add(wh);
+  }
+  D.add(chair);
 
-  // ── SEATED CHARACTER (viewed from behind) ──
-  const person=new THREE.Group();
-  // torso leaning toward desk
-  const torso=new THREE.Mesh(new THREE.SphereGeometry(0.66,32,32),sweater);
-  torso.scale.set(1.15,1.25,0.85);torso.position.set(0.1,0.2,0.95);torso.castShadow=true;person.add(torso);
-  // neck
-  const neckS=new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.22,0.2,20),skin);
-  neckS.position.set(0.13,0.78,0.82);person.add(neckS);
-  // head (egg)
-  const head=new THREE.Mesh(new THREE.SphereGeometry(0.46,40,40),skin);
-  head.scale.set(1,1.12,0.96);head.position.set(0.15,1.05,0.78);head.castShadow=true;person.add(head);
-  // ears
-  [-1,1].forEach(s=>{const ear=new THREE.Mesh(new THREE.SphereGeometry(0.12,16,16),skin);ear.scale.set(0.6,0.95,0.5);ear.position.set(0.15+s*0.45,1.02,0.78);person.add(ear);});
-  // cap dome (sits ON the crown)
-  const dome=new THREE.Mesh(new THREE.SphereGeometry(0.49,32,22,0,Math.PI*2,0,Math.PI*0.5),capWhite);
-  dome.scale.set(1.02,0.92,1.04);dome.position.set(0.15,1.22,0.78);dome.castShadow=true;person.add(dome);
-  // dark band
-  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,0.08,32,1,true),capDark);
-  band.position.set(0.15,1.13,0.78);band.scale.set(1.02,1,1.04);person.add(band);
-  // brim points toward viewer (-z, i.e. backwards cap seen from behind shows the brim)
-  const brim=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.32,0.05,28,1,false,-Math.PI/2,Math.PI),capWhite);
-  brim.position.set(0.15,1.14,1.2);brim.scale.set(1,1,1.4);person.add(brim);
-
-  // arms reaching to keyboard
+  /* the analyst hoodie, seen over-the-shoulder */
+  const lean=new THREE.Group();lean.position.set(0.05,-0.45,1.35);D.add(lean);
+  const torso=new THREE.Mesh(new THREE.SphereGeometry(0.62,32,32),hoodie);
+  torso.scale.set(1.18,1.35,0.85);torso.position.y=0.62;torso.castShadow=true;lean.add(torso);
+  const hood=new THREE.Mesh(new THREE.TorusGeometry(0.3,0.12,14,24),hoodie);
+  hood.position.set(0,1.28,0.12);hood.rotation.x=1.25;lean.add(hood);
+  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.2,0.18,16),skin);
+  neck.position.y=1.32;lean.add(neck);
+  const headG=new THREE.Group();headG.position.set(0,1.62,-0.02);lean.add(headG);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(0.44,36,36),skin);
+  head.scale.set(1,1.12,0.97);head.castShadow=true;headG.add(head);
+  [-1,1].forEach(s=>{const ear=new THREE.Mesh(new THREE.SphereGeometry(0.11,14,14),skin);
+    ear.scale.set(0.55,0.9,0.5);ear.position.set(s*0.43,-0.03,0);headG.add(ear);});
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(0.455,32,24,0,Math.PI*2,0,Math.PI*0.55),
+    new THREE.MeshStandardMaterial({color:0x14100d,roughness:.9}));
+  hair.position.y=0.06;hair.scale.set(1.01,1.05,0.99);headG.add(hair);
   const hands=[];
   [-1,1].forEach(s=>{
-    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.14,0.12,0.95,16),sweater);
-    arm.position.set(0.1+s*0.42,0.15,0.78);
-    arm.rotation.set(-1.0,0,s*0.25);
-    arm.castShadow=true;person.add(arm);
-    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.13,16,16),skin);
-    hand.position.set(0.1+s*0.32,0.18,0.4);
-    person.add(hand);hands.push(hand);
+    const shoulder=new THREE.Mesh(new THREE.SphereGeometry(0.17,14,14),hoodie);
+    shoulder.position.set(s*0.62,1.02,0.02);lean.add(shoulder);
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(0.115,0.095,0.85,14),hoodie);
+    arm.position.set(s*0.5,0.72,-0.4);arm.rotation.set(1.15,0,-s*0.18);arm.castShadow=true;lean.add(arm);
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(0.105,14,14),skin);
+    hand.position.set(s*0.34,0.56,-0.82);lean.add(hand);hands.push(hand);
   });
-  // legs under desk
   [-1,1].forEach(s=>{
-    const thigh=new THREE.Mesh(new THREE.CylinderGeometry(0.17,0.16,0.95,16),sweater);
-    thigh.position.set(0.1+s*0.3,-0.5,1.15);thigh.rotation.x=Math.PI/2;person.add(thigh);
-    const shin=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.13,0.95,16),sweater);
-    shin.position.set(0.1+s*0.3,-1.0,0.75);person.add(shin);
-    const shoe=new THREE.Mesh(new RoundedBoxGeometry(0.26,0.18,0.48,3,0.06),capWhite);
-    shoe.position.set(0.1+s*0.3,-1.42,0.52);shoe.castShadow=true;person.add(shoe);
+    const th=new THREE.Mesh(new THREE.CylinderGeometry(0.15,0.14,0.8,12),
+      new THREE.MeshStandardMaterial({color:0x15171c,roughness:.9}));
+    th.position.set(s*0.26,-0.02,-0.45);th.rotation.x=Math.PI/2-0.1;lean.add(th);
   });
 
-  diorama.add(person);
-  diorama.scale.setScalar(0.95);
-  diorama.position.y=0.0;
+  /* reflective podium + rim ring */
+  const podium=new THREE.Mesh(new THREE.CylinderGeometry(3.6,3.8,0.16,56),
+    new THREE.MeshPhysicalMaterial({color:0x0a0c14,roughness:.18,metalness:.55,envMap:env,envMapIntensity:.9,clearcoat:.8}));
+  podium.position.y=-1.32;podium.receiveShadow=true;D.add(podium);
+  const rimRing=new THREE.Mesh(new THREE.TorusGeometry(3.66,0.02,10,80),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:.5}));
+  rimRing.rotation.x=Math.PI/2;rimRing.position.y=-1.22;D.add(rimRing);
 
-  // ── GLASS HOLO PANELS floating beside the monitor ──
-  const holos=[];
-  [[-1.65,1.35,0.15,'#5ce1e6',1.15,0.78,0.55],[2.15,1.05,0.5,'#e0457b',0.95,0.65,-0.6]].forEach(([hx,hy,hz,ac,w,h,ry],i)=>{
-    const p=glassPanel(w,h,ac);p.position.set(hx,hy,hz);p.rotation.y=ry;
-    p.userData={by:hy,ph:i*1.7};
-    diorama.add(p);holos.push(p);
-  });
-  // ── PODIUM base + emissive rim ring (grounds the scene) ──
-  const podium=new THREE.Mesh(
-    new THREE.CylinderGeometry(3.0,3.18,0.16,48),
-    new THREE.MeshPhysicalMaterial({color:0x0c0c14,roughness:0.25,metalness:0.6,envMap:env2,envMapIntensity:0.8,clearcoat:0.6})
-  );
-  podium.position.y=-1.72;podium.receiveShadow=true;diorama.add(podium);
-  const rimRing=new THREE.Mesh(new THREE.TorusGeometry(3.05,0.018,10,72),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.5}));
-  rimRing.rotation.x=Math.PI/2;rimRing.position.y=-1.63;diorama.add(rimRing);
-  // ── rising spark particles from the screen glow ──
-  const PN=36,pGeo=new THREE.BufferGeometry(),pp=new Float32Array(PN*3),pSpeed=[];
-  for(let i=0;i<PN;i++){pp[i*3]=0.4+(Math.random()-0.5)*1.7;pp[i*3+1]=0.2+Math.random()*1.6;pp[i*3+2]=-0.3+(Math.random()-0.5)*0.5;pSpeed.push(0.25+Math.random()*0.4);}
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pp,3));
-  const sparks=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0xff9ab8,size:0.05,transparent:true,opacity:0.85,blending:THREE.AdditiveBlending,depthWrite:false}));
-  diorama.add(sparks);
+  /* dust motes floating in the screen light */
+  const PN=50,dGeo=new THREE.BufferGeometry(),dp=new Float32Array(PN*3),ds=[];
+  for(let i=0;i<PN;i++){dp[i*3]=(Math.random()-.5)*5;dp[i*3+1]=Math.random()*2.6-0.6;dp[i*3+2]=(Math.random()-.5)*2.5;ds.push(0.06+Math.random()*0.12);}
+  dGeo.setAttribute('position',new THREE.BufferAttribute(dp,3));
+  const dust=new THREE.Points(dGeo,new THREE.PointsMaterial({color:0x9fd8ff,size:0.02,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));
+  D.add(dust);
+
+  /* story loop: calm → intrusion → contained → calm */
+  const socChip=document.getElementById('socStatus');
+  const CALM=new THREE.Color(0x5ce1e6),RED=new THREE.Color(0xff2b45),GRN=new THREE.Color(0x39d98a),SCRN=new THREE.Color(0xbfefff);
+  const cur=new THREE.Color(0x5ce1e6);
+  let state='calm',stateT=0;
+  const DUR={calm:8.5,alert:3.4,contained:2.0};
+  function setChip(){
+    if(!socChip)return;
+    if(state==='alert'){socChip.textContent='⚠ INTRUSION DETECTED — T1110 BRUTE FORCE';socChip.className='alert';}
+    else if(state==='contained'){socChip.textContent='✓ THREAT CONTAINED · MTTC 41s';socChip.className='ok';}
+    else{socChip.textContent='● SOC LIVE — ALL SYSTEMS NOMINAL';socChip.className='';}
+  }
+  setChip();
 
   const clock=new THREE.Clock();
-  let t=0,lastPaint=0,visible=false;
+  let t=0,lastPaint=0,lastRack=0,visible=false,leanX=0,camPush=0;
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
   function frame(){
     const dt=Math.min(clock.getDelta(),0.05);
     if(visible){
-      t+=dt;
-      diorama.rotation.y=Math.sin(t*0.35)*0.14;
-      camera.position.x=0.3+Math.sin(t*0.22)*0.55;
-      head.rotation.z=Math.sin(t*2)*0.03;
-      head.rotation.y=Math.sin(t*0.9)*0.05;
-      person.position.y=Math.sin(t*1.3)*0.02;
-      // typing: alternating hand taps
-      hands.forEach((h,i)=>{h.position.y=0.18+Math.max(0,Math.sin(t*7+i*Math.PI))*0.045;});
-      // live code editor repaint (~8fps cheap, reads as real work)
-      if(t-lastPaint>0.12){codeScreen.paint(t);lastPaint=t;}
-      screenGlow.intensity=1.3+Math.sin(t*2.1)*0.35;
-      // holo panels bob + tilt
-      holos.forEach(p=>{p.position.y=p.userData.by+Math.sin(t*1.1+p.userData.ph)*0.07;p.rotation.z=Math.sin(t*0.6+p.userData.ph)*0.05;});
-      // particles rise from the glow, respawn low
-      const arr=pGeo.attributes.position.array;
-      for(let i=0;i<PN;i++){arr[i*3+1]+=pSpeed[i]*dt;if(arr[i*3+1]>2.3){arr[i*3+1]=0.15;arr[i*3]=0.4+(Math.random()-0.5)*1.7;}}
-      pGeo.attributes.position.needsUpdate=true;
-      rimRing.material.opacity=0.35+Math.sin(t*1.4)*0.15;
-      camera.lookAt(deskLook);
+      t+=dt;stateT+=dt;
+      if(stateT>DUR[state]){state=state==='calm'?'alert':state==='alert'?'contained':'calm';stateT=0;setChip();}
+      const isA=state==='alert';
+      cur.lerp(isA?RED:state==='contained'?GRN:CALM,1-Math.pow(0.02,dt));
+      ledMat.color.copy(cur);rimRing.material.color.copy(cur);stripGlow.color.copy(cur);rim.color.copy(cur);
+      if(t-lastPaint>0.1){termScr.paint(t,state);mapScr.paint(t,state);codeScr.paint(t);lastPaint=t;}
+      if(t-lastRack>0.25){paintRack(t);lastRack=t;}
+      /* alarm + screen light */
+      alarm.intensity=isA?1.6+Math.sin(t*14)*1.2:Math.max(0,alarm.intensity-dt*4);
+      alarm.position.set(Math.cos(t*7)*2.2,3.0,Math.sin(t*7)*2.2);
+      glowC.color.copy(isA?RED:SCRN);
+      glowC.intensity=isA?2.0+Math.sin(t*16)*.9:2.3+Math.sin(t*2.3)*.3;
+      glowL.intensity=1.1+Math.sin(t*1.7)*.25;
+      glowR.intensity=1.0+Math.sin(t*2.9)*.2;
+      /* analyst: breathes, scans monitors, snaps forward on alert */
+      leanX=lerp(leanX,isA?0.16:0.02,1-Math.pow(0.03,dt));
+      lean.rotation.x=leanX;
+      lean.position.y=-0.45+Math.sin(t*1.15)*0.015;
+      headG.rotation.y=isA?Math.sin(t*9)*0.02:Math.sin(t*0.42)*0.34;
+      headG.rotation.x=isA?0.06:Math.sin(t*0.9)*0.03;
+      const speed=isA?11:6.5;
+      hands.forEach((h,i)=>{h.position.y=0.56+Math.max(0,Math.sin(t*speed+i*Math.PI))*0.05;});
+      /* RGB keyboard cycle (locks red during alert) */
+      if(isA)kglowMat.color.copy(RED);else kglowMat.color.setHSL((t*0.06)%1,0.9,0.55);
+      /* steam curls */
+      steam.forEach(sp=>{
+        const k=(t*0.24+sp.userData.ph)%1;
+        sp.position.set(-1.35+Math.sin(k*9+sp.userData.ph*7)*0.05,0.3+k*0.55,0.55);
+        sp.material.opacity=0.30*Math.sin(k*Math.PI);
+        sp.scale.setScalar(0.1+k*0.2);
+      });
+      /* dust drift */
+      const arr=dGeo.attributes.position.array;
+      for(let i=0;i<PN;i++){arr[i*3+1]+=ds[i]*dt*0.25;arr[i*3]+=Math.sin(t*.5+i)*0.0008;
+        if(arr[i*3+1]>2.2)arr[i*3+1]=-0.6;}
+      dGeo.attributes.position.needsUpdate=true;
+      rimRing.material.opacity=.35+Math.sin(t*1.6)*.15;
+      /* cinematic camera: slow arc, handheld sway, push-in on alert */
+      camPush=lerp(camPush,isA?1:0,1-Math.pow(0.08,dt));
+      camera.position.set(
+        -1.8+Math.sin(t*0.16)*1.1+Math.sin(t*0.9)*0.02,
+        2.1+Math.sin(t*0.11)*0.15+Math.sin(t*1.3)*0.012,
+        8.2-camPush*1.6+Math.cos(t*0.16)*0.35
+      );
+      look.set(0.1-camPush*0.05,0.95+camPush*0.25,-0.2-camPush*0.3);
+      camera.lookAt(look);
       renderer.render(scene,camera);
     }
     requestAnimationFrame(frame);
@@ -1361,9 +1630,86 @@ function buildBackground(){
 }
 
 /* ════════════════════════════════════════════════
+   PROJECT SUMMARY MODAL click or pinch a project
+════════════════════════════════════════════════ */
+let projModalApi=null;
+function setupProjects(){
+  const modal=document.getElementById('projModal');
+  if(!modal) return;
+  const q=s=>modal.querySelector(s);
+  const P={
+    soar:{title:'Cloud-Native SOAR Engine',type:'MSc Dissertation · Microsoft Sentinel',img:'soar.jpg.jpeg',impact:'↯ MTTC 380s → 41s',
+      desc:'A "zero-touch" security orchestration engine that detects and contains high-velocity ransomware without a human in the loop, built on Microsoft Sentinel and Azure Logic Apps.',
+      points:['Benchmarked automated containment vs manual triage — Mean-Time-to-Contain cut from 380s to 41s',
+        'Logic Apps playbooks isolate VMs, disable accounts and ban attacker IPs automatically',
+        'Dissertation research on cloud-native SOAR architecture (2026)'],
+      tags:['Sentinel','Azure','Logic Apps','SOAR','KQL'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/Azure-Sentinel-SOAR-Automation']]},
+    wazuh:{title:'Enterprise SIEM & Incident Response Lab',type:'Wazuh · Multi-OS Home Lab',img:'https://raw.githubusercontent.com/pratikm7073/wazuh-siem-home-lab/main/dashboard.PNG',impact:'↯ Auto IP ban on attack',
+      desc:'A local SIEM environment simulating real-world cyber threats: a Wazuh manager aggregating endpoint logs from Windows 10 and Ubuntu VMs over encrypted tunnels, with automated active response.',
+      points:['Wazuh agents deployed across Windows & Linux with secure agent-to-manager communication',
+        'Simulated SSH brute-force attack, hunted IoCs and mapped them to MITRE ATT&CK T1110',
+        'Custom Active Response (rules 5710/5712) auto-modifies the endpoint firewall to ban the attacker IP'],
+      tags:['Wazuh','MITRE ATT&CK','VirtualBox','PowerShell','Bash'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/Wazuh-SIEM-Home-Lab']]},
+    wfm:{title:'AI-Enhanced WFM Capacity Planning Engine',type:'Python · ML Forecasting · Power BI',img:'https://raw.githubusercontent.com/pratikm7073/ai-wfm-capacity-planning-engine/main/ai_forecast_comparison.png',impact:'↯ MAPE 15.5% → 4.6%',
+      desc:'An end-to-end workforce management engine: machine-learning demand forecasting, Erlang C capacity modelling, and stakeholder-ready dashboards across a multi-site, multi-channel contact-centre operation.',
+      points:['Random Forest with engineered time/lag features beats the day-of-week baseline: ~15.5% → ~4.6% MAPE',
+        '4,380 rows · 4 UK sites · 3 channels · 12 months, with storm events & chatbot deflection built in',
+        'Erlang C Excel model converts forecast volume into FTE requirements with shrinkage & SLA targets',
+        'Self-contained interactive dashboard in raw SVG + vanilla JS — runs offline in any browser'],
+      tags:['scikit-learn','Pandas','Erlang C','Power BI','Feature Engineering'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/ai-wfm-capacity-planning-engine'],['Live Dashboard ↗','https://pratikm7073.github.io/WFM_Dashboard.html']]},
+    jarvis:{title:'Jarvis-AI — Offline Voice Assistant',type:'Local LLM · Zero-Trust Architecture',img:'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=900&q=80',impact:'↯ 100% offline LLM',
+      desc:'A completely offline, zero-trust voice assistant: it listens, reasons with a locally hosted LLM, and speaks back — without sending a single byte to the cloud.',
+      points:['Vosk transcribes speech locally; Microsoft Phi-3 reasons via Ollama; pyttsx3 speaks the reply natively',
+        'Zero-trust: fully functional with the network cable unplugged',
+        'Voice kill-switch — saying "stop" or "shut down" terminates the assistant instantly'],
+      tags:['Python','Ollama','Phi-3','Vosk','pyttsx3'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/Jarvis-AI']]},
+    vendor:{title:'Vendor Risk & Governance Pipeline',type:'Independent · ML Analytics',img:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80',impact:'↯ 167MB processed',
+      desc:'A data pipeline that surfaces compliance risks and vendor fraud in e-commerce marketplace data, with behavioural tripwires that flag high-risk accounts the moment they deviate.',
+      points:['Processed a 167MB e-commerce dataset with Pandas for compliance & fraud signals',
+        'Custom behavioural tripwires score and flag high-risk vendor accounts',
+        'Governance-ready outputs for risk review and escalation'],
+      tags:['Python','Pandas','Jupyter','ML'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/ecommerce-vendor-risk-pipeline']]},
+    ids:{title:'Secure Web App + ML Intrusion Detection',type:'Academic · 2026',img:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80',impact:'↯ 3-tier isolation',
+      desc:'A hardened web application with strict role-based access control and multi-factor authentication, paired with a machine-learning IDS that maps live attack vectors.',
+      points:['Strict RBAC with MFA enforced through Microsoft Authenticator',
+        'ML-powered intrusion detection classifying and mapping live attack vectors',
+        '3-tier isolation between presentation, logic and data layers'],
+      tags:['RBAC','MFA','ML-IDS','Python'],
+      links:[['GitHub ↗','https://github.com/Pratikm7073/secure-login-system-MFA']]},
+  };
+  let open=false;
+  function openM(key){
+    const p=P[key];if(!p)return;
+    q('.pm-title').textContent=p.title;q('.pm-type').textContent=p.type;
+    q('.pm-desc').textContent=p.desc;q('.pm-impact').textContent=p.impact;
+    const im=q('.pm-media img');im.src=p.img;im.alt=p.title;
+    q('.pm-points').innerHTML=p.points.map(s=>`<li>${s}</li>`).join('');
+    q('.pm-tags').innerHTML=p.tags.map(s=>`<span>${s}</span>`).join('');
+    q('.pm-links').innerHTML=p.links.map(([l,h],i)=>`<a href="${h}" target="_blank" rel="noopener" class="${i?'ghost':''}">${l}</a>`).join('');
+    q('.pm-body').scrollTop=0;
+    modal.classList.add('open');open=true;
+    document.body.style.overflow='hidden';
+  }
+  function closeM(){modal.classList.remove('open');open=false;document.body.style.overflow='';}
+  q('.pm-close').addEventListener('click',closeM);
+  q('.pm-backdrop').addEventListener('click',closeM);
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&open)closeM();});
+  document.querySelectorAll('.work-row[data-proj]').forEach(row=>{
+    row.addEventListener('click',e=>{if(e.target.closest('a'))return;openM(row.dataset.proj);});
+  });
+  projModalApi={open:openM,close:closeM,isOpen:()=>open,scrollBody:dy=>{q('.pm-body').scrollTop+=dy;}};
+}
+
+/* ════════════════════════════════════════════════
    GESTURE CONTROL webcam hand tracking (MediaPipe)
-   palm = cursor/parallax · top/bottom = scroll
-   fast swipe = jump section · pinch = click + shockwave
+   palm = cursor/parallax · top/bottom = fast scroll
+   ✊ fist = turbo scroll · fast swipe = jump section
+   pinch = click links / open project summary
 ════════════════════════════════════════════════ */
 function setupGestures(bg){
   const btn=document.getElementById('gestureBtn');
@@ -1389,7 +1735,10 @@ function setupGestures(bg){
   }
   function scrollLoop(){
     scrollVel*=0.92;
-    if(Math.abs(scrollVel)>.4){scrollBy(0,scrollVel);}
+    if(Math.abs(scrollVel)>.4){
+      if(projModalApi&&projModalApi.isOpen()) projModalApi.scrollBody(scrollVel);
+      else scrollBy(0,scrollVel);
+    }
     scrollRaf=active?requestAnimationFrame(scrollLoop):null;
   }
 
@@ -1407,29 +1756,46 @@ function setupGestures(bg){
     cursor.style.transform=`translate(${smX}px,${smY}px)`;
     /* parallax: hand steers the cosmos */
     bg&&bg.setPointer(nx*2-1,ny*2-1);
-    /* vertical zones → scroll */
-    if(ny<.28) scrollVel=lerp(scrollVel,-(0.28-ny)*90,.2);
-    else if(ny>.72) scrollVel=lerp(scrollVel,(ny-0.72)*90,.2);
+    /* hand geometry: size + how folded each finger is */
+    const hand=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1;
+    const fold=i=>Math.hypot(lm[i].x-lm[9].x,lm[i].y-lm[9].y)/hand;
+    const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
+    const isFist=foldAvg<0.9;
+    const modalOpen=projModalApi&&projModalApi.isOpen();
+    /* ✊ fist = turbo scroll (direction from hand height) */
+    if(isFist){
+      status.textContent='✊ Turbo scroll';
+      scrollVel=lerp(scrollVel,(ny-0.5)*520,.3);
+    }else if(ny<.3) scrollVel=lerp(scrollVel,-(0.3-ny)*260,.22);
+    else if(ny>.7) scrollVel=lerp(scrollVel,(ny-0.7)*260,.22);
     else scrollVel*=.85;
-    /* fast horizontal swipe → jump section */
+    /* fast horizontal swipe → jump section (not while fist/modal) */
     const now=performance.now();
-    if(lastX!=null){
+    if(lastX!=null&&!isFist&&!modalOpen){
       const vx=(nx-lastX)/Math.max(.001,(now-lastT)/1000); // screens/sec
       if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
     }
     lastX=nx;lastT=now;
-    /* pinch: thumb tip ↔ index tip, normalised by hand size */
-    const dx=lm[4].x-lm[8].x,dy=lm[4].y-lm[8].y;
-    const hand=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1;
-    const ratio=Math.hypot(dx,dy)/hand;
-    if(ratio<.38&&!pinched){
+    /* pinch: thumb tip ↔ index tip (middle finger must be extended
+       so a closing fist never fires accidental clicks) */
+    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/hand;
+    if(ratio<.38&&!pinched&&fold(12)>1.05){
       pinched=true;
       cursor.classList.add('pinch','burst');
       setTimeout(()=>cursor.classList.remove('burst'),520);
       bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
       const el=document.elementFromPoint(smX,smY);
-      const link=el&&el.closest&&el.closest('a');
-      if(link) link.click();
+      if(el){
+        if(modalOpen){
+          const a=el.closest('a');
+          if(a) a.click();
+          else if(el.closest('.pm-close')||!el.closest('.pm-card')) projModalApi.close();
+        }else{
+          const a=el.closest('a'),row=el.closest('.work-row');
+          if(a) a.click();
+          else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened';}
+        }
+      }
     }else if(ratio>.5&&pinched){pinched=false;cursor.classList.remove('pinch');}
   }
 
@@ -1553,6 +1919,7 @@ function proximityReveal(){
 
 function boot(){
   const bg=buildBackground();
+  setupProjects();
   setupGestures(bg);
   buildHero();
   buildAbout();
