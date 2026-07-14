@@ -321,7 +321,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Hand high</b> scroll up · <b>Hand slightly low</b> scroll down (no need to reach the frame edge) · <b>✊ Fist</b> turbo scroll · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open its summary · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> rotate the reactor · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
 <div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div><div class="hc-arr u">▲</div><div class="hc-arr d">▼</div></div>
@@ -643,8 +643,8 @@ function makeCodeScreen(){
    AI CORE the JARVIS/FRIDAY presence: an arc-
    reactor energy heart in gyroscopic HUD rings
 ════════════════════════════════════════════════ */
-let aiSpeaking=false;
-function makeAICore(){
+let aiSpeaking=false,heroApi=null;
+function makeAICore(env){
   const g=new THREE.Group();
 
   const glowTex=(()=>{const c=document.createElement('canvas');c.width=128;c.height=128;const x=c.getContext('2d');
@@ -662,19 +662,60 @@ function makeAICore(){
       vec3 col=mix(vec3(.36,.88,.9),vec3(.55,.43,1.),f);
       gl_FragColor=vec4(col*(1.+uBoost*1.4),f*(.8+uBoost)+.07);}`
   });
-  const shell=new THREE.Mesh(new THREE.SphereGeometry(.55,48,48),shellMat);g.add(shell);
-  const inner=new THREE.Mesh(new THREE.SphereGeometry(.28,32,32),
-    new THREE.MeshBasicMaterial({color:0xcffdff,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false}));
-  g.add(inner);
+  const shell=new THREE.Mesh(new THREE.SphereGeometry(1.05,48,48),shellMat);g.add(shell);
+
+  /* ── THE ARC REACTOR metal housing, copper coils,
+     segment rotor, glowing palladium core ── */
+  const reactorG=new THREE.Group();g.add(reactorG);
+  const metal=new THREE.MeshStandardMaterial({color:0x3a3f4a,metalness:.9,roughness:.28,envMap:env,envMapIntensity:1.3});
+  const metalDark=new THREE.MeshStandardMaterial({color:0x1c2028,metalness:.85,roughness:.4,envMap:env,envMapIntensity:.9});
+  const copper=new THREE.MeshStandardMaterial({color:0xb87333,metalness:.9,roughness:.32,envMap:env,envMapIntensity:1.1});
+  const slitMat=new THREE.MeshBasicMaterial({color:0x9ff2f6,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+  const coreMat=new THREE.MeshBasicMaterial({color:0xcffdff,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+  /* outer housing ring with copper coil wraps */
+  const housing=new THREE.Mesh(new THREE.TorusGeometry(.95,.13,20,72),metal);
+  reactorG.add(housing);
+  const Z=new THREE.Vector3(0,0,1),T=new THREE.Vector3();
+  for(let i=0;i<10;i++){
+    const a=i/10*Math.PI*2;
+    const wrap=new THREE.Mesh(new THREE.TorusGeometry(.145,.038,10,18,Math.PI*1.35),copper);
+    wrap.position.set(Math.cos(a)*.95,Math.sin(a)*.95,0);
+    T.set(-Math.sin(a),Math.cos(a),0);
+    wrap.quaternion.setFromUnitVectors(Z,T);
+    reactorG.add(wrap);
+  }
+  /* rotor: 10 plates with glowing slits between */
+  const rotor=new THREE.Group();reactorG.add(rotor);
+  for(let i=0;i<10;i++){
+    const a=i/10*Math.PI*2;
+    const seg=new THREE.Mesh(new RoundedBoxGeometry(.34,.2,.12,2,.03),metalDark);
+    seg.position.set(Math.cos(a)*.62,Math.sin(a)*.62,0);
+    seg.rotation.z=a+Math.PI/2;
+    rotor.add(seg);
+    const b=(i+.5)/10*Math.PI*2;
+    const slit=new THREE.Mesh(new THREE.PlaneGeometry(.09,.22),slitMat);
+    slit.position.set(Math.cos(b)*.62,Math.sin(b)*.62,0);
+    slit.rotation.z=b+Math.PI/2;
+    rotor.add(slit);
+  }
+  /* inner ring + palladium core */
+  const innerRing=new THREE.Mesh(new THREE.TorusGeometry(.38,.055,14,48),metal);
+  reactorG.add(innerRing);
+  const glowRing=new THREE.Mesh(new THREE.TorusGeometry(.38,.02,8,48),slitMat);
+  glowRing.position.z=.05;reactorG.add(glowRing);
+  const coreDisc=new THREE.Mesh(new THREE.CircleGeometry(.3,48),coreMat);
+  coreDisc.position.z=.03;reactorG.add(coreDisc);
+  const coreBack=new THREE.Mesh(new THREE.CircleGeometry(.3,48),coreMat);
+  coreBack.rotation.y=Math.PI;coreBack.position.z=-.03;reactorG.add(coreBack);
   const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending}));
   halo.scale.setScalar(3.4);g.add(halo);
 
   /* gyroscopic rings */
   const rMat=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false});
-  const r1=new THREE.Mesh(new THREE.TorusGeometry(1.0,.012,8,128),rMat(0x5ce1e6,.6));g.add(r1);
-  const r2=new THREE.Mesh(new THREE.TorusGeometry(1.28,.01,8,128),rMat(0x8b6dff,.5));g.add(r2);
+  const r1=new THREE.Mesh(new THREE.TorusGeometry(1.55,.012,8,128),rMat(0x5ce1e6,.6));g.add(r1);
+  const r2=new THREE.Mesh(new THREE.TorusGeometry(1.8,.01,8,128),rMat(0x8b6dff,.5));g.add(r2);
   const arcG=new THREE.Group();g.add(arcG);
-  const arc=new THREE.Mesh(new THREE.TorusGeometry(1.14,.022,8,64,Math.PI*.66),rMat(0xe0457b,.75));
+  const arc=new THREE.Mesh(new THREE.TorusGeometry(1.66,.022,8,64,Math.PI*.66),rMat(0xe0457b,.75));
   arcG.add(arc);arcG.rotation.x=1.05;
 
   /* flat HUD tick rings (canvas-drawn) */
@@ -697,8 +738,8 @@ function makeAICore(){
       new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
     return m;
   }
-  const t1=tickPlane(1.6,72,6,.55);t1.rotation.x=Math.PI/2-0.35;g.add(t1);
-  const t2=tickPlane(2.0,36,3,.35);t2.rotation.x=0.25;g.add(t2);
+  const t1=tickPlane(2.05,72,6,.55);t1.rotation.x=Math.PI/2-0.35;g.add(t1);
+  const t2=tickPlane(2.4,36,3,.35);t2.rotation.x=0.25;g.add(t2);
 
   /* voice waveform ring around the core */
   const WN=96,wPos=new Float32Array(WN*3);
@@ -710,17 +751,17 @@ function makeAICore(){
   /* orbiting data particles */
   const PN=120,pGeo=new THREE.BufferGeometry(),pArr=new Float32Array(PN*3),pMeta=[];
   for(let i=0;i<PN;i++){
-    pMeta.push({r:1.15+Math.random()*1.15,a:Math.random()*Math.PI*2,s:(.2+Math.random()*.5)*(Math.random()<.5?1:-1),y:(Math.random()-.5)*.5,ph:Math.random()*7});
+    pMeta.push({r:1.5+Math.random()*1.1,a:Math.random()*Math.PI*2,s:(.2+Math.random()*.5)*(Math.random()<.5?1:-1),y:(Math.random()-.5)*.5,ph:Math.random()*7});
   }
   pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
   const parts=new THREE.Points(pGeo,new THREE.PointsMaterial({map:glowTex,color:0x8be9ff,size:.075,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));
   g.add(parts);
 
   /* expanding scan pulse */
-  const pulse=new THREE.Mesh(new THREE.TorusGeometry(1,.014,8,96),rMat(0x5ce1e6,0));
+  const pulse=new THREE.Mesh(new THREE.TorusGeometry(1.3,.014,8,96),rMat(0x5ce1e6,0));
   g.add(pulse);
 
-  return {group:g,shellMat,inner,halo,r1,r2,arcG,t1,t2,wGeo,wPos,WN,pGeo,pArr,pMeta,PN,pulse,wave};
+  return {group:g,shellMat,reactorG,rotor,coreMat,slitMat,halo,r1,r2,arcG,t1,t2,wGeo,wPos,WN,pGeo,pArr,pMeta,PN,pulse,wave};
 }
 
 /* ════════════════════════════════════════════════
@@ -741,11 +782,13 @@ function buildHero(){
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
   resize();addEventListener('resize',resize);
 
-  const AI=makeAICore();
+  const AI=makeAICore(env);
   const core=AI.group;
   core.position.y=0.55;
   core.scale.setScalar(0.001); // ignition
   scene.add(core);
+  let manualRot=null,manualAt=0;
+  heroApi={rotate(rx,ry,rz){manualRot={rx,ry,rz};manualAt=performance.now();}};
 
   // base ring + orbit dots grounding the hologram
   const ringGrp=new THREE.Group();ringGrp.position.y=-1.55;scene.add(ringGrp);
@@ -787,12 +830,16 @@ function buildHero(){
     const dt=Math.min(clock.getDelta(),0.05);
     if(vis){
       t+=dt;
-      if(born<1){born=Math.min(1,born+dt/1.1);core.scale.setScalar(Math.max(0.001,easeOutBack(born)));}
+      if(born<1){born=Math.min(1,born+dt/1.1);core.scale.setScalar(Math.max(0.001,easeOutBack(born)*0.85));}
       px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
 
-      /* the whole gimbal leans toward the cursor */
-      core.rotation.y=px*0.55;
-      core.rotation.x=py*0.35;
+      /* gimbal leans toward the cursor — or follows both hands
+         when the visitor grabs it via gesture control */
+      const useManual=manualRot&&performance.now()-manualAt<350;
+      const kR=1-Math.pow(useManual?0.0001:0.001,dt);
+      core.rotation.x=lerp(core.rotation.x,useManual?manualRot.rx:py*0.35,kR);
+      core.rotation.y=lerp(core.rotation.y,useManual?manualRot.ry:px*0.55,kR);
+      core.rotation.z=lerp(core.rotation.z,useManual?manualRot.rz:0,kR);
       core.position.y=0.55+Math.sin(t*1.1)*0.05;
 
       /* gyro ring motion */
@@ -806,7 +853,11 @@ function buildHero(){
       const hb=t%4;
       const boost=Math.exp(-Math.pow(hb-0.12,2)/0.004)+0.55*Math.exp(-Math.pow(hb-0.42,2)/0.005);
       AI.shellMat.uniforms.uBoost.value=boost*0.9+(aiSpeaking?0.25:0);
-      AI.inner.scale.setScalar(1+boost*0.22+Math.sin(t*2.1)*0.04);
+      AI.rotor.rotation.z=t*0.45;
+      AI.reactorG.rotation.x=Math.sin(t*0.31)*0.14;   // 4D precession wobble
+      AI.reactorG.rotation.y=Math.sin(t*0.23)*0.1;
+      AI.coreMat.opacity=0.72+boost*0.28;
+      AI.slitMat.opacity=0.5+boost*0.5+Math.sin(t*2.1)*0.08;
       AI.halo.material.opacity=0.65+boost*0.35+Math.sin(t*1.7)*0.08;
       AI.halo.scale.setScalar(3.4+boost*0.7);
 
@@ -814,7 +865,7 @@ function buildHero(){
       const amp=aiSpeaking?0.075*(0.55+0.45*Math.sin(t*7.3)):0.012;
       for(let i=0;i<AI.WN;i++){
         const a=i/AI.WN*Math.PI*2;
-        const r=0.78+(Math.sin(a*3+t*9)+Math.sin(a*5-t*13)*0.6+Math.sin(a*8+t*21)*0.35)*amp;
+        const r=1.35+(Math.sin(a*3+t*9)+Math.sin(a*5-t*13)*0.6+Math.sin(a*8+t*21)*0.35)*amp;
         AI.wPos[i*3]=Math.cos(a)*r;AI.wPos[i*3+1]=Math.sin(a)*r;AI.wPos[i*3+2]=0;
       }
       AI.wGeo.attributes.position.needsUpdate=true;
@@ -1828,7 +1879,7 @@ function setupGestures(bg){
 
   let active=false,stream=null,hands=null,loopTimer=null,busy=false;
   let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
-  let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0;
+  let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0,pinchFrames=0,lastPinchAt=0;
 
   const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('load fail '+src));document.head.appendChild(s);});
 
@@ -1866,6 +1917,23 @@ function setupGestures(bg){
       return;
     }
     lastSeen=now;cursor.classList.remove('lost');
+    /* 🙌 two hands = grab & rotate the arc reactor */
+    const all=r.multiHandLandmarks;
+    if(all.length===2&&heroApi){
+      const p1=all[0][9],p2=all[1][9];
+      const x1=1-p1.x,y1=p1.y,x2=1-p2.x,y2=p2.y;
+      const mx=(x1+x2)/2,my=(y1+y2)/2;
+      let ang=Math.atan2(y2-y1,x2-x1);
+      if(ang>Math.PI/2)ang-=Math.PI; if(ang<-Math.PI/2)ang+=Math.PI;
+      heroApi.rotate((my*2-1)*1.2,(mx*2-1)*2.4,clamp(-ang*1.5,-1.3,1.3));
+      status.textContent='🙌 Rotating reactor';
+      smX=lerp(smX,mx*innerWidth,.3);smY=lerp(smY,my*innerHeight,.3);
+      cursor.style.display='block';
+      cursor.style.transform=`translate(${smX}px,${smY}px)`;
+      cursor.classList.remove('scrollUp','scrollDn');
+      scrollVel*=.85;lastX=null;pinchFrames=0;
+      return;
+    }
     status.textContent='Tracking ✋';
     /* palm centre (middle-finger MCP), mirrored */
     const palm=lm[9];
@@ -1910,27 +1978,36 @@ function setupGestures(bg){
       if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
     }
     lastX=nx;lastT=now;
-    /* pinch: thumb tip ↔ index tip (middle finger extended so a
-       closing fist can't misfire; 400ms cooldown between pinches) */
-    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/hand;
-    if(ratio<.42&&!pinched&&fold(12)>0.9&&now>pinchCool){
-      pinched=true;pinchCool=now+400;
+    /* pinch: thumb tip ↔ index tip, normalised by PALM WIDTH
+       (index MCP ↔ pinky MCP — stable when the hand tilts).
+       Fires after 2 consecutive frames; gated only on not-a-fist. */
+    const palmW=Math.hypot(lm[5].x-lm[17].x,lm[5].y-lm[17].y)||.08;
+    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/palmW;
+    const wantPinch=ratio<.55&&!isFist&&now>pinchCool;
+    pinchFrames=wantPinch?pinchFrames+1:0;
+    if(pinchFrames>=2&&!pinched){
+      pinched=true;pinchCool=now+250;
+      const dbl=now-lastPinchAt<700;lastPinchAt=now;
       cursor.classList.add('pinch','burst');
       setTimeout(()=>cursor.classList.remove('burst'),520);
       bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
-      const el=document.elementFromPoint(smX,smY);
-      if(el){
-        if(modalOpen){
-          const a=el.closest('a');
-          if(a) a.click();
-          else if(el.closest('.pm-close')||!el.closest('.pm-card')) projModalApi.close();
-        }else{
-          const a=el.closest('a'),row=el.closest('.work-row');
-          if(a) a.click();
-          else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened';}
+      if(modalOpen&&dbl){
+        projModalApi.close();status.textContent='✕ Popup closed';
+      }else{
+        const el=document.elementFromPoint(smX,smY);
+        if(el){
+          if(modalOpen){
+            const a=el.closest('a');
+            if(a) a.click();
+            else if(el.closest('.pm-close')||!el.closest('.pm-card')) projModalApi.close();
+          }else{
+            const a=el.closest('a'),row=el.closest('.work-row');
+            if(a) a.click();
+            else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened · pinch×2 = close';}
+          }
         }
       }
-    }else if(ratio>.58&&pinched){pinched=false;cursor.classList.remove('pinch');}
+    }else if(ratio>.75&&pinched){pinched=false;cursor.classList.remove('pinch');}
   }
 
   async function start(){
@@ -1940,7 +2017,7 @@ function setupGestures(bg){
       stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
       video.srcObject=stream;await video.play();
       hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
-      hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.5,minTrackingConfidence:.5});
+      hands.setOptions({maxNumHands:2,modelComplexity:0,minDetectionConfidence:.5,minTrackingConfidence:.5});
       hands.onResults(onResults);
       active=true;btn.classList.add('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gestures ON';
       status.textContent='Show your palm ✋';
@@ -1966,7 +2043,7 @@ function setupGestures(bg){
     cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
     bg&&bg.releasePointer();
-    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;
+    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;pinchFrames=0;lastPinchAt=0;
   }
   btn.addEventListener('click',()=>active?stop():start());
 
