@@ -321,7 +321,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> drag=rotate · twist=roll · spread=zoom · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> drag=rotate · twist=roll · hands apart=zoom out / together=zoom in · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
 <div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div><div class="hc-arr u">▲</div><div class="hc-arr d">▼</div></div>
@@ -1941,10 +1941,13 @@ function setupGestures(bg){
       rotY+=(mx-pmx)*5.5;
       rotX+=(my-pmy)*4.0;
       rotZ=clamp(rotZ-dA*1.25,-2.6,2.6);
-      zoomT=clamp(zoomT*Math.pow(spread/Math.max(.02,pspread),1.15),0.45,2.2);
+      /* zoom is ABSOLUTE: hand distance IS the zoom level.
+         hands close together = zoomed in · far apart = zoomed out */
+      const k=clamp((spread-0.16)/0.55,0,1);
+      zoomT=lerp(zoomT,2.2-k*(2.2-0.5),.28);
       pmx=mx;pmy=my;pang=ang;pspread=spread;
       heroApi.manual(rotX,rotY,rotZ,zoomT);
-      status.textContent=`🙌 Rotate · twist · spread=zoom ${Math.round(zoomT*100)}%`;
+      status.textContent=`🙌 Rotate · twist · zoom ${Math.round(zoomT*100)}%`;
       smX=lerp(smX,mx*innerWidth,.3);smY=lerp(smY,my*innerHeight,.3);
       cursor.style.display='block';
       cursor.style.transform=`translate(${smX}px,${smY}px)`;
@@ -1966,7 +1969,14 @@ function setupGestures(bg){
     const hand=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1;
     const fold=i=>Math.hypot(lm[i].x-lm[9].x,lm[i].y-lm[9].y)/hand;
     const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
-    const isFist=foldAvg<0.9;
+    /* pinch vs fist: both bring thumb & index tips together, but a
+       pinch holds the contact point OUT from the wrist while a fist
+       pulls everything in — 'reach' tells them apart reliably */
+    const palmW=Math.hypot(lm[5].x-lm[17].x,lm[5].y-lm[17].y)||.08;
+    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/palmW;
+    const reach=Math.hypot((lm[4].x+lm[8].x)/2-lm[0].x,(lm[4].y+lm[8].y)/2-lm[0].y)/palmW;
+    const pinchPose=ratio<.5&&reach>1.05;
+    const isFist=foldAvg<0.9&&!pinchPose;
     const modalOpen=projModalApi&&projModalApi.isOpen();
     /* scrolling: asymmetric zones — the DOWN zone starts just below
        centre (holding a hand at the bottom edge of a webcam frame
@@ -1997,14 +2007,8 @@ function setupGestures(bg){
       if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
     }
     lastX=nx;lastT=now;
-    /* pinch: thumb tip ↔ index tip, normalised by PALM WIDTH
-       (index MCP ↔ pinky MCP — stable when the hand tilts).
-       Fires after 2 consecutive frames; gated only on not-a-fist. */
-    const palmW=Math.hypot(lm[5].x-lm[17].x,lm[5].y-lm[17].y)||.08;
-    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/palmW;
-    const wantPinch=ratio<.55&&!isFist&&now>pinchCool;
-    pinchFrames=wantPinch?pinchFrames+1:0;
-    if(pinchFrames>=2&&!pinched){
+    /* pinch fires on a single confirmed pose frame */
+    if(pinchPose&&!pinched&&now>pinchCool){
       pinched=true;pinchCool=now+250;
       const dbl=now-lastPinchAt<700;lastPinchAt=now;
       cursor.classList.add('pinch','burst');
@@ -2026,7 +2030,7 @@ function setupGestures(bg){
           }
         }
       }
-    }else if(ratio>.75&&pinched){pinched=false;cursor.classList.remove('pinch');}
+    }else if((ratio>.7||reach<0.95)&&pinched){pinched=false;cursor.classList.remove('pinch');}
   }
 
   async function start(){
