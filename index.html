@@ -321,7 +321,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> rotate the reactor · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> drag=rotate · twist=roll · spread=zoom · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
 <div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div><div class="hc-arr u">▲</div><div class="hc-arr d">▼</div></div>
@@ -787,8 +787,8 @@ function buildHero(){
   core.position.y=0.55;
   core.scale.setScalar(0.001); // ignition
   scene.add(core);
-  let manualRot=null,manualAt=0;
-  heroApi={rotate(rx,ry,rz){manualRot={rx,ry,rz};manualAt=performance.now();}};
+  let manualRot=null,manualAt=0,zoomCur=1;
+  heroApi={manual(rx,ry,rz,sc){manualRot={rx,ry,rz,sc};manualAt=performance.now();}};
 
   // base ring + orbit dots grounding the hologram
   const ringGrp=new THREE.Group();ringGrp.position.y=-1.55;scene.add(ringGrp);
@@ -830,16 +830,20 @@ function buildHero(){
     const dt=Math.min(clock.getDelta(),0.05);
     if(vis){
       t+=dt;
-      if(born<1){born=Math.min(1,born+dt/1.1);core.scale.setScalar(Math.max(0.001,easeOutBack(born)*0.85));}
+      if(born<1){born=Math.min(1,born+dt/1.1);}
       px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
 
-      /* gimbal leans toward the cursor — or follows both hands
-         when the visitor grabs it via gesture control */
-      const useManual=manualRot&&performance.now()-manualAt<350;
-      const kR=1-Math.pow(useManual?0.0001:0.001,dt);
+      /* gimbal: cursor-follow by default; both-hands gesture takes
+         over with free rotation + zoom, and the pose HOLDS for 4s
+         after release before drifting home (Stark-lab style) */
+      const mAge=manualRot?performance.now()-manualAt:1e9;
+      const useManual=mAge<4000;
+      const kR=1-Math.pow(mAge<250?0.0005:useManual?0.05:0.001,dt);
       core.rotation.x=lerp(core.rotation.x,useManual?manualRot.rx:py*0.35,kR);
       core.rotation.y=lerp(core.rotation.y,useManual?manualRot.ry:px*0.55,kR);
       core.rotation.z=lerp(core.rotation.z,useManual?manualRot.rz:0,kR);
+      zoomCur=lerp(zoomCur,useManual?manualRot.sc:1,kR);
+      core.scale.setScalar(Math.max(0.001,easeOutBack(Math.min(1,born))*0.85*zoomCur));
       core.position.y=0.55+Math.sin(t*1.1)*0.05;
 
       /* gyro ring motion */
@@ -1880,6 +1884,7 @@ function setupGestures(bg){
   let active=false,stream=null,hands=null,loopTimer=null,busy=false;
   let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
   let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0,pinchFrames=0,lastPinchAt=0;
+  let twoHand=false,pmx=0,pmy=0,pang=0,pspread=0,rotX=0,rotY=0,rotZ=0,zoomT=1;
 
   const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('load fail '+src));document.head.appendChild(s);});
 
@@ -1905,6 +1910,7 @@ function setupGestures(bg){
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
     const now=performance.now();
     if(!lm){
+      twoHand=false;
       /* grace window: tracking drops for a few frames constantly
          (especially with the hand low in the camera frame) — keep the
          cursor up AND keep the current scroll velocity going so a
@@ -1917,16 +1923,28 @@ function setupGestures(bg){
       return;
     }
     lastSeen=now;cursor.classList.remove('lost');
-    /* 🙌 two hands = grab & rotate the arc reactor */
+    /* 🙌 two hands = Stark-lab control: DRAG to keep rotating
+       (unlimited, full 360°+), TWIST to roll, SPREAD/CLOSE to zoom.
+       Delta-based: only hand MOVEMENT changes the pose, so it's
+       accurate and never snaps. */
     const all=r.multiHandLandmarks;
     if(all.length===2&&heroApi){
-      const p1=all[0][9],p2=all[1][9];
-      const x1=1-p1.x,y1=p1.y,x2=1-p2.x,y2=p2.y;
+      let A=all[0][9],B=all[1][9];
+      if(A.x<B.x){const tm=A;A=B;B=tm;}   // stable order (mirrored: left hand first)
+      const x1=1-A.x,y1=A.y,x2=1-B.x,y2=B.y;
       const mx=(x1+x2)/2,my=(y1+y2)/2;
-      let ang=Math.atan2(y2-y1,x2-x1);
-      if(ang>Math.PI/2)ang-=Math.PI; if(ang<-Math.PI/2)ang+=Math.PI;
-      heroApi.rotate((my*2-1)*1.2,(mx*2-1)*2.4,clamp(-ang*1.5,-1.3,1.3));
-      status.textContent='🙌 Rotating reactor';
+      const ang=Math.atan2(y2-y1,x2-x1);
+      const spread=Math.hypot(x2-x1,y2-y1);
+      if(!twoHand){twoHand=true;pmx=mx;pmy=my;pang=ang;pspread=spread;}
+      let dA=ang-pang;
+      while(dA>Math.PI/2)dA-=Math.PI;while(dA<-Math.PI/2)dA+=Math.PI;
+      rotY+=(mx-pmx)*5.5;
+      rotX+=(my-pmy)*4.0;
+      rotZ=clamp(rotZ-dA*1.25,-2.6,2.6);
+      zoomT=clamp(zoomT*Math.pow(spread/Math.max(.02,pspread),1.15),0.45,2.2);
+      pmx=mx;pmy=my;pang=ang;pspread=spread;
+      heroApi.manual(rotX,rotY,rotZ,zoomT);
+      status.textContent=`🙌 Rotate · twist · spread=zoom ${Math.round(zoomT*100)}%`;
       smX=lerp(smX,mx*innerWidth,.3);smY=lerp(smY,my*innerHeight,.3);
       cursor.style.display='block';
       cursor.style.transform=`translate(${smX}px,${smY}px)`;
@@ -1934,6 +1952,7 @@ function setupGestures(bg){
       scrollVel*=.85;lastX=null;pinchFrames=0;
       return;
     }
+    twoHand=false;
     status.textContent='Tracking ✋';
     /* palm centre (middle-finger MCP), mirrored */
     const palm=lm[9];
@@ -2043,7 +2062,7 @@ function setupGestures(bg){
     cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
     bg&&bg.releasePointer();
-    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;pinchFrames=0;lastPinchAt=0;
+    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;pinchFrames=0;lastPinchAt=0;twoHand=false;
   }
   btn.addEventListener('click',()=>active?stop():start());
 
