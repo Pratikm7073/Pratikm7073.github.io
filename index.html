@@ -239,6 +239,13 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 #handCursor.pinch .hc-ring{transform:scale(.55);border-color:var(--pink);box-shadow:0 0 24px rgba(224,69,123,.8)}
 #handCursor{transition:opacity .25s}
 #handCursor.lost{opacity:.35}
+.hc-arr{position:absolute;left:50%;transform:translateX(-50%);font-size:13px;color:var(--cyan);opacity:0;transition:opacity .2s;text-shadow:0 0 10px var(--cyan);pointer-events:none}
+.hc-arr.u{top:-22px}
+.hc-arr.d{bottom:-22px}
+#handCursor.scrollUp .hc-arr.u{opacity:1;animation:arrNudgeU .6s infinite alternate}
+#handCursor.scrollDn .hc-arr.d{opacity:1;animation:arrNudgeD .6s infinite alternate}
+@keyframes arrNudgeU{to{transform:translate(-50%,-4px)}}
+@keyframes arrNudgeD{to{transform:translate(-50%,4px)}}
 #handCursor .hc-pulse{position:absolute;inset:0;border:2px solid var(--pink);border-radius:50%;opacity:0;transform:scale(1)}
 #handCursor.burst .hc-pulse{animation:hcBurst .5s var(--ease)}
 @keyframes hcBurst{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.6)}}
@@ -314,10 +321,10 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Move palm</b> steer the cosmos · <b>Hand top/bottom</b> scroll · <b>✊ Fist</b> turbo scroll · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open its summary · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Hand high</b> scroll up · <b>Hand slightly low</b> scroll down (no need to reach the frame edge) · <b>✊ Fist</b> turbo scroll · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open its summary · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
-<div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div></div>
+<div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div><div class="hc-arr u">▲</div><div class="hc-arr d">▼</div></div>
 
 <div id="projModal" aria-hidden="true">
   <div class="pm-backdrop"></div>
@@ -1847,11 +1854,14 @@ function setupGestures(bg){
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
     const now=performance.now();
     if(!lm){
-      /* grace window: tracking drops for a few frames constantly —
-         keep the cursor up (faded) instead of blinking it off */
-      scrollVel*=.9;
-      if(now-lastSeen<600){cursor.classList.add('lost');return;}
+      /* grace window: tracking drops for a few frames constantly
+         (especially with the hand low in the camera frame) — keep the
+         cursor up AND keep the current scroll velocity going so a
+         downward scroll doesn't die the moment the hand dips out */
+      if(now-lastSeen<700){cursor.classList.add('lost');return;}
+      scrollVel*=.85;
       cursor.style.display='none';cursor.classList.remove('lost');
+      cursor.classList.remove('scrollUp','scrollDn');
       status.textContent='Show your palm ✋';
       return;
     }
@@ -1871,21 +1881,29 @@ function setupGestures(bg){
     const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
     const isFist=foldAvg<0.9;
     const modalOpen=projModalApi&&projModalApi.isOpen();
-    /* scrolling: wide dead zone + quadratic ease = controllable.
+    /* scrolling: asymmetric zones — the DOWN zone starts just below
+       centre (holding a hand at the bottom edge of a webcam frame
+       loses tracking, so never require it). Quadratic ease, capped.
        ✊ fist = turbo (faster, still capped) */
+    let zone=0;
     if(isFist){
       status.textContent='✊ Turbo scroll';
-      const d=ny-0.5;
-      const k=Math.max(0,Math.abs(d)-0.14)/0.36;      // 0 at dead zone edge → 1 at frame edge
+      const d=ny-0.45;
+      const k=Math.min(1,Math.max(0,Math.abs(d)-0.12)/0.3);
       scrollVel=lerp(scrollVel,Math.sign(d)*k*k*45,.18);
-    }else if(ny<.34){
-      const k=(0.34-ny)/0.34;
+      zone=Math.sign(d)*(k>0?1:0);
+    }else if(ny<.32){
+      const k=(0.32-ny)/0.32;
       scrollVel=lerp(scrollVel,-k*k*22,.15);
-    }else if(ny>.66){
-      const k=(ny-0.66)/0.34;
-      scrollVel=lerp(scrollVel,k*k*22,.15);
+      zone=-1;status.textContent='⬆ Scrolling';
+    }else if(ny>.55){
+      const k=Math.min(1,(ny-0.55)/0.3);
+      scrollVel=lerp(scrollVel,k*k*26,.15);
+      zone=1;status.textContent='⬇ Scrolling';
     }else scrollVel*=.85;
     scrollVel=clamp(scrollVel,-48,48);
+    cursor.classList.toggle('scrollUp',zone<0);
+    cursor.classList.toggle('scrollDn',zone>0);
     /* fast horizontal swipe → jump section (not while fist/modal) */
     if(lastX!=null&&!isFist&&!modalOpen){
       const vx=(nx-lastX)/Math.max(.001,(now-lastT)/1000); // screens/sec
@@ -1945,6 +1963,7 @@ function setupGestures(bg){
     stream&&stream.getTracks().forEach(t=>t.stop());stream=null;
     hands&&hands.close&&hands.close();hands=null;
     hud.classList.remove('on');cursor.style.display='none';
+    cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
     bg&&bg.releasePointer();
     lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;
