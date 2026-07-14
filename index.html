@@ -627,133 +627,94 @@ function makeCodeScreen(){
 }
 
 /* ════════════════════════════════════════════════
-   STYLIZED 3D CHARACTER BUST (Memoji-inspired)
-   Built procedurally cap, head, ears, sweater
+   MASCOT Sonic-style speedster character that
+   welcomes visitors: waves, blinks, spin-jumps
 ════════════════════════════════════════════════ */
-function makeCharacter(env){
-  // Returns { group, head } so callers can animate the head independently.
+function makeMascot(env){
   const g=new THREE.Group();
+  const bodyMat=new THREE.MeshStandardMaterial({color:0x2fb5e8,roughness:.32,metalness:.06,envMap:env,envMapIntensity:.8});
+  const bellyMat=new THREE.MeshStandardMaterial({color:0xffe3c2,roughness:.5,envMap:env,envMapIntensity:.4});
+  const whiteMat=new THREE.MeshStandardMaterial({color:0xf5f5f7,roughness:.28,envMap:env,envMapIntensity:.8});
+  const shoeMat=new THREE.MeshStandardMaterial({color:0xe0457b,roughness:.28,metalness:.1,envMap:env,envMapIntensity:.9});
+  const darkMat=new THREE.MeshStandardMaterial({color:0x10121a,roughness:.4});
+  const irisMat=new THREE.MeshStandardMaterial({color:0x35d977,roughness:.25,envMap:env,envMapIntensity:.6});
 
-  const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:0.55,metalness:0.05,envMap:env,envMapIntensity:0.5});
-  const skinDark=new THREE.MeshStandardMaterial({color:0x7d4f33,roughness:0.6,envMap:env,envMapIntensity:0.4});
-  const capWhite=new THREE.MeshStandardMaterial({color:0xe8e8ea,roughness:0.38,metalness:0.12,envMap:env,envMapIntensity:0.8});
-  const capDark=new THREE.MeshStandardMaterial({color:0x141414,roughness:0.5,envMap:env,envMapIntensity:0.3});
-  const sweater=new THREE.MeshStandardMaterial({color:0x2a2a2e,roughness:0.85,envMap:env,envMapIntensity:0.2});
-  const teeth=new THREE.MeshStandardMaterial({color:0xf5f5f5,roughness:0.3});
-  const mouthDark=new THREE.MeshStandardMaterial({color:0x2a1818,roughness:0.6});
-  const eyeMat=new THREE.MeshStandardMaterial({color:0x0d0d14,roughness:0.18,metalness:0.3,envMap:env,envMapIntensity:0.9});
+  /* body */
+  const body=new THREE.Mesh(new THREE.SphereGeometry(.52,32,32),bodyMat);
+  body.scale.set(1,1.12,.9);body.position.y=.62;body.castShadow=true;g.add(body);
+  const belly=new THREE.Mesh(new THREE.SphereGeometry(.4,24,24),bellyMat);
+  belly.scale.set(.72,.9,.5);belly.position.set(0,.58,.28);g.add(belly);
 
-  /* ---------- BODY (below the neck) ---------- */
-  // Shoulders/torso: a wide rounded mass topping out at ~y=0 so it never reaches the face.
-  const torso=new THREE.Mesh(new THREE.SphereGeometry(1.15,40,32),sweater);
-  torso.scale.set(1.35,1.15,0.95);
-  torso.position.y=-0.95;
-  torso.castShadow=true;
-  g.add(torso);
-  // crew-neck collar ring
-  const collar=new THREE.Mesh(new THREE.TorusGeometry(0.34,0.1,16,32),sweater);
-  collar.rotation.x=Math.PI/2;
-  collar.position.y=0.12;
-  collar.scale.set(1,1,0.85);
-  g.add(collar);
-  // neck
-  const neck=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.36,0.34,24),skin);
-  neck.position.y=0.2;
-  g.add(neck);
+  /* head */
+  const headG=new THREE.Group();headG.position.y=1.52;g.add(headG);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.62,40,40),bodyMat);
+  head.scale.set(1,.95,.95);head.castShadow=true;headG.add(head);
+  const muzzle=new THREE.Mesh(new THREE.SphereGeometry(.3,24,24),bellyMat);
+  muzzle.scale.set(1.1,.72,.8);muzzle.position.set(0,-.2,.44);headG.add(muzzle);
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.07,16,16),darkMat);
+  nose.position.set(0,-.1,.73);headG.add(nose);
+  const smile=new THREE.Mesh(new THREE.TorusGeometry(.15,.024,10,24,Math.PI*.75),darkMat);
+  smile.position.set(0,-.2,.64);smile.rotation.z=Math.PI+Math.PI*.125;headG.add(smile);
 
-  /* ---------- HEAD GROUP (everything moves together) ---------- */
-  const head=new THREE.Group();
-  head.position.y=0.92;          // sits on top of the neck
-  g.add(head);
-
-  // skull egg shaped (slightly taller than wide)
-  const skull=new THREE.Mesh(new THREE.SphereGeometry(0.72,48,48),skin);
-  skull.scale.set(1,1.14,0.98);
-  skull.castShadow=true;
-  head.add(skull);
-  // lower jaw to give a chin
-  const jaw=new THREE.Mesh(new THREE.SphereGeometry(0.6,40,40),skin);
-  jaw.scale.set(0.92,0.66,0.92);
-  jaw.position.set(0,-0.34,0.04);
-  head.add(jaw);
-
-  // ears (sit at mid-head height, on the sides)
+  /* big cartoon eyes + tracking pupils (blink via eyeG.scale.y) */
+  const eyeGs=[],pupilGs=[];
   [-1,1].forEach(s=>{
-    const ear=new THREE.Mesh(new THREE.SphereGeometry(0.2,24,24),skin);
-    ear.scale.set(0.55,0.95,0.5);
-    ear.position.set(s*0.72,-0.02,0.02);
-    head.add(ear);
-    const inner=new THREE.Mesh(new THREE.SphereGeometry(0.1,16,16),skinDark);
-    inner.scale.set(0.5,0.9,0.4);
-    inner.position.set(s*0.8,-0.02,0.06);
-    head.add(inner);
+    const eyeG=new THREE.Group();eyeG.position.set(s*.21,.1,.46);eyeG.rotation.y=s*.28;headG.add(eyeG);
+    const white=new THREE.Mesh(new THREE.SphereGeometry(.2,24,24),whiteMat);
+    white.scale.set(.7,1.15,.5);eyeG.add(white);
+    const pupilG=new THREE.Group();eyeG.add(pupilG);
+    const iris=new THREE.Mesh(new THREE.SphereGeometry(.085,16,16),irisMat);
+    iris.scale.set(1,1.25,.5);iris.position.z=.09;pupilG.add(iris);
+    const pupil=new THREE.Mesh(new THREE.SphereGeometry(.045,12,12),darkMat);
+    pupil.scale.set(1,1.25,.5);pupil.position.z=.125;pupilG.add(pupil);
+    const shine=new THREE.Mesh(new THREE.SphereGeometry(.018,8,8),new THREE.MeshBasicMaterial({color:0xffffff}));
+    shine.position.set(.03,.05,.14);pupilG.add(shine);
+    eyeGs.push(eyeG);pupilGs.push(pupilG);
+  });
+  /* ears */
+  [-1,1].forEach(s=>{
+    const ear=new THREE.Mesh(new THREE.ConeGeometry(.13,.3,16),bodyMat);
+    ear.position.set(s*.36,.56,.02);ear.rotation.z=-s*.35;headG.add(ear);
+    const inner=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,12),bellyMat);
+    inner.position.set(s*.36,.55,.07);inner.rotation.z=-s*.35;headG.add(inner);
+  });
+  /* back-swept quills (the sonic signature) */
+  [[0,.34,-.42,.6],[-.26,.2,-.44,.55],[.26,.2,-.44,.55],[-.14,-.02,-.46,.48],[.14,-.02,-.46,.48],[0,.12,-.5,.7]].forEach(([qx,qy,qz,ql])=>{
+    const q=new THREE.Mesh(new THREE.ConeGeometry(.13,ql,16),bodyMat);
+    q.position.set(qx,qy,qz);
+    q.rotation.x=-Math.PI/2-0.32;q.rotation.z=qx*.5;
+    q.castShadow=true;headG.add(q);
   });
 
-  // brows (thick dark bars) upper face
-  [-1,1].forEach(s=>{
-    const brow=new THREE.Mesh(new RoundedBoxGeometry(0.3,0.085,0.09,3,0.04),capDark);
-    brow.position.set(s*0.3,0.12,0.62);
-    brow.rotation.z=-s*0.06;
-    head.add(brow);
-  });
-  // eyes just below the brows
-  head.userData.eyes=[];
-  [-1,1].forEach(s=>{
-    const eye=new THREE.Mesh(new THREE.SphereGeometry(0.13,24,24),eyeMat);
-    eye.scale.set(1,0.78,0.5);
-    eye.position.set(s*0.3,0.0,0.64);
-    head.add(eye);
-    head.userData.eyes.push(eye);
-    // tiny catch-light
-    const cl=new THREE.Mesh(new THREE.SphereGeometry(0.028,10,10),new THREE.MeshBasicMaterial({color:0xffffff}));
-    cl.position.set(s*0.3-0.04,0.05,0.74);
-    head.add(cl);
-  });
-  // nose
-  const nose=new THREE.Mesh(new THREE.SphereGeometry(0.16,24,24),skin);
-  nose.scale.set(0.85,0.95,1.05);
-  nose.position.set(0,-0.12,0.72);
-  head.add(nose);
-  // mouth wide friendly grin (dark cavity + teeth)
-  const mouth=new THREE.Mesh(new THREE.SphereGeometry(0.28,24,24),mouthDark);
-  mouth.scale.set(1,0.42,0.4);
-  mouth.position.set(0,-0.42,0.58);
-  head.add(mouth);
-  const teethRow=new THREE.Mesh(new THREE.SphereGeometry(0.25,24,24),teeth);
-  teethRow.scale.set(1,0.3,0.35);
-  teethRow.position.set(0,-0.4,0.62);
-  head.add(teethRow);
+  /* limbs pivot groups at the joints */
+  function limb(len,r0,r1,mat){const m=new THREE.Mesh(new THREE.CylinderGeometry(r0,r1,len,14),mat);m.position.y=-len/2;return m;}
+  const armR=new THREE.Group();armR.position.set(.48,1.0,0);g.add(armR);
+  armR.add(limb(.52,.085,.075,bodyMat));
+  const handR=new THREE.Mesh(new THREE.SphereGeometry(.15,18,18),whiteMat);
+  handR.position.y=-.6;armR.add(handR);
+  const armL=new THREE.Group();armL.position.set(-.48,1.0,0);g.add(armL);
+  armL.add(limb(.52,.085,.075,bodyMat));
+  const handL=new THREE.Mesh(new THREE.SphereGeometry(.15,18,18),whiteMat);
+  handL.position.y=-.6;armL.add(handL);
+  armR.rotation.z=.4;armL.rotation.z=-.4;
 
-  /* ---------- CAP (parented to head, sits on upper skull) ---------- */
-  const cap=new THREE.Group();
-  cap.position.y=0.18;                // rests on the crown, not over the face
-  head.add(cap);
-  // shallow skullcap dome radius slightly larger than skull, only the top hemisphere
-  const dome=new THREE.Mesh(new THREE.SphereGeometry(0.76,40,28,0,Math.PI*2,0,Math.PI*0.5),capWhite);
-  dome.scale.set(1.03,0.92,1.05);
-  dome.castShadow=true;
-  cap.add(dome);
-  // dark headband at the base of the cap
-  const band=new THREE.Mesh(new THREE.CylinderGeometry(0.785,0.785,0.12,40,1,true),capDark);
-  band.position.y=0.0;
-  band.scale.set(1.03,1,1.05);
-  cap.add(band);
-  // brim pointing BACKWARDS (-z) worn backwards
-  const brimShape=new THREE.Mesh(new THREE.CylinderGeometry(0.42,0.5,0.06,32,1,false,-Math.PI/2,Math.PI),capWhite);
-  brimShape.position.set(0,0.01,-0.66);
-  brimShape.scale.set(1,1,1.5);
-  cap.add(brimShape);
-  // top button
-  const btn=new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),capWhite);
-  btn.position.y=0.66;
-  cap.add(btn);
+  /* legs + sneakers */
+  [-1,1].forEach(s=>{
+    const leg=new THREE.Group();leg.position.set(s*.2,.28,0);g.add(leg);
+    leg.add(limb(.5,.08,.07,bodyMat));
+    const shoe=new THREE.Mesh(new RoundedBoxGeometry(.26,.2,.52,3,.08),shoeMat);
+    shoe.position.set(0,-.58,.1);shoe.castShadow=true;leg.add(shoe);
+    const stripe=new THREE.Mesh(new RoundedBoxGeometry(.27,.06,.53,2,.03),whiteMat);
+    stripe.position.set(0,-.56,.1);leg.add(stripe);
+    const sole=new THREE.Mesh(new RoundedBoxGeometry(.27,.05,.54,2,.02),whiteMat);
+    sole.position.set(0,-.68,.1);leg.add(sole);
+  });
 
-  head.userData.cap=cap;
-  return { group:g, head };
+  return {group:g,headG,armR,armL,pupilGs,eyeGs};
 }
 
 /* ════════════════════════════════════════════════
-   HERO SCENE real photo as a floating holo card
+   HERO SCENE the mascot welcomes you in
 ════════════════════════════════════════════════ */
 function buildHero(){
   const canvas=document.getElementById('hero-canvas');
@@ -762,7 +723,7 @@ function buildHero(){
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const env=studioEnv(renderer);
-  const scene=new THREE.Scene(); // transparent page orbs show through
+  const scene=new THREE.Scene();
 
   const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
   camera.position.set(0,0.7,7.6);
@@ -771,106 +732,39 @@ function buildHero(){
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
   resize();addEventListener('resize',resize);
 
-  // lights pink rim + cyan back + soft key (shadow map kept small)
-  scene.add(new THREE.AmbientLight(0x404050,0.7));
-  const key=new THREE.DirectionalLight(0xffffff,1.4);key.position.set(-3,5,4);
+  scene.add(new THREE.AmbientLight(0x404050,0.85));
+  const key=new THREE.DirectionalLight(0xffffff,1.5);key.position.set(-3,5,4);
   key.castShadow=true;key.shadow.mapSize.set(512,512);scene.add(key);
   const pink=new THREE.PointLight(0xe0457b,2.0,18,2);pink.position.set(3.5,2,1.5);scene.add(pink);
   const cyan=new THREE.PointLight(0x5ce1e6,1.5,18,2);cyan.position.set(-3,0.5,-1);scene.add(cyan);
   const fill=new THREE.DirectionalLight(0x8899ff,0.4);fill.position.set(2,-1,3);scene.add(fill);
 
-  /* ── THE REAL PHOTO, presented as a floating holo card ── */
-  const card=new THREE.Group();
-  card.position.y=0.5;
-  card.scale.setScalar(0.001); // entrance pop
-  scene.add(card);
-  const CW=2.3,CH=3.05,R=0.16; // card size / corner radius (world units)
+  const M=makeMascot(env);
+  const mascot=M.group;
+  const baseY=-1.05;
+  mascot.position.y=baseY;
+  mascot.scale.setScalar(0.001); // entrance pop
+  scene.add(mascot);
 
-  // photo cover-cropped into a rounded-rect canvas
-  const photoC=document.createElement('canvas');photoC.width=768;photoC.height=1018;
-  const photoTex=new THREE.CanvasTexture(photoC);photoTex.anisotropy=8;photoTex.colorSpace=THREE.SRGBColorSpace;
-  {
-    const pc=photoC.getContext('2d');
-    const rr=R/CW*768;
-    pc.fillStyle='#0a0d16';
-    pc.beginPath();pc.roundRect(0,0,768,1018,rr);pc.fill();
-    photoTex.needsUpdate=true;
-    const img=new Image();
-    img.onload=()=>{
-      const s=Math.max(768/img.width,1018/img.height);
-      const dw=img.width*s,dh=img.height*s;
-      pc.save();pc.beginPath();pc.roundRect(0,0,768,1018,rr);pc.clip();
-      pc.drawImage(img,(768-dw)/2,(1018-dh)/2,dw,dh);
-      const g1=pc.createLinearGradient(0,0,0,320);
-      g1.addColorStop(0,'rgba(255,255,255,.13)');g1.addColorStop(1,'rgba(255,255,255,0)');
-      pc.fillStyle=g1;pc.fillRect(0,0,768,320);
-      const g2=pc.createLinearGradient(0,650,0,1018);
-      g2.addColorStop(0,'rgba(5,8,16,0)');g2.addColorStop(1,'rgba(5,8,16,.55)');
-      pc.fillStyle=g2;pc.fillRect(0,650,768,368);
-      pc.restore();
-      photoTex.needsUpdate=true;
-    };
-    img.src='download.jfif';
-  }
-  const photo=new THREE.Mesh(new THREE.PlaneGeometry(CW,CH),
-    new THREE.MeshBasicMaterial({map:photoTex,transparent:true}));
-  card.add(photo);
-
-  // glass slab behind the photo catches the studio reflections
-  const slab=new THREE.Mesh(new RoundedBoxGeometry(CW+0.22,CH+0.22,0.09,4,0.06),
-    new THREE.MeshPhysicalMaterial({color:0x9fb6d8,metalness:0,roughness:0.12,transparent:true,opacity:0.16,clearcoat:1,clearcoatRoughness:0.1,envMap:env,envMapIntensity:1.4,side:THREE.DoubleSide}));
-  slab.position.z=-0.06;card.add(slab);
-
-  // emissive cyan border
-  const bC=document.createElement('canvas');bC.width=512;bC.height=678;
-  {const bx=bC.getContext('2d');
-   bx.strokeStyle='rgba(92,225,230,.95)';bx.lineWidth=7;bx.shadowColor='#5ce1e6';bx.shadowBlur=18;
-   bx.beginPath();bx.roundRect(14,14,512-28,678-28,R/CW*512);bx.stroke();}
-  const border=new THREE.Mesh(new THREE.PlaneGeometry(CW+0.12,CH+0.12),
-    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(bC),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
-  border.position.z=0.012;card.add(border);
-
-  // soft glow halo behind the card
-  const gC=document.createElement('canvas');gC.width=256;gC.height=256;
-  {const gx=gC.getContext('2d');const g=gx.createRadialGradient(128,128,10,128,128,128);
-   g.addColorStop(0,'rgba(92,225,230,.55)');g.addColorStop(.5,'rgba(139,109,255,.22)');g.addColorStop(1,'rgba(0,0,0,0)');
-   gx.fillStyle=g;gx.fillRect(0,0,256,256);}
-  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(gC),transparent:true,opacity:.75,depthWrite:false}));
-  halo.scale.set(CW*2.6,CH*1.9,1);halo.position.z=-0.4;card.add(halo);
-
-  // holographic scan-line sweeping down the photo
-  const scanC=document.createElement('canvas');scanC.width=64;scanC.height=256;
-  {const sx=scanC.getContext('2d');const g=sx.createLinearGradient(0,0,0,256);
-   g.addColorStop(0,'rgba(92,225,230,0)');g.addColorStop(.5,'rgba(92,225,230,.8)');g.addColorStop(1,'rgba(92,225,230,0)');
-   sx.fillStyle=g;sx.fillRect(0,0,64,256);}
-  const scan=new THREE.Mesh(new THREE.PlaneGeometry(CW,0.16),
-    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(scanC),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
-  scan.position.z=0.02;card.add(scan);
-
-  // ID chip on the lower part of the card
-  const idC=document.createElement('canvas');idC.width=512;idC.height=96;
-  {const ix=idC.getContext('2d');
-   ix.fillStyle='rgba(6,10,18,.72)';ix.beginPath();ix.roundRect(0,0,512,96,26);ix.fill();
-   ix.strokeStyle='rgba(92,225,230,.5)';ix.lineWidth=2.5;ix.beginPath();ix.roundRect(2,2,508,92,24);ix.stroke();
-   ix.fillStyle='#5ce1e6';ix.beginPath();ix.arc(52,48,10,0,7);ix.fill();
-   ix.fillStyle='#eaf6ff';ix.font='600 34px monospace';ix.fillText('PRATIK MORE',88,60);
-   ix.fillStyle='rgba(255,255,255,.45)';ix.font='24px monospace';ix.fillText('· SECOPS',336,58);}
-  const idChip=new THREE.Mesh(new THREE.PlaneGeometry(1.55,0.29),
-    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(idC),transparent:true,depthWrite:false}));
-  idChip.position.set(0,-CH/2+0.34,0.03);card.add(idChip);
-
-  // orbiting accent ring + dots at the card's base
-  const ringGrp=new THREE.Group();ringGrp.position.y=-1.15;scene.add(ringGrp);
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(2.05,0.012,8,120),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.25}));
-  ring.rotation.x=Math.PI/2.15;ringGrp.add(ring);
+  // energy ring + dots orbiting at the mascot's feet
+  const ringGrp=new THREE.Group();ringGrp.position.y=baseY-0.72;scene.add(ringGrp);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(1.7,0.014,8,120),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.3}));
+  ring.rotation.x=Math.PI/2;ringGrp.add(ring);
   const orbDots=new THREE.Group();ringGrp.add(orbDots);
   for(let i=0;i<7;i++){
     const d=new THREE.Mesh(new THREE.SphereGeometry(0.035,10,10),new THREE.MeshBasicMaterial({color:i%2?0xe0457b:0x5ce1e6}));
-    const a=i/7*Math.PI*2;d.position.set(Math.cos(a)*2.05,Math.sin(a*2)*0.12,Math.sin(a)*2.05);
+    const a=i/7*Math.PI*2;d.position.set(Math.cos(a)*1.7,Math.sin(a*2)*0.1,Math.sin(a)*1.7);
     orbDots.add(d);
   }
 
-  // floating glass UI shards (glassmorphism accents)
+  // speed-trail sparks that kick up during the spin-jump
+  const TN=26,tGeo=new THREE.BufferGeometry(),tp=new Float32Array(TN*3),tLife=new Float32Array(TN);
+  for(let i=0;i<TN;i++){tp[i*3]=0;tp[i*3+1]=-10;tp[i*3+2]=0;tLife[i]=0;}
+  tGeo.setAttribute('position',new THREE.BufferAttribute(tp,3));
+  const trail=new THREE.Points(tGeo,new THREE.PointsMaterial({color:0x8be9ff,size:0.09,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scene.add(trail);
+
+  // floating glass UI shards
   const shards=[];
   [[-2.5,1.15,-0.9,'#5ce1e6',1.0,0.68,0.5],[2.6,0.25,-1.2,'#e0457b',0.9,0.6,-0.45],[2.0,1.95,-0.5,'#8b6dff',0.7,0.48,-0.18]].forEach(([sx,sy,sz,ac,w,h,ry],i)=>{
     const p=glassPanel(w,h,ac);p.position.set(sx,sy,sz);p.rotation.y=ry;
@@ -878,36 +772,83 @@ function buildHero(){
     scene.add(p);shards.push(p);
   });
 
-  // pointer-driven card tilt
+  // pointer tracking (head + eyes follow the cursor)
   let px=0,py=0,tx=0,ty=0;
   addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);},{passive:true});
 
-  // pause when hero is off-screen
   let vis=true;
   new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0.02}).observe(canvas);
 
   const clock=new THREE.Clock();
-  let t=0,born=0;
+  let t=0,born=0,blinkT=-1,nextBlink=2.4,spinT=-1,nextSpin=6.5;
   const easeOutBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
+  const easeInOut=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 
   function frame(){
     const dt=Math.min(clock.getDelta(),0.05);
     if(vis){
       t+=dt;
-      // entrance: 0→1 scale with overshoot over 0.9s
-      if(born<1){born=Math.min(1,born+dt/0.9);card.scale.setScalar(Math.max(0.001,easeOutBack(born)));}
+      if(born<1){born=Math.min(1,born+dt/0.9);mascot.scale.setScalar(Math.max(0.001,easeOutBack(born)));}
       px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
-      // card tilts toward the cursor like a held photograph
-      card.rotation.y=px*0.55+Math.sin(t*0.4)*0.05;
-      card.rotation.x=py*0.3+Math.sin(t*0.6)*0.02;
-      card.position.y=0.5+Math.sin(t*1.1)*0.06;
-      halo.material.opacity=0.6+Math.sin(t*1.3)*0.15;
-      // holo scan-line sweeps down every ~4s
-      const sk=(t%4)/4;
-      if(sk<0.35){scan.position.y=CH/2-(sk/0.35)*CH;scan.material.opacity=0.55*Math.sin((sk/0.35)*Math.PI);}
-      else scan.material.opacity=0;
-      ringGrp.rotation.y=t*0.25;
-      ring.material.opacity=0.2+Math.sin(t*0.8)*0.06;
+
+      /* blink: big cartoon eyes snap shut & open */
+      if(blinkT<0&&t>nextBlink)blinkT=0;
+      if(blinkT>=0){
+        blinkT+=dt;
+        const k=blinkT/0.13;
+        const s=k<0.5?1-(k*2)*0.92:0.08+((k-0.5)*2)*0.92;
+        M.eyeGs.forEach(e=>e.scale.y=Math.max(0.08,Math.min(1,s)));
+        if(blinkT>0.13){blinkT=-1;nextBlink=t+2+Math.random()*3;M.eyeGs.forEach(e=>e.scale.y=1);}
+      }
+
+      /* spin-jump every so often pure sonic */
+      if(spinT<0&&t>nextSpin)spinT=0;
+      let jumpY=0;
+      if(spinT>=0){
+        spinT+=dt;
+        const p=Math.min(1,spinT/0.85);
+        mascot.rotation.y=easeInOut(p)*Math.PI*2;
+        jumpY=Math.sin(p*Math.PI)*0.75;
+        mascot.scale.y=born>=1?(1-Math.sin(p*Math.PI*2)*0.12):mascot.scale.y;
+        // kick sparks at takeoff/landing
+        if(p<0.15||p>0.9){
+          const i=Math.floor(Math.random()*TN);
+          tp[i*3]=(Math.random()-.5)*1.2;tp[i*3+1]=baseY-0.6;tp[i*3+2]=(Math.random()-.5)*.8;
+          tLife[i]=1;
+        }
+        if(p>=1){spinT=-1;nextSpin=t+7+Math.random()*5;mascot.rotation.y=0;mascot.scale.y=mascot.scale.x;}
+      }else{
+        mascot.rotation.y=Math.sin(t*0.6)*0.07+px*0.3;
+      }
+
+      /* welcome wave: enthusiastic bursts with rests between */
+      const w=(t%4.6);
+      if(w<2.0){
+        const raise=Math.min(1,w/0.35)*Math.min(1,(2.0-w)/0.35);
+        M.armR.rotation.z=lerp(.4,2.45,raise)+Math.sin(t*13)*0.28*raise;
+        M.armR.rotation.x=Math.sin(t*13)*0.12*raise;
+      }else{
+        M.armR.rotation.z=lerp(M.armR.rotation.z,.4,1-Math.pow(0.005,dt));
+        M.armR.rotation.x*=Math.pow(0.01,dt);
+      }
+      M.armL.rotation.z=-.4-Math.sin(t*2.2)*0.08;
+
+      /* idle bob + head & eyes follow the cursor */
+      mascot.position.y=baseY+jumpY+Math.sin(t*2.2)*0.045;
+      M.headG.rotation.y=px*0.55;
+      M.headG.rotation.x=py*0.32;
+      M.headG.rotation.z=Math.sin(t*1.1)*0.03;
+      M.pupilGs.forEach(pg=>{pg.rotation.y=px*0.55;pg.rotation.x=py*0.4;});
+
+      /* trail sparks decay */
+      for(let i=0;i<TN;i++){
+        if(tLife[i]>0){tLife[i]-=dt*1.6;tp[i*3+1]+=dt*1.3;if(tLife[i]<=0)tp[i*3+1]=-10;}
+      }
+      tGeo.attributes.position.needsUpdate=true;
+      trail.material.opacity=0.4+Math.random()*0.4;
+
+      ringGrp.rotation.y=t*0.3;
+      ring.material.opacity=0.25+Math.sin(t*0.8)*0.08+(spinT>=0?0.25:0);
       shards.forEach(s=>{s.position.y=s.userData.by+Math.sin(t*1.1+s.userData.ph)*0.09;s.rotation.z=Math.sin(t*0.7+s.userData.ph)*0.05;});
       camera.lookAt(lookTarget);
       renderer.render(scene,camera);
@@ -918,56 +859,129 @@ function buildHero(){
 }
 
 /* ════════════════════════════════════════════════
-   ABOUT SCENE same character, closer crop, idle
+   ABOUT SCENE a living neural network "brain":
+   glowing nodes + synapses firing signal pulses
 ════════════════════════════════════════════════ */
 function buildAbout(){
   const canvas=document.getElementById('about-canvas');
   if(!canvas) return;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-  const env=studioEnv(renderer);
   const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(34,1,0.1,100);
-  camera.position.set(0.4,0.85,6.4);
-  const lookTarget=new THREE.Vector3(0,0.6,0);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
+  const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
+  camera.position.set(0,0,7);
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();new ResizeObserver(resize).observe(canvas);
 
-  scene.add(new THREE.AmbientLight(0x404050,0.7));
-  const key=new THREE.DirectionalLight(0xffffff,1.3);key.position.set(-3,5,4);scene.add(key);
-  const pink=new THREE.PointLight(0xe0457b,1.8,16,2);pink.position.set(3,2,1.5);scene.add(pink);
-  const cyan=new THREE.PointLight(0x5ce1e6,1.3,16,2);cyan.position.set(-3,0,-1);scene.add(cyan);
+  const brain=new THREE.Group();brain.scale.setScalar(1.18);scene.add(brain);
 
-  const {group:char,head}=makeCharacter(env);
-  char.position.y=-0.7;
-  scene.add(char);
+  /* round sprite so points render as glowing dots, not squares */
+  const dotTex=(()=>{const c=document.createElement('canvas');c.width=64;c.height=64;const x=c.getContext('2d');
+    const g=x.createRadialGradient(32,32,0,32,32,32);
+    g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.4,'rgba(255,255,255,.6)');g.addColorStop(1,'rgba(255,255,255,0)');
+    x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c);})();
 
-  // glass shards floating around the bust
+  /* nodes sampled in a two-lobed brain-ish ellipsoid */
+  const N=110,nodes=[];
+  for(let i=0;i<N;i++){
+    let x=0,y=0,z=0,l=2;
+    while(l>1){x=Math.random()*2-1;y=Math.random()*2-1;z=Math.random()*2-1;l=x*x+y*y+z*z;}
+    const r=0.55+0.45*Math.cbrt(Math.random()); // bias toward the surface
+    x*=1.9*r;y*=1.3*r;z*=1.45*r;
+    x+=Math.sign(x)*0.18;          // split into two lobes
+    if(y<-0.7)y*=0.75;             // flatter underside
+    nodes.push(new THREE.Vector3(x,y,z));
+  }
+  /* edges: each node links to its 2 nearest neighbours */
+  const edges=[],adj=Array.from({length:N},()=>[]);
+  for(let i=0;i<N;i++){
+    const d=nodes.map((p,j)=>({j,d:i===j?1e9:nodes[i].distanceToSquared(p)}));
+    d.sort((a,b)=>a.d-b.d);
+    for(let k=0;k<2;k++){
+      const j=d[k].j,a=Math.min(i,j),b=Math.max(i,j);
+      if(!edges.some(e=>e[0]===a&&e[1]===b)){edges.push([a,b]);adj[a].push(edges.length-1);adj[b].push(edges.length-1);}
+    }
+  }
+  /* synapse lines */
+  const lPos=new Float32Array(edges.length*6);
+  edges.forEach((e,i)=>{
+    lPos.set([nodes[e[0]].x,nodes[e[0]].y,nodes[e[0]].z,nodes[e[1]].x,nodes[e[1]].y,nodes[e[1]].z],i*6);
+  });
+  const lGeo=new THREE.BufferGeometry();
+  lGeo.setAttribute('position',new THREE.BufferAttribute(lPos,3));
+  const lMat=new THREE.LineBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.16,blending:THREE.AdditiveBlending,depthWrite:false});
+  brain.add(new THREE.LineSegments(lGeo,lMat));
+  /* node points with mixed accent colours */
+  const nPos=new Float32Array(N*3),nCol=new Float32Array(N*3);
+  const palette=[new THREE.Color(0x5ce1e6),new THREE.Color(0x8b6dff),new THREE.Color(0xbfefff)];
+  nodes.forEach((p,i)=>{
+    nPos.set([p.x,p.y,p.z],i*3);
+    const c=palette[i%3];nCol.set([c.r,c.g,c.b],i*3);
+  });
+  const nGeo=new THREE.BufferGeometry();
+  nGeo.setAttribute('position',new THREE.BufferAttribute(nPos,3));
+  nGeo.setAttribute('color',new THREE.BufferAttribute(nCol,3));
+  const nMat=new THREE.PointsMaterial({map:dotTex,size:0.1,vertexColors:true,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false});
+  brain.add(new THREE.Points(nGeo,nMat));
+  /* firing signals travelling along the synapses */
+  const S=26,sparks=[];
+  const sPos=new Float32Array(S*3),sCol=new Float32Array(S*3);
+  const sPal=[new THREE.Color(0x5ce1e6),new THREE.Color(0xe0457b),new THREE.Color(0xc1ff00),new THREE.Color(0x8b6dff)];
+  for(let i=0;i<S;i++){
+    sparks.push({e:Math.floor(Math.random()*edges.length),p:Math.random(),v:.5+Math.random()*.9,dir:Math.random()<.5?1:-1});
+    const c=sPal[i%sPal.length];sCol.set([c.r,c.g,c.b],i*3);
+  }
+  const sGeo=new THREE.BufferGeometry();
+  sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+  sGeo.setAttribute('color',new THREE.BufferAttribute(sCol,3));
+  brain.add(new THREE.Points(sGeo,new THREE.PointsMaterial({map:dotTex,size:0.2,vertexColors:true,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+  /* glass shards for continuity with the hero */
   const shards=[];
-  [[-1.9,1.35,-0.7,'#5ce1e6',0.85,0.58,0.55],[1.95,0.35,-0.9,'#e0457b',0.75,0.52,-0.5],[1.45,1.85,0.3,'#8b6dff',0.55,0.4,-0.2]].forEach(([sx,sy,sz,ac,w,h,ry],i)=>{
+  [[-2.4,1.3,-0.7,'#5ce1e6',0.85,0.58,0.55],[2.4,-0.6,-0.9,'#e0457b',0.75,0.52,-0.5],[2.1,1.5,0.2,'#8b6dff',0.55,0.4,-0.2]].forEach(([sx,sy,sz,ac,w,h,ry],i)=>{
     const p=glassPanel(w,h,ac);p.position.set(sx,sy,sz);p.rotation.y=ry;
     p.userData={by:sy,ph:i*1.9};
     scene.add(p);shards.push(p);
   });
 
-  const clock=new THREE.Clock();
-  const eyes=head.userData.eyes||[];
-  let t=0,visible=false,nextBlink=3,blinkT=-1;
+  let visible=false,px=0,py=0,tx=0,ty=0,pulse=0,nextPulse=3;
+  addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);},{passive:true});
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
+  const clock=new THREE.Clock();
+  const A=new THREE.Vector3(),B=new THREE.Vector3();
+  let t=0;
   function frame(){
     const dt=Math.min(clock.getDelta(),0.05);
     if(visible){
       t+=dt;
-      if(blinkT<0&&t>nextBlink)blinkT=0;
-      if(blinkT>=0){blinkT+=dt;const k=blinkT/0.14;const s=k<0.5?1-(k*2)*0.94:0.06+((k-0.5)*2)*0.94;
-        eyes.forEach(e=>e.scale.y=0.78*Math.max(0.06,Math.min(1,s)));
-        if(blinkT>0.14){blinkT=-1;nextBlink=t+2.5+Math.random()*3;eyes.forEach(e=>e.scale.y=0.78);}}
-      char.rotation.y=Math.sin(t*0.4)*0.12;
-      head.rotation.y=Math.sin(t*0.55)*0.18;
-      char.position.y=-0.7+Math.sin(t*1.1)*0.04;
+      /* thought burst: the whole network flashes, extra sparks fire */
+      if(t>nextPulse){pulse=1;nextPulse=t+4.5+Math.random()*3;
+        for(let i=0;i<6;i++){const s=sparks[Math.floor(Math.random()*S)];s.e=Math.floor(Math.random()*edges.length);s.p=0;s.dir=1;}
+      }
+      pulse=Math.max(0,pulse-dt*1.4);
+      lMat.opacity=0.14+pulse*0.22;
+      nMat.size=0.075+pulse*0.03;
+      /* advance sparks along edges; hop to a connected edge at the end */
+      for(let i=0;i<S;i++){
+        const s=sparks[i];
+        s.p+=s.v*s.dir*dt;
+        if(s.p>1||s.p<0){
+          const node=s.p>1?edges[s.e][1]:edges[s.e][0];
+          const opts=adj[node];
+          s.e=opts[Math.floor(Math.random()*opts.length)];
+          s.dir=edges[s.e][0]===node?1:-1;
+          s.p=s.dir===1?0:1;
+        }
+        A.copy(nodes[edges[s.e][0]]);B.copy(nodes[edges[s.e][1]]);
+        A.lerp(B,Math.max(0,Math.min(1,s.p)));
+        sPos.set([A.x,A.y,A.z],i*3);
+      }
+      sGeo.attributes.position.needsUpdate=true;
+      px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
+      brain.rotation.y=t*0.18+px*0.5;
+      brain.rotation.x=py*0.3+Math.sin(t*0.4)*0.05;
+      brain.position.y=Math.sin(t*0.9)*0.08;
       shards.forEach(s=>{s.position.y=s.userData.by+Math.sin(t*1.05+s.userData.ph)*0.08;s.rotation.z=Math.sin(t*0.65+s.userData.ph)*0.05;});
-      camera.lookAt(lookTarget);
       renderer.render(scene,camera);
     }
     requestAnimationFrame(frame);
