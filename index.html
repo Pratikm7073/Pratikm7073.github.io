@@ -237,6 +237,8 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 #handCursor .hc-ring{position:absolute;inset:0;border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 18px rgba(92,225,230,.6),inset 0 0 10px rgba(92,225,230,.3);transition:transform .12s,border-color .12s}
 #handCursor .hc-core{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--cyan)}
 #handCursor.pinch .hc-ring{transform:scale(.55);border-color:var(--pink);box-shadow:0 0 24px rgba(224,69,123,.8)}
+#handCursor{transition:opacity .25s}
+#handCursor.lost{opacity:.35}
 #handCursor .hc-pulse{position:absolute;inset:0;border:2px solid var(--pink);border-radius:50%;opacity:0;transform:scale(1)}
 #handCursor.burst .hc-pulse{animation:hcBurst .5s var(--ease)}
 @keyframes hcBurst{0%{opacity:.9;transform:scale(.6)}100%{opacity:0;transform:scale(2.6)}}
@@ -751,7 +753,7 @@ function makeCharacter(env){
 }
 
 /* ════════════════════════════════════════════════
-   HERO SCENE character bust, soft turntable
+   HERO SCENE real photo as a floating holo card
 ════════════════════════════════════════════════ */
 function buildHero(){
   const canvas=document.getElementById('hero-canvas');
@@ -777,13 +779,88 @@ function buildHero(){
   const cyan=new THREE.PointLight(0x5ce1e6,1.5,18,2);cyan.position.set(-3,0.5,-1);scene.add(cyan);
   const fill=new THREE.DirectionalLight(0x8899ff,0.4);fill.position.set(2,-1,3);scene.add(fill);
 
-  const {group:char,head}=makeCharacter(env);
-  char.position.y=-0.6;
-  char.scale.setScalar(0.001); // entrance pop
-  scene.add(char);
+  /* ── THE REAL PHOTO, presented as a floating holo card ── */
+  const card=new THREE.Group();
+  card.position.y=0.5;
+  card.scale.setScalar(0.001); // entrance pop
+  scene.add(card);
+  const CW=2.3,CH=3.05,R=0.16; // card size / corner radius (world units)
 
-  // orbiting accent ring + dots behind the character
-  const ringGrp=new THREE.Group();ringGrp.position.y=-0.4;scene.add(ringGrp);
+  // photo cover-cropped into a rounded-rect canvas
+  const photoC=document.createElement('canvas');photoC.width=768;photoC.height=1018;
+  const photoTex=new THREE.CanvasTexture(photoC);photoTex.anisotropy=8;photoTex.colorSpace=THREE.SRGBColorSpace;
+  {
+    const pc=photoC.getContext('2d');
+    const rr=R/CW*768;
+    pc.fillStyle='#0a0d16';
+    pc.beginPath();pc.roundRect(0,0,768,1018,rr);pc.fill();
+    photoTex.needsUpdate=true;
+    const img=new Image();
+    img.onload=()=>{
+      const s=Math.max(768/img.width,1018/img.height);
+      const dw=img.width*s,dh=img.height*s;
+      pc.save();pc.beginPath();pc.roundRect(0,0,768,1018,rr);pc.clip();
+      pc.drawImage(img,(768-dw)/2,(1018-dh)/2,dw,dh);
+      const g1=pc.createLinearGradient(0,0,0,320);
+      g1.addColorStop(0,'rgba(255,255,255,.13)');g1.addColorStop(1,'rgba(255,255,255,0)');
+      pc.fillStyle=g1;pc.fillRect(0,0,768,320);
+      const g2=pc.createLinearGradient(0,650,0,1018);
+      g2.addColorStop(0,'rgba(5,8,16,0)');g2.addColorStop(1,'rgba(5,8,16,.55)');
+      pc.fillStyle=g2;pc.fillRect(0,650,768,368);
+      pc.restore();
+      photoTex.needsUpdate=true;
+    };
+    img.src='download.jfif';
+  }
+  const photo=new THREE.Mesh(new THREE.PlaneGeometry(CW,CH),
+    new THREE.MeshBasicMaterial({map:photoTex,transparent:true}));
+  card.add(photo);
+
+  // glass slab behind the photo catches the studio reflections
+  const slab=new THREE.Mesh(new RoundedBoxGeometry(CW+0.22,CH+0.22,0.09,4,0.06),
+    new THREE.MeshPhysicalMaterial({color:0x9fb6d8,metalness:0,roughness:0.12,transparent:true,opacity:0.16,clearcoat:1,clearcoatRoughness:0.1,envMap:env,envMapIntensity:1.4,side:THREE.DoubleSide}));
+  slab.position.z=-0.06;card.add(slab);
+
+  // emissive cyan border
+  const bC=document.createElement('canvas');bC.width=512;bC.height=678;
+  {const bx=bC.getContext('2d');
+   bx.strokeStyle='rgba(92,225,230,.95)';bx.lineWidth=7;bx.shadowColor='#5ce1e6';bx.shadowBlur=18;
+   bx.beginPath();bx.roundRect(14,14,512-28,678-28,R/CW*512);bx.stroke();}
+  const border=new THREE.Mesh(new THREE.PlaneGeometry(CW+0.12,CH+0.12),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(bC),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
+  border.position.z=0.012;card.add(border);
+
+  // soft glow halo behind the card
+  const gC=document.createElement('canvas');gC.width=256;gC.height=256;
+  {const gx=gC.getContext('2d');const g=gx.createRadialGradient(128,128,10,128,128,128);
+   g.addColorStop(0,'rgba(92,225,230,.55)');g.addColorStop(.5,'rgba(139,109,255,.22)');g.addColorStop(1,'rgba(0,0,0,0)');
+   gx.fillStyle=g;gx.fillRect(0,0,256,256);}
+  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(gC),transparent:true,opacity:.75,depthWrite:false}));
+  halo.scale.set(CW*2.6,CH*1.9,1);halo.position.z=-0.4;card.add(halo);
+
+  // holographic scan-line sweeping down the photo
+  const scanC=document.createElement('canvas');scanC.width=64;scanC.height=256;
+  {const sx=scanC.getContext('2d');const g=sx.createLinearGradient(0,0,0,256);
+   g.addColorStop(0,'rgba(92,225,230,0)');g.addColorStop(.5,'rgba(92,225,230,.8)');g.addColorStop(1,'rgba(92,225,230,0)');
+   sx.fillStyle=g;sx.fillRect(0,0,64,256);}
+  const scan=new THREE.Mesh(new THREE.PlaneGeometry(CW,0.16),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(scanC),transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false}));
+  scan.position.z=0.02;card.add(scan);
+
+  // ID chip on the lower part of the card
+  const idC=document.createElement('canvas');idC.width=512;idC.height=96;
+  {const ix=idC.getContext('2d');
+   ix.fillStyle='rgba(6,10,18,.72)';ix.beginPath();ix.roundRect(0,0,512,96,26);ix.fill();
+   ix.strokeStyle='rgba(92,225,230,.5)';ix.lineWidth=2.5;ix.beginPath();ix.roundRect(2,2,508,92,24);ix.stroke();
+   ix.fillStyle='#5ce1e6';ix.beginPath();ix.arc(52,48,10,0,7);ix.fill();
+   ix.fillStyle='#eaf6ff';ix.font='600 34px monospace';ix.fillText('PRATIK MORE',88,60);
+   ix.fillStyle='rgba(255,255,255,.45)';ix.font='24px monospace';ix.fillText('· SECOPS',336,58);}
+  const idChip=new THREE.Mesh(new THREE.PlaneGeometry(1.55,0.29),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(idC),transparent:true,depthWrite:false}));
+  idChip.position.set(0,-CH/2+0.34,0.03);card.add(idChip);
+
+  // orbiting accent ring + dots at the card's base
+  const ringGrp=new THREE.Group();ringGrp.position.y=-1.15;scene.add(ringGrp);
   const ring=new THREE.Mesh(new THREE.TorusGeometry(2.05,0.012,8,120),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.25}));
   ring.rotation.x=Math.PI/2.15;ringGrp.add(ring);
   const orbDots=new THREE.Group();ringGrp.add(orbDots);
@@ -801,7 +878,7 @@ function buildHero(){
     scene.add(p);shards.push(p);
   });
 
-  // pointer-driven head turn
+  // pointer-driven card tilt
   let px=0,py=0,tx=0,ty=0;
   addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);},{passive:true});
 
@@ -810,8 +887,7 @@ function buildHero(){
   new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0.02}).observe(canvas);
 
   const clock=new THREE.Clock();
-  const eyes=head.userData.eyes||[];
-  let t=0,born=0,nextBlink=2.2,blinkT=-1;
+  let t=0,born=0;
   const easeOutBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
 
   function frame(){
@@ -819,21 +895,17 @@ function buildHero(){
     if(vis){
       t+=dt;
       // entrance: 0→1 scale with overshoot over 0.9s
-      if(born<1){born=Math.min(1,born+dt/0.9);char.scale.setScalar(Math.max(0.001,easeOutBack(born)));}
-      // blink state machine
-      if(blinkT<0 && t>nextBlink){blinkT=0;}
-      if(blinkT>=0){
-        blinkT+=dt;
-        const k=blinkT/0.14; // 140ms blink
-        const s=k<0.5 ? 1-(k*2)*0.94 : 0.06+((k-0.5)*2)*0.94;
-        eyes.forEach(e=>e.scale.y=0.78*Math.max(0.06,Math.min(1,s)));
-        if(blinkT>0.14){blinkT=-1;nextBlink=t+2.2+Math.random()*2.6;eyes.forEach(e=>e.scale.y=0.78);}
-      }
+      if(born<1){born=Math.min(1,born+dt/0.9);card.scale.setScalar(Math.max(0.001,easeOutBack(born)));}
       px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
-      char.rotation.y=Math.sin(t*0.5)*0.08+px*0.25;
-      head.rotation.y=px*0.4;
-      head.rotation.x=py*0.22;
-      char.position.y=-0.6+Math.sin(t*1.2)*0.04;
+      // card tilts toward the cursor like a held photograph
+      card.rotation.y=px*0.55+Math.sin(t*0.4)*0.05;
+      card.rotation.x=py*0.3+Math.sin(t*0.6)*0.02;
+      card.position.y=0.5+Math.sin(t*1.1)*0.06;
+      halo.material.opacity=0.6+Math.sin(t*1.3)*0.15;
+      // holo scan-line sweeps down every ~4s
+      const sk=(t%4)/4;
+      if(sk<0.35){scan.position.y=CH/2-(sk/0.35)*CH;scan.material.opacity=0.55*Math.sin((sk/0.35)*Math.PI);}
+      else scan.material.opacity=0;
       ringGrp.rotation.y=t*0.25;
       ring.material.opacity=0.2+Math.sin(t*0.8)*0.06;
       shards.forEach(s=>{s.position.y=s.userData.by+Math.sin(t*1.1+s.userData.ph)*0.09;s.rotation.z=Math.sin(t*0.7+s.userData.ph)*0.05;});
@@ -1721,7 +1793,7 @@ function setupGestures(bg){
 
   let active=false,stream=null,hands=null,loopTimer=null,busy=false;
   let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
-  let pinched=false,lastX=null,lastT=0,swipeCool=0;
+  let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0;
 
   const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('load fail '+src));document.head.appendChild(s);});
 
@@ -1745,13 +1817,22 @@ function setupGestures(bg){
   function onResults(r){
     busy=false;
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
-    if(!lm){cursor.style.display='none';status.textContent='Show your palm ✋';scrollVel*=.9;return;}
+    const now=performance.now();
+    if(!lm){
+      /* grace window: tracking drops for a few frames constantly —
+         keep the cursor up (faded) instead of blinking it off */
+      scrollVel*=.9;
+      if(now-lastSeen<600){cursor.classList.add('lost');return;}
+      cursor.style.display='none';cursor.classList.remove('lost');
+      status.textContent='Show your palm ✋';
+      return;
+    }
+    lastSeen=now;cursor.classList.remove('lost');
     status.textContent='Tracking ✋';
     /* palm centre (middle-finger MCP), mirrored */
     const palm=lm[9];
     const nx=1-palm.x, ny=palm.y;
-    const px=nx*innerWidth, py=ny*innerHeight;
-    smX=lerp(smX,px,.35);smY=lerp(smY,py,.35);
+    smX=lerp(smX,nx*innerWidth,.3);smY=lerp(smY,ny*innerHeight,.3);
     cursor.style.display='block';
     cursor.style.transform=`translate(${smX}px,${smY}px)`;
     /* parallax: hand steers the cosmos */
@@ -1762,25 +1843,32 @@ function setupGestures(bg){
     const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
     const isFist=foldAvg<0.9;
     const modalOpen=projModalApi&&projModalApi.isOpen();
-    /* ✊ fist = turbo scroll (direction from hand height) */
+    /* scrolling: wide dead zone + quadratic ease = controllable.
+       ✊ fist = turbo (faster, still capped) */
     if(isFist){
       status.textContent='✊ Turbo scroll';
-      scrollVel=lerp(scrollVel,(ny-0.5)*520,.3);
-    }else if(ny<.3) scrollVel=lerp(scrollVel,-(0.3-ny)*260,.22);
-    else if(ny>.7) scrollVel=lerp(scrollVel,(ny-0.7)*260,.22);
-    else scrollVel*=.85;
+      const d=ny-0.5;
+      const k=Math.max(0,Math.abs(d)-0.14)/0.36;      // 0 at dead zone edge → 1 at frame edge
+      scrollVel=lerp(scrollVel,Math.sign(d)*k*k*45,.18);
+    }else if(ny<.34){
+      const k=(0.34-ny)/0.34;
+      scrollVel=lerp(scrollVel,-k*k*22,.15);
+    }else if(ny>.66){
+      const k=(ny-0.66)/0.34;
+      scrollVel=lerp(scrollVel,k*k*22,.15);
+    }else scrollVel*=.85;
+    scrollVel=clamp(scrollVel,-48,48);
     /* fast horizontal swipe → jump section (not while fist/modal) */
-    const now=performance.now();
     if(lastX!=null&&!isFist&&!modalOpen){
       const vx=(nx-lastX)/Math.max(.001,(now-lastT)/1000); // screens/sec
       if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
     }
     lastX=nx;lastT=now;
-    /* pinch: thumb tip ↔ index tip (middle finger must be extended
-       so a closing fist never fires accidental clicks) */
+    /* pinch: thumb tip ↔ index tip (middle finger extended so a
+       closing fist can't misfire; 400ms cooldown between pinches) */
     const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/hand;
-    if(ratio<.38&&!pinched&&fold(12)>1.05){
-      pinched=true;
+    if(ratio<.42&&!pinched&&fold(12)>0.9&&now>pinchCool){
+      pinched=true;pinchCool=now+400;
       cursor.classList.add('pinch','burst');
       setTimeout(()=>cursor.classList.remove('burst'),520);
       bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
@@ -1796,7 +1884,7 @@ function setupGestures(bg){
           else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened';}
         }
       }
-    }else if(ratio>.5&&pinched){pinched=false;cursor.classList.remove('pinch');}
+    }else if(ratio>.58&&pinched){pinched=false;cursor.classList.remove('pinch');}
   }
 
   async function start(){
@@ -1806,7 +1894,7 @@ function setupGestures(bg){
       stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
       video.srcObject=stream;await video.play();
       hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
-      hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});
+      hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.5,minTrackingConfidence:.5});
       hands.onResults(onResults);
       active=true;btn.classList.add('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gestures ON';
       status.textContent='Show your palm ✋';
@@ -1831,7 +1919,7 @@ function setupGestures(bg){
     hud.classList.remove('on');cursor.style.display='none';
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
     bg&&bg.releasePointer();
-    lastX=null;pinched=false;scrollVel=0;
+    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;
   }
   btn.addEventListener('click',()=>active?stop():start());
 
