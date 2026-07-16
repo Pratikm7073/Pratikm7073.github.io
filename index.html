@@ -118,6 +118,11 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .career-row .desc{color:#aaa;font-size:14.5px;line-height:1.7;font-weight:300}
 .career-row .desc strong{color:#fff;font-weight:500}
 
+/* CAREER VIBE SCENE */
+.career-split{display:grid;grid-template-columns:1.15fr .85fr;gap:3vw;align-items:start}
+.career-split .career-list{max-width:none}
+#career-canvas{width:100%;height:74vh;display:block;position:sticky;top:13vh}
+
 /* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
 .metric{border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:48px 40px;position:relative;transition:border-color .3s}
@@ -302,6 +307,8 @@ nav.scrolled{background:rgba(8,8,12,.6)}
   #desk-canvas{height:50vh}
   .whatido-title{position:static;margin-bottom:20px}
   .career-row{grid-template-columns:1fr;gap:12px;padding:30px 0}
+  .career-split{grid-template-columns:1fr}
+  #career-canvas{height:46vh;position:static}
   .work-row{grid-template-columns:1fr;gap:18px;padding:34px 0}
   .metrics{grid-template-columns:1fr}
   .contact-grid{grid-template-columns:1fr;gap:30px}
@@ -422,6 +429,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <section class="section-pad">
   <div class="section-eyebrow">Career &amp; Experience</div>
   <h2 class="section-title">My career &amp; <em>experience</em></h2>
+  <div class="career-split">
   <div class="career-list">
     <div class="career-row rv">
       <div class="yr">2022</div>
@@ -438,6 +446,8 @@ nav.scrolled{background:rgba(8,8,12,.6)}
       <div class="role">MSc Cybersecurity<span class="sub">United Kingdom · 2026</span></div>
       <div class="desc">Dissertation on <strong>cloud-native SOAR architecture</strong> benchmarking automated containment against manual triage, cutting Mean-Time-to-Contain from 380s to 41s. Focus on AI ethics, threat analysis &amp; secure programming.</div>
     </div>
+  </div>
+  <canvas id="career-canvas"></canvas>
   </div>
 </section>
 
@@ -1471,6 +1481,223 @@ function buildDesk(){
 }
 
 /* ════════════════════════════════════════════════
+   CAREER VIBE SCENE an avatar strolls in, pops in
+   his earpods and vibes while scrolling his phone
+════════════════════════════════════════════════ */
+function buildVibe(){
+  const canvas=document.getElementById('career-canvas');
+  if(!canvas) return;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.15));
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
+  const env=studioEnv(renderer);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(36,1,0.1,100);
+  camera.position.set(0,1.7,7.4);
+  const look=new THREE.Vector3(0,1.25,0);
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
+  resize();new ResizeObserver(resize).observe(canvas);
+
+  scene.add(new THREE.AmbientLight(0x39415a,2.2));
+  const key=new THREE.DirectionalLight(0xbfd0ff,1.1);key.position.set(-4,6,4);scene.add(key);
+  const fill=new THREE.DirectionalLight(0xd8e4ff,0.75);fill.position.set(1.5,2.5,7);scene.add(fill);
+  const pink=new THREE.PointLight(0xe0457b,1.6,14,2);pink.position.set(3,2.5,2);scene.add(pink);
+  const cyan=new THREE.PointLight(0x5ce1e6,1.4,14,2);cyan.position.set(-3.5,1.5,-1);scene.add(cyan);
+
+  /* materials — same family as the SOC analyst */
+  const hoodie=new THREE.MeshStandardMaterial({color:0x232c3e,roughness:.9,envMap:env,envMapIntensity:.18});
+  const jeans=new THREE.MeshStandardMaterial({color:0x2b3a52,roughness:.85,envMap:env,envMapIntensity:.15});
+  const skin=new THREE.MeshStandardMaterial({color:0x9c6644,roughness:.55,envMap:env,envMapIntensity:.4});
+  const hairM=new THREE.MeshStandardMaterial({color:0x14100d,roughness:.9});
+  const white=new THREE.MeshStandardMaterial({color:0xf5f5f7,roughness:.3,envMap:env,envMapIntensity:.7});
+  const shoeM=new THREE.MeshStandardMaterial({color:0xe0457b,roughness:.35,envMap:env,envMapIntensity:.7});
+
+  const man=new THREE.Group();scene.add(man);
+
+  /* hips + torso + head */
+  const hips=new THREE.Mesh(new THREE.SphereGeometry(.26,20,16),jeans);
+  hips.scale.set(1.15,.7,.85);hips.position.y=1.32;man.add(hips);
+  const torso=new THREE.Mesh(new THREE.SphereGeometry(.4,28,24),hoodie);
+  torso.scale.set(1.05,1.35,.78);torso.position.y=1.86;man.add(torso);
+  const hood=new THREE.Mesh(new THREE.TorusGeometry(.2,.09,12,22),hoodie);
+  hood.position.set(0,2.28,-.05);hood.rotation.x=1.2;man.add(hood);
+  const headG=new THREE.Group();headG.position.y=2.52;man.add(headG);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.3,32,28),skin);
+  head.scale.set(1,1.12,.97);headG.add(head);
+  const hair=new THREE.Mesh(new THREE.SphereGeometry(.31,28,20,0,Math.PI*2,0,Math.PI*.55),hairM);
+  hair.position.y=.05;headG.add(hair);
+  [-1,1].forEach(sd=>{
+    const ear=new THREE.Mesh(new THREE.SphereGeometry(.075,12,12),skin);
+    ear.scale.set(.55,.9,.5);ear.position.set(sd*.29,-.02,0);headG.add(ear);
+  });
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(.06,12,12),skin);
+  nose.position.set(0,-.06,.3);headG.add(nose);
+  /* earpods (hidden until he puts them in) */
+  const pods=[];
+  [-1,1].forEach(sd=>{
+    const pod=new THREE.Mesh(new THREE.SphereGeometry(.045,10,10),white);
+    pod.position.set(sd*.31,-.02,.03);pod.visible=false;headG.add(pod);
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,.09,8),white);
+    stem.position.set(sd*.315,-.1,.04);stem.visible=false;headG.add(stem);
+    pods.push(pod,stem);
+  });
+
+  /* articulated limbs: shoulder→elbow, hip→knee */
+  function seg(len,r0,r1,mat){const m=new THREE.Mesh(new THREE.CylinderGeometry(r0,r1,len,12),mat);m.position.y=-len/2;return m;}
+  function arm(sd){
+    const sh=new THREE.Group();sh.position.set(sd*.44,2.18,0);man.add(sh);
+    sh.add(seg(.5,.085,.075,hoodie));
+    const el=new THREE.Group();el.position.y=-.5;sh.add(el);
+    el.add(seg(.42,.07,.06,hoodie));
+    const hand=new THREE.Mesh(new THREE.SphereGeometry(.085,12,12),skin);
+    hand.position.y=-.48;el.add(hand);
+    return {sh,el,hand};
+  }
+  function leg(sd){
+    const hp=new THREE.Group();hp.position.set(sd*.17,1.28,0);man.add(hp);
+    hp.add(seg(.58,.11,.095,jeans));
+    const kn=new THREE.Group();kn.position.y=-.58;hp.add(kn);
+    kn.add(seg(.52,.09,.075,jeans));
+    const shoe=new THREE.Mesh(new RoundedBoxGeometry(.18,.12,.34,2,.05),shoeM);
+    shoe.position.set(0,-.56,.06);kn.add(shoe);
+    const sole=new THREE.Mesh(new RoundedBoxGeometry(.19,.04,.35,2,.02),white);
+    sole.position.set(0,-.63,.06);kn.add(sole);
+    return {hp,kn};
+  }
+  const armR=arm(1),armL=arm(-1),legR=leg(1),legL=leg(-1);
+
+  /* phone in the right hand (hidden until the vibe phase) */
+  const phone=new THREE.Group();phone.visible=false;armR.el.add(phone);
+  const body=new THREE.Mesh(new RoundedBoxGeometry(.16,.32,.025,2,.012),new THREE.MeshStandardMaterial({color:0x0c0d12,roughness:.4,metalness:.4,envMap:env}));
+  phone.add(body);
+  const scrM=new THREE.MeshBasicMaterial({color:0x9fd8ff});
+  const scr=new THREE.Mesh(new THREE.PlaneGeometry(.14,.29),scrM);
+  scr.position.z=.014;phone.add(scr);
+  phone.position.set(0,-.5,.12);phone.rotation.x=-1.05;
+  const phoneGlow=new THREE.PointLight(0x9fd8ff,0,1.6,2);
+  phoneGlow.position.set(0,-.45,.25);armR.el.add(phoneGlow);
+
+  /* floor: podium + ring, consistent with the other scenes */
+  const podium=new THREE.Mesh(new THREE.CylinderGeometry(2.1,2.22,.14,48),
+    new THREE.MeshPhysicalMaterial({color:0x0a0c14,roughness:.2,metalness:.55,envMap:env,envMapIntensity:.9,clearcoat:.7}));
+  podium.position.y=-.07;scene.add(podium);
+  const rim=new THREE.Mesh(new THREE.TorusGeometry(2.16,.016,8,72),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:.45}));
+  rim.rotation.x=Math.PI/2;rim.position.y=.02;scene.add(rim);
+
+  /* floating music notes (sprite pool) */
+  const noteTex=(()=>{const c=document.createElement('canvas');c.width=64;c.height=64;const x=c.getContext('2d');
+    x.fillStyle='#5ce1e6';x.font='700 46px serif';x.textAlign='center';x.textBaseline='middle';
+    x.shadowColor='#5ce1e6';x.shadowBlur=10;x.fillText('♪',32,34);return new THREE.CanvasTexture(c);})();
+  const notes=[];
+  for(let i=0;i<7;i++){
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:noteTex,transparent:true,opacity:0,depthWrite:false}));
+    sp.scale.setScalar(.28);scene.add(sp);
+    notes.push({sp,t:-1,ph:Math.random()*7});
+  }
+  let nextNote=0;
+
+  /* ── timeline: walk in → insert pods → vibe+scroll → walk out ── */
+  const T_WALK=2.6,T_INSERT=4.4,T_VIBE=12.0,T_EXIT=14.6;
+  const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  let visible=false;
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.15}).observe(canvas);
+  const clock=new THREE.Clock();
+  let T=0;
+
+  function walkPose(w,speed){
+    const sw=Math.sin(w*speed);
+    legR.hp.rotation.x=sw*.55;legL.hp.rotation.x=-sw*.55;
+    legR.kn.rotation.x=Math.max(0,-Math.sin(w*speed-.6))*.9;
+    legL.kn.rotation.x=Math.max(0,Math.sin(w*speed-.6))*.9;
+    armR.sh.rotation.x=-sw*.45;armL.sh.rotation.x=sw*.45;
+    armR.el.rotation.x=-.25;armL.el.rotation.x=-.25;
+    man.position.y=Math.abs(Math.cos(w*speed))*.05;
+  }
+
+  function frame(){
+    const dt=Math.min(clock.getDelta(),.05);
+    if(visible){
+      T+=dt;const t=T%T_EXIT;
+      const beat=T*4.4; // ~132bpm groove
+
+      if(t<T_WALK){ /* walk in from the left */
+        const u=t/T_WALK;
+        man.position.x=lerp(-3.4,0,u);
+        man.rotation.y=lerp(.9,0,ease(Math.min(1,u*1.6)));
+        pods.forEach(p=>p.visible=false);phone.visible=false;phoneGlow.intensity=0;
+        walkPose(t,9);
+        headG.rotation.x=0;headG.rotation.z=0;
+      }else if(t<T_INSERT){ /* stop & put the earpods in */
+        const u=(t-T_WALK)/(T_INSERT-T_WALK);
+        man.position.x=0;man.position.y=0;man.rotation.y=0;
+        legR.hp.rotation.x=legL.hp.rotation.x=0;
+        legR.kn.rotation.x=legL.kn.rotation.x=.04;
+        const reach=u<.55?ease(u/.55):1-ease((u-.55)/.45);
+        [armR,armL].forEach((a,i)=>{
+          const sd=i?-1:1;
+          a.sh.rotation.x=lerp(0,-2.35,reach);
+          a.sh.rotation.z=lerp(0,sd*.55,reach);
+          a.el.rotation.x=lerp(-.25,-1.5,reach);
+        });
+        if(u>.5)pods.forEach(p=>p.visible=true); // pods are in
+        headG.rotation.z=Math.sin(t*2)*.03;
+      }else if(t<T_VIBE){ /* vibing: head bob + phone scroll */
+        const u=Math.min(1,(t-T_INSERT)/.7);
+        phone.visible=true;
+        phoneGlow.intensity=lerp(0,.9,u)+Math.sin(T*13)*.12;
+        /* right arm holds the phone up, left arm grooves at his side */
+        armR.sh.rotation.x=lerp(armR.sh.rotation.x,-.55,u*.2);
+        armR.sh.rotation.z=lerp(armR.sh.rotation.z,-.18,u*.2);
+        armR.el.rotation.x=lerp(armR.el.rotation.x,-1.85,u*.2);
+        armL.sh.rotation.x=lerp(armL.sh.rotation.x,Math.sin(beat)*.14,.15);
+        armL.sh.rotation.z=lerp(armL.sh.rotation.z,-.12,.15);
+        armL.el.rotation.x=lerp(armL.el.rotation.x,-.4+Math.sin(beat+1)*.12,.15);
+        /* the groove */
+        man.position.y=Math.abs(Math.sin(beat))*.06;
+        man.rotation.y=Math.sin(beat*.5)*.1;
+        headG.rotation.x=.42+Math.sin(beat)*.09;          // looking at phone, nodding
+        headG.rotation.z=Math.sin(beat*.5)*.09;
+        legR.kn.rotation.x=.06+Math.max(0,Math.sin(beat))*.05;
+        legL.kn.rotation.x=.06+Math.max(0,-Math.sin(beat))*.05;
+        /* screen flicker like scrolling content */
+        scrM.color.setHSL(.55+Math.sin(T*7)*.04,.6,.72+Math.sin(T*11)*.06);
+        /* music notes */
+        if(T>nextNote){
+          nextNote=T+.7+Math.random()*.5;
+          const n=notes.find(n=>n.t<0);
+          if(n){n.t=0;n.sp.position.set(man.position.x+(Math.random()-.5)*.7,2.7,(Math.random()-.5)*.4);}
+        }
+      }else{ /* walk out to the right */
+        const u=(t-T_VIBE)/(T_EXIT-T_VIBE);
+        man.position.x=lerp(0,3.6,u);
+        man.rotation.y=lerp(0,-.9,ease(Math.min(1,u*2)));
+        phone.visible=false;phoneGlow.intensity=0;
+        walkPose(t,9);
+        headG.rotation.x=0;headG.rotation.z=Math.sin(beat*.5)*.06; // still vibing on the way out
+      }
+
+      /* note physics */
+      notes.forEach(n=>{
+        if(n.t>=0){
+          n.t+=dt;
+          n.sp.position.y+=dt*.75;
+          n.sp.position.x+=Math.sin(T*2+n.ph)*.004;
+          n.sp.material.opacity=.85*Math.sin(Math.min(1,n.t/2.4)*Math.PI);
+          if(n.t>2.4){n.t=-1;n.sp.material.opacity=0;}
+        }
+      });
+
+      rim.material.opacity=.35+Math.sin(T*1.4)*.12;
+      camera.position.x=Math.sin(T*.12)*.5;
+      camera.lookAt(look);
+      renderer.render(scene,camera);
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+/* ════════════════════════════════════════════════
    TECHSTACK floating 3D logo spheres (the star)
 ════════════════════════════════════════════════ */
 function logoSphereTexture(label,bg,fg){
@@ -2246,6 +2473,7 @@ function boot(){
   buildHero();
   buildAbout();
   buildDesk();
+  buildVibe();
   buildTech();
   proximityReveal();
 
