@@ -321,7 +321,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 <div id="gestureHud">
   <video id="gestureCam" playsinline muted></video>
   <div class="g-status" id="gStatus">Starting camera…</div>
-  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🙌 Both hands</b> drag=rotate · twist=roll · hands apart=zoom out / together=zoom in · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
+  <div class="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🔒 Grab the reactor</b> (pinch-hold / palm / fist over it) then rotate your wrist — it mirrors your hand · <b>🙌 Both hands</b> drag=rotate · apart=zoom out / together=zoom in · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup · <b>Pinch</b> click / shockwave</div>
   <div class="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
 </div>
 <div id="handCursor"><div class="hc-ring"></div><div class="hc-core"></div><div class="hc-pulse"></div><div class="hc-arr u">▲</div><div class="hc-arr d">▼</div></div>
@@ -788,7 +788,12 @@ function buildHero(){
   core.scale.setScalar(0.001); // ignition
   scene.add(core);
   let manualRot=null,manualAt=0,zoomCur=1;
-  heroApi={manual(rx,ry,rz,sc){manualRot={rx,ry,rz,sc};manualAt=performance.now();}};
+  const quatTarget=new THREE.Quaternion();let quatAt=-1e9;
+  heroApi={
+    manual(rx,ry,rz,sc){manualRot={rx,ry,rz,sc};manualAt=performance.now();},
+    manualQuat(q){quatTarget.copy(q);quatAt=performance.now();},
+    getQuat(){return core.quaternion;},
+  };
 
   // base ring + orbit dots grounding the hologram
   const ringGrp=new THREE.Group();ringGrp.position.y=-1.55;scene.add(ringGrp);
@@ -836,13 +841,20 @@ function buildHero(){
       /* gimbal: cursor-follow by default; both-hands gesture takes
          over with free rotation + zoom, and the pose HOLDS for 4s
          after release before drifting home (Stark-lab style) */
-      const mAge=manualRot?performance.now()-manualAt:1e9;
-      const useManual=mAge<4000;
-      const kR=1-Math.pow(mAge<250?0.0005:useManual?0.05:0.001,dt);
-      core.rotation.x=lerp(core.rotation.x,useManual?manualRot.rx:py*0.35,kR);
-      core.rotation.y=lerp(core.rotation.y,useManual?manualRot.ry:px*0.55,kR);
-      core.rotation.z=lerp(core.rotation.z,useManual?manualRot.rz:0,kR);
-      zoomCur=lerp(zoomCur,useManual?manualRot.sc:1,kR);
+      const nowMs=performance.now();
+      const qAge=nowMs-quatAt,mAge=manualRot?nowMs-manualAt:1e9;
+      if(qAge<4000&&qAge<mAge){
+        /* Stark grab: mirror the wrist quaternion (snappy while held,
+           gentle during the 4s pose-hold after release) */
+        core.quaternion.slerp(quatTarget,1-Math.pow(qAge<300?0.0005:0.05,dt));
+      }else{
+        const useManual=mAge<4000;
+        const kR=1-Math.pow(mAge<250?0.0005:useManual?0.05:0.001,dt);
+        core.rotation.x=lerp(core.rotation.x,useManual?manualRot.rx:py*0.35,kR);
+        core.rotation.y=lerp(core.rotation.y,useManual?manualRot.ry:px*0.55,kR);
+        core.rotation.z=lerp(core.rotation.z,useManual?manualRot.rz:0,kR);
+        zoomCur=lerp(zoomCur,useManual?manualRot.sc:1,kR);
+      }
       core.scale.setScalar(Math.max(0.001,easeOutBack(Math.min(1,born))*0.85*zoomCur));
       core.position.y=0.55+Math.sin(t*1.1)*0.05;
 
@@ -1885,6 +1897,44 @@ function setupGestures(bg){
   let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
   let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0,pinchFrames=0,lastPinchAt=0;
   let twoHand=false,pmx=0,pmy=0,pang=0,pspread=0,rotX=0,rotY=0,rotZ=0,zoomT=1;
+  /* ── STARK GRAB: mirror the hand's own 3D orientation ── */
+  let grab=null,palmHold=0;
+  const gUp=new THREE.Vector3(),gAc=new THREE.Vector3(),gNorm=new THREE.Vector3(),gAxis=new THREE.Vector3();
+  const gSmUp=new THREE.Vector3(0,1,0),gSmAc=new THREE.Vector3(1,0,0);
+  const gM=new THREE.Matrix4(),gQ=new THREE.Quaternion(),gQ0inv=new THREE.Quaternion(),gQC0=new THREE.Quaternion(),gQd=new THREE.Quaternion(),gT=new THREE.Quaternion();
+  function handQuat(lm,reset){
+    /* palm frame in view space: mirror x, flip y (screen-down) and z */
+    gUp.set(-(lm[9].x-lm[0].x),-(lm[9].y-lm[0].y),-(lm[9].z-lm[0].z)).normalize();
+    gAc.set(-(lm[5].x-lm[17].x),-(lm[5].y-lm[17].y),-(lm[5].z-lm[17].z)).normalize();
+    if(reset){gSmUp.copy(gUp);gSmAc.copy(gAc);}
+    else{gSmUp.lerp(gUp,.45).normalize();gSmAc.lerp(gAc,.45).normalize();}
+    gNorm.crossVectors(gSmAc,gSmUp).normalize();
+    gAc.crossVectors(gSmUp,gNorm).normalize();
+    gM.makeBasis(gAc,gSmUp,gNorm);
+    return gQ.setFromRotationMatrix(gM);
+  }
+  function heroUnderCursor(){
+    const h=document.getElementById('hero');
+    if(!h)return false;
+    const rc=h.getBoundingClientRect();
+    if(rc.bottom<100)return false;
+    return smX>=rc.left&&smX<=rc.right&&smY>=Math.max(0,rc.top)&&smY<=Math.min(rc.bottom,innerHeight);
+  }
+  function startGrab(mode,lm){
+    gQ0inv.copy(handQuat(lm,true)).invert();
+    gQC0.copy(heroApi.getQuat());
+    grab={mode};
+    status.textContent='🔒 Grabbed '+(mode==='pinch'?'🤏':mode==='fist'?'✊':'✋')+' — rotate your hand';
+  }
+  function updateGrab(lm){
+    gQd.copy(handQuat(lm,false)).multiply(gQ0inv);
+    if(gQd.w<0){gQd.x*=-1;gQd.y*=-1;gQd.z*=-1;gQd.w*=-1;}
+    const w=clamp(gQd.w,-1,1),ang=2*Math.acos(w),sn=Math.sqrt(Math.max(1e-9,1-w*w));
+    gAxis.set(gQd.x/sn,gQd.y/sn,gQd.z/sn);
+    gQd.setFromAxisAngle(gAxis,ang*1.8);   // amplified 1.8x, same axis
+    gT.copy(gQd).multiply(gQC0);
+    heroApi.manualQuat(gT);
+  }
 
   const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>rej(new Error('load fail '+src));document.head.appendChild(s);});
 
@@ -1910,7 +1960,7 @@ function setupGestures(bg){
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
     const now=performance.now();
     if(!lm){
-      twoHand=false;
+      twoHand=false;grab=null;palmHold=0;
       /* grace window: tracking drops for a few frames constantly
          (especially with the hand low in the camera frame) — keep the
          cursor up AND keep the current scroll velocity going so a
@@ -1952,7 +2002,7 @@ function setupGestures(bg){
       cursor.style.display='block';
       cursor.style.transform=`translate(${smX}px,${smY}px)`;
       cursor.classList.remove('scrollUp','scrollDn');
-      scrollVel*=.85;lastX=null;pinchFrames=0;
+      scrollVel*=.85;lastX=null;pinchFrames=0;grab=null;palmHold=0;
       return;
     }
     twoHand=false;
@@ -1978,6 +2028,61 @@ function setupGestures(bg){
     const pinchPose=ratio<.5&&reach>1.05;
     const isFist=foldAvg<0.9&&!pinchPose;
     const modalOpen=projModalApi&&projModalApi.isOpen();
+    const overHero=heroUnderCursor();
+    /* pinch state machine (what a pinch DOES is decided below) */
+    let pinchStart=false;
+    if(pinchPose&&!pinched&&now>pinchCool){pinched=true;pinchCool=now+250;pinchStart=true;}
+    else if((ratio>.7||reach<0.95)&&pinched){pinched=false;cursor.classList.remove('pinch');}
+
+    /* active grab: reactor mirrors the wrist while the trigger holds */
+    if(grab){
+      const alive=grab.mode==='pinch'?pinched
+        :grab.mode==='fist'?(isFist&&overHero)
+        :(overHero&&!isFist&&!pinchPose&&ny>0.3&&ny<0.6);
+      if(alive){
+        updateGrab(lm);
+        cursor.classList.remove('scrollUp','scrollDn');
+        scrollVel*=.85;lastX=nx;lastT=now;palmHold=0;
+        return;
+      }
+      grab=null;
+    }
+    /* pinch actions: over the reactor = grab it; elsewhere = click */
+    if(pinchStart){
+      cursor.classList.add('pinch','burst');
+      setTimeout(()=>cursor.classList.remove('burst'),520);
+      const el=document.elementFromPoint(smX,smY);
+      const interactive=modalOpen||(el&&(el.closest('a')||el.closest('.work-row')));
+      if(!interactive&&overHero&&heroApi){
+        startGrab('pinch',lm);
+        lastPinchAt=now;lastX=nx;lastT=now;
+        return;
+      }
+      bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
+      const dbl=now-lastPinchAt<700;lastPinchAt=now;
+      if(modalOpen&&dbl){
+        projModalApi.close();status.textContent='✕ Popup closed';
+      }else if(el){
+        if(modalOpen){
+          const a=el.closest('a');
+          if(a) a.click();
+          else if(el.closest('.pm-close')||!el.closest('.pm-card')) projModalApi.close();
+        }else{
+          const a=el.closest('a'),row=el.closest('.work-row');
+          if(a) a.click();
+          else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened · pinch×2 = close';}
+        }
+      }
+    }
+    /* ✊ fist over the reactor = grab (beats turbo scroll there) */
+    if(isFist&&!grab&&overHero&&heroApi&&ny>0.3&&ny<0.6){
+      startGrab('fist',lm);lastX=nx;lastT=now;return;
+    }
+    /* ✋ open palm resting over the reactor auto-grabs after ~0.25s */
+    if(!isFist&&!pinchPose&&overHero&&heroApi&&ny>0.34&&ny<0.55){
+      if(++palmHold>=4&&!grab){startGrab('palm',lm);lastX=nx;lastT=now;return;}
+    }else palmHold=0;
+
     /* scrolling: asymmetric zones — the DOWN zone starts just below
        centre (holding a hand at the bottom edge of a webcam frame
        loses tracking, so never require it). Quadratic ease, capped.
@@ -2007,30 +2112,6 @@ function setupGestures(bg){
       if(now>swipeCool&&Math.abs(vx)>2.6){jumpSection(vx>0?1:-1);swipeCool=now+1100;}
     }
     lastX=nx;lastT=now;
-    /* pinch fires on a single confirmed pose frame */
-    if(pinchPose&&!pinched&&now>pinchCool){
-      pinched=true;pinchCool=now+250;
-      const dbl=now-lastPinchAt<700;lastPinchAt=now;
-      cursor.classList.add('pinch','burst');
-      setTimeout(()=>cursor.classList.remove('burst'),520);
-      bg&&bg.pulse(smX/innerWidth,smY/innerHeight);
-      if(modalOpen&&dbl){
-        projModalApi.close();status.textContent='✕ Popup closed';
-      }else{
-        const el=document.elementFromPoint(smX,smY);
-        if(el){
-          if(modalOpen){
-            const a=el.closest('a');
-            if(a) a.click();
-            else if(el.closest('.pm-close')||!el.closest('.pm-card')) projModalApi.close();
-          }else{
-            const a=el.closest('a'),row=el.closest('.work-row');
-            if(a) a.click();
-            else if(row&&row.dataset.proj&&projModalApi){projModalApi.open(row.dataset.proj);status.textContent='📂 Project opened · pinch×2 = close';}
-          }
-        }
-      }
-    }else if((ratio>.7||reach<0.95)&&pinched){pinched=false;cursor.classList.remove('pinch');}
   }
 
   async function start(){
@@ -2066,7 +2147,7 @@ function setupGestures(bg){
     cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';
     bg&&bg.releasePointer();
-    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;pinchFrames=0;lastPinchAt=0;twoHand=false;
+    lastX=null;pinched=false;scrollVel=0;lastSeen=0;pinchCool=0;pinchFrames=0;lastPinchAt=0;twoHand=false;grab=null;palmHold=0;
   }
   btn.addEventListener('click',()=>active?stop():start());
 
