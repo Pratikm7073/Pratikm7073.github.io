@@ -4,6 +4,13 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 const lerp=(a,b,t)=>a+(b-a)*t;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
+/* while the user is actively scrolling, section scenes drop to half
+   frame-rate so the main thread/GPU budget goes to the scroll itself;
+   full rate resumes 150ms after the last scroll event */
+let scrollBusyUntil=0;
+addEventListener('scroll',()=>{scrollBusyUntil=performance.now()+150;},{passive:true});
+const scrollBusy=()=>performance.now()<scrollBusyUntil;
+
 /* shared studio env (one PMREM, reused) */
 let ENV=null;
 function studioEnv(renderer){
@@ -265,6 +272,7 @@ function buildHero(){
   const easeOutBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
 
   function frame(){
+    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
     const dt=Math.min(clock.getDelta(),0.05);
     if(vis){
       t+=dt;
@@ -472,6 +480,7 @@ function buildAbout(){
   const A=new THREE.Vector3(),B=new THREE.Vector3();
   let t=0;
   function frame(){
+    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
     const dt=Math.min(clock.getDelta(),0.05);
     if(visible){
       t+=dt;
@@ -849,6 +858,7 @@ function buildDesk(){
   let t=0,lastPaint=0,lastRack=0,visible=false,leanX=0,camPush=0;
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.15}).observe(canvas);
   function frame(){
+    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
     const dt=Math.min(clock.getDelta(),0.05);
     if(visible){
       t+=dt;stateT+=dt;
@@ -1020,6 +1030,7 @@ function buildTech(){
   const clock=new THREE.Clock();
   let t=0;
   function frame(){
+    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
     const dt=Math.min(clock.getDelta(),0.05);
     if(visible){
       t+=dt;
@@ -1182,6 +1193,7 @@ function buildBackground(){
   function frame(){
     frameFlip=!frameFlip;
     if(frameFlip){requestAnimationFrame(frame);return;} // bg runs at 30fps
+    if(scrollBusy()&&(frame._s=!frame._s)){requestAnimationFrame(frame);return;} // 15fps while scrolling
     const dt=Math.min(clock.getDelta(),.1);
     const t=uni.uTime.value+=dt;
     const k=1-Math.pow(.002,dt);
@@ -1292,6 +1304,19 @@ function setupGestures(bg){
       octx.shadowBlur=0;
     });
   }
+  /* ── camera geometry: webcam frames are 4:3, screens ~16:9.
+     camA makes landmark space ISOTROPIC (equal units per physical cm
+     on both axes); calib() maps the hand to screen px with uniform
+     gain so diagonal motion is never skewed and edges are reachable */
+  let camA=4/3;
+  function calib(nx,ny){
+    const scrA=innerWidth/innerHeight;
+    const Gy=1.6,Gx=Gy*camA/scrA;
+    return [
+      clamp((0.5+(nx-0.5)*Gx)*innerWidth,0,innerWidth),
+      clamp((0.5+(ny-0.5)*Gy)*innerHeight,0,innerHeight),
+    ];
+  }
   /* ── STARK GRAB: mirror the hand's own 3D orientation ── */
   let grab=null,palmHold=0;
   const gUp=new THREE.Vector3(),gAc=new THREE.Vector3(),gNorm=new THREE.Vector3(),gAxis=new THREE.Vector3();
@@ -1299,8 +1324,8 @@ function setupGestures(bg){
   const gM=new THREE.Matrix4(),gQ=new THREE.Quaternion(),gQ0inv=new THREE.Quaternion(),gQC0=new THREE.Quaternion(),gQd=new THREE.Quaternion(),gT=new THREE.Quaternion();
   function handQuat(lm,reset){
     /* palm frame in view space: mirror x, flip y (screen-down) and z */
-    gUp.set(-(lm[9].x-lm[0].x),-(lm[9].y-lm[0].y),-(lm[9].z-lm[0].z)).normalize();
-    gAc.set(-(lm[5].x-lm[17].x),-(lm[5].y-lm[17].y),-(lm[5].z-lm[17].z)).normalize();
+    gUp.set(-(lm[9].x-lm[0].x)*camA,-(lm[9].y-lm[0].y),-(lm[9].z-lm[0].z)*camA).normalize();
+    gAc.set(-(lm[5].x-lm[17].x)*camA,-(lm[5].y-lm[17].y),-(lm[5].z-lm[17].z)*camA).normalize();
     if(reset){gSmUp.copy(gUp);gSmAc.copy(gAc);}
     else{gSmUp.lerp(gUp,.45).normalize();gSmAc.lerp(gAc,.45).normalize();}
     gNorm.crossVectors(gSmAc,gSmUp).normalize();
@@ -1379,24 +1404,27 @@ function setupGestures(bg){
       let A=all[0][9],B=all[1][9];
       if(A.x<B.x){const tm=A;A=B;B=tm;}   // stable order (mirrored: left hand first)
       const x1=1-A.x,y1=A.y,x2=1-B.x,y2=B.y;
-      const mx=(x1+x2)/2,my=(y1+y2)/2;
-      const ang=Math.atan2(y2-y1,x2-x1);
-      const spread=Math.hypot(x2-x1,y2-y1);
-      if(!twoHand){twoHand=true;pmx=mx;pmy=my;pang=ang;pspread=spread;}
+      const mxN=(x1+x2)/2,myN=(y1+y2)/2;
+      /* geometry in aspect-true space — raw normalized webcam coords
+         are anisotropic, which skewed angle and spread */
+      const ang=Math.atan2(y2-y1,(x2-x1)*camA);
+      const spread=Math.hypot((x2-x1)*camA,y2-y1);
+      if(!twoHand){twoHand=true;pmx=mxN;pmy=myN;pang=ang;pspread=spread;}
       let dA=ang-pang;
       while(dA>Math.PI/2)dA-=Math.PI;while(dA<-Math.PI/2)dA+=Math.PI;
-      rotY+=(mx-pmx)*5.5;
-      rotX+=(my-pmy)*4.0;
+      rotY+=(mxN-pmx)*5.5;
+      rotX+=(myN-pmy)*4.0;
       rotZ=clamp(rotZ-dA*1.25,-2.6,2.6);
       /* zoom is ABSOLUTE: hand distance IS the zoom level.
          hands close together = zoomed in · far apart = zoomed out */
-      const k=clamp((spread-0.16)/0.55,0,1);
+      const k=clamp((spread-0.2)/0.7,0,1);
       zoomT=lerp(zoomT,2.2-k*(2.2-0.5),.28);
-      pmx=mx;pmy=my;pang=ang;pspread=spread;
+      pmx=mxN;pmy=myN;pang=ang;pspread=spread;
       heroApi.manual(rotX,rotY,rotZ,zoomT);
       skelMode='two';
       status.textContent=`🙌 Rotate · twist · zoom ${Math.round(zoomT*100)}%`;
-      smX=lerp(smX,mx*innerWidth,.3);smY=lerp(smY,my*innerHeight,.3);
+      const cc2=calib(mxN,myN);
+      smX=lerp(smX,cc2[0],.35);smY=lerp(smY,cc2[1],.35);
       cursor.style.display='block';
       cursor.style.transform=`translate(${smX}px,${smY}px)`;
       cursor.classList.remove('scrollUp','scrollDn');
@@ -1408,21 +1436,29 @@ function setupGestures(bg){
     /* palm centre (middle-finger MCP), mirrored */
     const palm=lm[9];
     const nx=1-palm.x, ny=palm.y;
-    smX=lerp(smX,nx*innerWidth,.3);smY=lerp(smY,ny*innerHeight,.3);
+    const cc=calib(nx,ny);
+    /* one-euro-style adaptive smoothing: heavy filtering while the
+       hand is still (no jitter), near-zero lag while it moves */
+    const spd=Math.hypot(cc[0]-smX,cc[1]-smY);
+    const kS=clamp(0.14+spd*0.012,0.16,0.85);
+    smX=lerp(smX,cc[0],kS);smY=lerp(smY,cc[1],kS);
     cursor.style.display='block';
     cursor.style.transform=`translate(${smX}px,${smY}px)`;
     /* parallax: hand steers the cosmos */
     bg&&bg.setPointer(nx*2-1,ny*2-1);
-    /* hand geometry: size + how folded each finger is */
-    const hand=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1;
-    const fold=i=>Math.hypot(lm[i].x-lm[9].x,lm[i].y-lm[9].y)/hand;
+    /* hand geometry in ASPECT-TRUE space: x scaled by the camera
+       aspect so every distance is isotropic — pinch/fist/reach ratios
+       stay consistent no matter how the hand is oriented */
+    const gX=i=>lm[i].x*camA, gY=i=>lm[i].y;
+    const hand=Math.hypot(gX(0)-gX(9),gY(0)-gY(9))||.1;
+    const fold=i=>Math.hypot(gX(i)-gX(9),gY(i)-gY(9))/hand;
     const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
     /* pinch vs fist: both bring thumb & index tips together, but a
        pinch holds the contact point OUT from the wrist while a fist
        pulls everything in — 'reach' tells them apart reliably */
-    const palmW=Math.hypot(lm[5].x-lm[17].x,lm[5].y-lm[17].y)||.08;
-    const ratio=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/palmW;
-    const reach=Math.hypot((lm[4].x+lm[8].x)/2-lm[0].x,(lm[4].y+lm[8].y)/2-lm[0].y)/palmW;
+    const palmW=Math.hypot(gX(5)-gX(17),gY(5)-gY(17))||.08;
+    const ratio=Math.hypot(gX(4)-gX(8),gY(4)-gY(8))/palmW;
+    const reach=Math.hypot((gX(4)+gX(8))/2-gX(0),(gY(4)+gY(8))/2-gY(0))/palmW;
     const pinchPose=ratio<.5&&reach>1.05;
     const isFist=foldAvg<0.9&&!pinchPose;
     if(pinchPose||pinched)skelMode='pinch';else if(isFist)skelMode='fist';
@@ -1519,6 +1555,7 @@ function setupGestures(bg){
       if(!window.Hands) await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js');
       stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
       video.srcObject=stream;await video.play();sizeOverlay();
+      if(video.videoWidth)camA=video.videoWidth/video.videoHeight;
       hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
       hands.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:.55,minTrackingConfidence:.6});
       hands.onResults(onResults);
@@ -1590,11 +1627,16 @@ function setupCareerViz(){
   place();new ResizeObserver(place).observe(viz);
 
   /* scroll progress through the career list drives everything */
-  let raf=null;
+  let raf=null,secTop=0,secH=1;
+  function measureSec(){
+    const b=viz.parentElement.getBoundingClientRect();
+    secTop=b.top+scrollY;secH=b.height;
+  }
+  measureSec();setTimeout(measureSec,2600);
+  addEventListener('resize',()=>requestAnimationFrame(measureSec),{passive:true});
   function update(){
     raf=null;
-    const r=viz.parentElement.getBoundingClientRect();
-    const p=clamp((innerHeight*.72-r.top)/(r.height*.9),0,1);
+    const p=clamp((innerHeight*.72-(secTop-scrollY))/(secH*.9),0,1);
     prog.style.strokeDashoffset=L*(1-p);
     const pt=prog.getPointAtLength(L*p);
     comet.setAttribute('cx',pt.x);comet.setAttribute('cy',pt.y);
@@ -1642,14 +1684,15 @@ function runPreloader(done){
 
 /* ════════════════════════════════════════════════
    PROXIMITY REVEAL cursor torchlight over rows
+   (in-memory rect cache: ZERO layout reads on the
+   scroll path — measurements happen once, then the
+   hot loop touches only cached numbers + scrollY)
 ════════════════════════════════════════════════ */
 function proximityReveal(){
   const rows=[...document.querySelectorAll('.career-row,.work-row')];
-  // these rows are driven by --r, not the generic .rv fade
   rows.forEach(r=>r.classList.remove('rv'));
 
   if(matchMedia('(hover:none)').matches){
-    // touch: row lights up when centered in viewport; tap focuses one
     const io=new IntersectionObserver(es=>es.forEach(e=>{
       e.target.style.setProperty('--r', e.isIntersecting?1:0.35);
     }),{rootMargin:'-32% 0% -32% 0%'});
@@ -1660,30 +1703,41 @@ function proximityReveal(){
     return;
   }
 
+  let rects=[];
+  function measure(){
+    const sy=scrollY,sx=scrollX;
+    rects=rows.map(el=>{
+      const b=el.getBoundingClientRect();
+      return {el,left:b.left+sx,right:b.right+sx,top:b.top+sy,bottom:b.bottom+sy};
+    });
+  }
+  measure();
+  addEventListener('resize',()=>requestAnimationFrame(measure),{passive:true});
+  addEventListener('load',()=>measure());
+  setTimeout(measure,2600); // re-measure after the entrance springs settle
+
   let raf=null,mx=-9999,my=-9999;
-  addEventListener('mousemove',e=>{
-    mx=e.clientX;my=e.clientY;
-    if(!raf)raf=requestAnimationFrame(update);
-  },{passive:true});
-  addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(update);},{passive:true});
+  const queue=()=>{if(!raf)raf=requestAnimationFrame(update);};
+  addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;queue();},{passive:true});
+  addEventListener('scroll',queue,{passive:true});
 
   function update(){
     raf=null;
-    for(const row of rows){
-      const b=row.getBoundingClientRect();
-      if(b.bottom<-120||b.top>innerHeight+120)continue;
-      // distance from cursor to the row rectangle
-      const dx=Math.max(b.left-mx,0,mx-b.right);
-      const dy=Math.max(b.top-my,0,my-b.bottom);
-      const d=Math.hypot(dx,dy);
-      const r=Math.max(0,1-d/280);
-      row.style.setProperty('--r',r.toFixed(3));
+    const sy=scrollY,vh=innerHeight;
+    for(const c of rects){
+      const vt=c.top-sy,vb=c.bottom-sy;
+      if(vb<-120||vt>vh+120)continue;
+      const dx=Math.max(c.left-mx,0,mx-c.right);
+      const dy=Math.max(vt-my,0,my-vb);
+      const r=Math.max(0,1-Math.hypot(dx,dy)/280);
+      c.el.style.setProperty('--r',r.toFixed(3));
       if(r>0.01){
-        row.style.setProperty('--mx',(mx-b.left)+'px');
-        row.style.setProperty('--my',(my-b.top)+'px');
+        c.el.style.setProperty('--mx',(mx-c.left)+'px');
+        c.el.style.setProperty('--my',(my-vt)+'px');
       }
     }
   }
+  update();
 }
 
 function boot(){
