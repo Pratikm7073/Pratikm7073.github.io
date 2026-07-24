@@ -190,10 +190,12 @@ export default function App() {
 
       <button id="gestureBtn" type="button"><span className="gb-dot"></span>✋ Gesture Control</button>
       <div id="gestureHud">
-        <video id="gestureCam" playsInline muted></video>
+        <div className="g-view">
+          <video id="gestureCam" playsInline muted></video>
+          <canvas id="gestureOverlay"></canvas>
+        </div>
         <div className="g-status" id="gStatus">Starting camera…</div>
-        <div className="g-help"><b>Hand high/low</b> scroll · <b>✊ Fist</b> turbo · <b>🔒 Grab the reactor</b> (pinch-hold / palm / fist over it) then rotate your wrist — it mirrors your hand · <b>🙌 Both hands</b> drag=rotate · apart=zoom out / together=zoom in · <b>Swipe fast</b> jump section · <b>Pinch a project</b> open it · <b>Pinch twice</b> close popup</div>
-        <div className="g-priv">⛨ runs 100% in your browser — nothing is uploaded</div>
+        <div className="g-priv">⛨ 100% in-browser · nothing uploaded</div>
       </div>
       <div id="handCursor"><div className="hc-ring"></div><div className="hc-core"></div><div className="hc-pulse"></div><div className="hc-arr u">▲</div><div className="hc-arr d">▼</div></div>
 
