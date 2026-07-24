@@ -1260,6 +1260,38 @@ function setupGestures(bg){
   let smX=innerWidth/2,smY=innerHeight/2,scrollVel=0,scrollRaf=null;
   let pinched=false,lastX=null,lastT=0,swipeCool=0,lastSeen=0,pinchCool=0,pinchFrames=0,lastPinchAt=0;
   let twoHand=false,pmx=0,pmy=0,pang=0,pspread=0,rotX=0,rotY=0,rotZ=0,zoomT=1;
+  /* ── live hand skeleton overlay: every joint and fingertip ── */
+  const overlay=document.getElementById('gestureOverlay');
+  const octx=overlay?overlay.getContext('2d'):null;
+  const LINKS=[[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
+  const TIPS=[4,8,12,16,20];
+  let skelMode='idle'; // colour follows the active gesture
+  const SKEL={idle:'#5ce1e6',pinch:'#e0457b',fist:'#ffd07a',grab:'#7dff9a',two:'#8b6dff'};
+  function sizeOverlay(){
+    if(!overlay)return;
+    overlay.width=overlay.clientWidth*2;overlay.height=overlay.clientHeight*2; // 2x for crispness
+  }
+  function drawHands(all){
+    if(!octx)return;
+    const W=overlay.width,H=overlay.height;
+    octx.clearRect(0,0,W,H);
+    if(!all||!all.length)return;
+    const col=SKEL[skelMode]||SKEL.idle;
+    all.forEach(lm=>{
+      const P=i=>[(1-lm[i].x)*W,lm[i].y*H]; // mirrored to match the preview
+      octx.strokeStyle=col;octx.globalAlpha=.55;octx.lineWidth=2.5;
+      octx.beginPath();
+      LINKS.forEach(([a,b])=>{const p=P(a),q=P(b);octx.moveTo(p[0],p[1]);octx.lineTo(q[0],q[1]);});
+      octx.stroke();
+      octx.globalAlpha=1;octx.shadowColor=col;octx.shadowBlur=8;
+      for(let i=0;i<21;i++){
+        const p=P(i),tip=TIPS.includes(i);
+        octx.fillStyle=tip?'#ffffff':col;
+        octx.beginPath();octx.arc(p[0],p[1],tip?5:3,0,7);octx.fill();
+      }
+      octx.shadowBlur=0;
+    });
+  }
   /* ── STARK GRAB: mirror the hand's own 3D orientation ── */
   let grab=null,palmHold=0;
   const gUp=new THREE.Vector3(),gAc=new THREE.Vector3(),gNorm=new THREE.Vector3(),gAxis=new THREE.Vector3();
@@ -1320,6 +1352,7 @@ function setupGestures(bg){
 
   function onResults(r){
     busy=false;
+    drawHands(r.multiHandLandmarks);
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
     const now=performance.now();
     if(!lm){
@@ -1336,6 +1369,7 @@ function setupGestures(bg){
       return;
     }
     lastSeen=now;cursor.classList.remove('lost');
+    skelMode='idle';
     /* 🙌 two hands = Stark-lab control: DRAG to keep rotating
        (unlimited, full 360°+), TWIST to roll, SPREAD/CLOSE to zoom.
        Delta-based: only hand MOVEMENT changes the pose, so it's
@@ -1360,6 +1394,7 @@ function setupGestures(bg){
       zoomT=lerp(zoomT,2.2-k*(2.2-0.5),.28);
       pmx=mx;pmy=my;pang=ang;pspread=spread;
       heroApi.manual(rotX,rotY,rotZ,zoomT);
+      skelMode='two';
       status.textContent=`🙌 Rotate · twist · zoom ${Math.round(zoomT*100)}%`;
       smX=lerp(smX,mx*innerWidth,.3);smY=lerp(smY,my*innerHeight,.3);
       cursor.style.display='block';
@@ -1390,6 +1425,7 @@ function setupGestures(bg){
     const reach=Math.hypot((lm[4].x+lm[8].x)/2-lm[0].x,(lm[4].y+lm[8].y)/2-lm[0].y)/palmW;
     const pinchPose=ratio<.5&&reach>1.05;
     const isFist=foldAvg<0.9&&!pinchPose;
+    if(pinchPose||pinched)skelMode='pinch';else if(isFist)skelMode='fist';
     const modalOpen=window.projModalApi&&window.projModalApi.isOpen();
     const overHero=heroUnderCursor();
     /* pinch state machine (what a pinch DOES is decided below) */
@@ -1403,7 +1439,7 @@ function setupGestures(bg){
         :grab.mode==='fist'?(isFist&&overHero)
         :(overHero&&!isFist&&!pinchPose&&ny>0.3&&ny<0.6);
       if(alive){
-        updateGrab(lm);
+        updateGrab(lm);skelMode='grab';
         cursor.classList.remove('scrollUp','scrollDn');
         scrollVel*=.85;lastX=nx;lastT=now;palmHold=0;
         return;
@@ -1482,9 +1518,9 @@ function setupGestures(bg){
     try{
       if(!window.Hands) await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.min.js');
       stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
-      video.srcObject=stream;await video.play();
+      video.srcObject=stream;await video.play();sizeOverlay();
       hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
-      hands.setOptions({maxNumHands:2,modelComplexity:0,minDetectionConfidence:.5,minTrackingConfidence:.5});
+      hands.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:.55,minTrackingConfidence:.6});
       hands.onResults(onResults);
       active=true;btn.classList.add('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gestures ON';
       status.textContent='Show your palm ✋';
@@ -1506,6 +1542,7 @@ function setupGestures(bg){
     scrollRaf&&cancelAnimationFrame(scrollRaf);scrollRaf=null;
     stream&&stream.getTracks().forEach(t=>t.stop());stream=null;
     hands&&hands.close&&hands.close();hands=null;
+    if(octx)octx.clearRect(0,0,overlay.width,overlay.height);
     hud.classList.remove('on');cursor.style.display='none';
     cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';

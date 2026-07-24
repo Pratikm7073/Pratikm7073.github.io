@@ -239,10 +239,10 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 #gestureBtn.live .gb-dot{background:var(--lime);box-shadow:0 0 10px var(--lime)}
 #gestureHud{position:fixed;right:22px;bottom:78px;z-index:9600;width:216px;border-radius:18px;overflow:hidden;background:rgba(8,8,14,.78);border:1px solid rgba(92,225,230,.35);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 18px 50px rgba(0,0,0,.6);opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .4s var(--ease),transform .4s var(--ease)}
 #gestureHud.on{opacity:1;transform:translateY(0);pointer-events:auto}
-#gestureHud video{width:100%;height:140px;object-fit:cover;transform:scaleX(-1);display:block;background:#000}
+#gestureHud .g-view{position:relative}
+#gestureHud video{width:100%;height:150px;object-fit:cover;transform:scaleX(-1);display:block;background:#000}
+#gestureOverlay{position:absolute;inset:0;width:100%;height:150px;pointer-events:none}
 #gestureHud .g-status{font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--cyan);letter-spacing:.06em;padding:10px 14px 4px;text-transform:uppercase}
-#gestureHud .g-help{font-family:'Geist Mono',monospace;font-size:10px;color:#999;line-height:1.7;padding:2px 14px 10px}
-#gestureHud .g-help b{color:#ddd;font-weight:500}
 #gestureHud .g-priv{font-family:'Geist Mono',monospace;font-size:9px;color:#666;padding:0 14px 12px;letter-spacing:.04em}
 #handCursor{position:fixed;left:0;top:0;z-index:9500;width:42px;height:42px;margin:-21px 0 0 -21px;pointer-events:none;display:none}
 #handCursor .hc-ring{position:absolute;inset:0;border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 18px rgba(92,225,230,.6),inset 0 0 10px rgba(92,225,230,.3);transition:transform .12s,border-color .12s}
