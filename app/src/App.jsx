@@ -178,6 +178,84 @@ function ProjectModal() {
   );
 }
 
+/* ── per-letter cascade word (hero) ── */
+function LetterWord({ text, base = 0 }) {
+  return (
+    <span className="lw">
+      {text.split('').map((ch, i) => (
+        <span key={i} className="lw-c" style={{ animationDelay: `${1.15 + (base + i) * 0.045}s` }}>
+          {ch === ' ' ? ' ' : ch}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+const SKILLS_A = ['Python', 'PyTorch', 'scikit-learn', 'Pandas', 'NumPy', 'TensorFlow', 'Random Forest', 'Feature Engineering', 'Power BI', 'Erlang C'];
+const SKILLS_B = ['Microsoft Sentinel', 'KQL', 'Azure', 'SOAR', 'Wazuh', 'MITRE ATT&CK', 'RBAC', 'MFA', 'ML-IDS', 'Zero-Trust', 'Ollama', 'Phi-3'];
+
+/* ── P·R·A·T·I·K terminal (Contact easter egg) ── */
+function Terminal() {
+  const [open, setOpen] = useState(false);
+  const [lines, setLines] = useState([
+    { t: 'sys', v: 'P·R·A·T·I·K portfolio shell v2.0 — type "help"' },
+  ]);
+  const [val, setVal] = useState('');
+  const bodyRef = useRef(null);
+  const inRef = useRef(null);
+
+  const push = (arr) => setLines((L) => [...L, ...arr]);
+  useEffect(() => { if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight; }, [lines, open]);
+  useEffect(() => { if (open && inRef.current) inRef.current.focus(); }, [open]);
+
+  const run = (raw) => {
+    const cmd = raw.trim().toLowerCase();
+    push([{ t: 'in', v: raw }]);
+    if (!cmd) return;
+    const out = (v) => push([{ t: 'out', v }]);
+    switch (cmd) {
+      case 'help': out('commands: whoami · projects · stack · contact · clear · sudo hire-me'); break;
+      case 'whoami': out('Pratik More — ML Engineer & SecOps specialist. 4.5+ yrs. MSc Cybersecurity (UK). Turns messy data + noisy alerts into automated decisions.'); break;
+      case 'projects': out('01 SOAR Engine · 02 Wazuh SIEM Lab · 03 WFM Forecasting · 04 Jarvis-AI · 05 Vendor Risk · 06 Secure Web+IDS — scroll up to explore, or pinch one with gesture control.'); break;
+      case 'stack': out('Python · PyTorch · scikit-learn · Pandas · Sentinel · KQL · Azure · SOAR · Wazuh · RBAC/MFA · Ollama/Phi-3'); break;
+      case 'contact': out('mail: morepratik77@gmail.com · github.com/Pratikm7073 · linkedin.com/in/pratik-more-969749249'); break;
+      case 'clear': setLines([]); return;
+      case 'sudo hire-me':
+        window.bgPulse && window.bgPulse(0.5, 0.5);
+        push([
+          { t: 'ok', v: '[sudo] authenticating intent … GRANTED ✓' },
+          { t: 'ok', v: 'Excellent decision. Opening a direct line to Pratik…' },
+        ]);
+        setTimeout(() => { location.href = 'mailto:morepratik77@gmail.com?subject=Let%27s%20build%20something&body=Hi%20Pratik%2C'; }, 900);
+        break;
+      case 'ls': out('about/  projects/  stack/  contact/  secrets/'); break;
+      case 'cd secrets': case 'cat secrets': out('🔒 nice try. run "sudo hire-me" instead.'); break;
+      default: out(`command not found: ${cmd} — the AI suggests "help" (or just "sudo hire-me").`);
+    }
+  };
+
+  return (
+    <div className={'term' + (open ? ' open' : '')}>
+      <button className="term-trigger" type="button" onClick={() => setOpen((o) => !o)}>
+        <span className="tt-dot"></span>▸ talk to P·R·A·T·I·K {open ? '—' : '↗'}
+      </button>
+      {open && (
+        <div className="term-card">
+          <div className="term-bar"><i></i><i></i><i></i><span>pratik@portfolio: ~</span></div>
+          <div className="term-body" ref={bodyRef}>
+            {lines.map((l, i) => <div key={i} className={'tl ' + l.t}>{l.t === 'in' ? '➜ ' : ''}{l.v}</div>)}
+          </div>
+          <form className="term-in" onSubmit={(e) => { e.preventDefault(); run(val); setVal(''); }}>
+            <span>➜</span>
+            <input ref={inRef} value={val} onChange={(e) => setVal(e.target.value)} spellCheck={false}
+              autoComplete="off" placeholder='type "help"' />
+          </form>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
   useEffect(() => { startEngine(); }, []);
   const open = (k) => window.projModalApi && window.projModalApi.open(k);
@@ -187,6 +265,13 @@ export default function App() {
       <div className="grain"></div>
       <div className="vignette"></div>
       <div className="bg-layer"><canvas id="bg3d"></canvas></div>
+      <div id="scrollProg"></div>
+
+      <div id="scrollRail">
+        {[['hero', 'Home'], ['about', 'About'], ['whatido', 'Ops'], ['career-split', 'Career'], ['work-list', 'Work'], ['techstack', 'Stack'], ['contact', 'Contact']].map(([sec, lab]) => (
+          <button key={sec} className="sr-dot" data-sec={sec} type="button"><span className="sr-lab">{lab}</span></button>
+        ))}
+      </div>
 
       <button id="gestureBtn" type="button"><span className="gb-dot"></span>✋ Gesture Control</button>
       <div id="gestureHud">
@@ -206,6 +291,7 @@ export default function App() {
         <div className="pre-sub">Booting portfolio intelligence</div>
         <div className="pre-bar"><div className="fill"></div></div>
         <div className="pre-pct">0%</div>
+        <div className="pre-log"></div>
       </div>
 
       <nav>
@@ -223,11 +309,11 @@ export default function App() {
         <div className="hero-grid">
           <div className="hero-side left">
             <div className="small">Hello! I'm</div>
-            <div className="big">PRATIK<br />MORE</div>
+            <div className="big cascade"><LetterWord text="PRATIK" base={0} /><br /><LetterWord text="MORE" base={6} /></div>
           </div>
           <div className="hero-side right">
             <div className="small">A Machine Learning</div>
-            <div className="big"><span className="ghost">ML</span><br />ENGINEER</div>
+            <div className="big cascade"><span className="ghost"><LetterWord text="ML" base={0} /></span><br /><LetterWord text="ENGINEER" base={2} /></div>
           </div>
         </div>
         <div className="hero-meta">
@@ -256,6 +342,16 @@ export default function App() {
           </motion.div>
         </div>
       </section>
+
+      {/* SKILLS MARQUEE */}
+      <div className="marquee" aria-hidden="true">
+        <div className="mq-row">
+          <div className="mq-track">{[...SKILLS_A, ...SKILLS_A].map((s, i) => <span key={i} className="mq-item">{s}<i>✦</i></span>)}</div>
+        </div>
+        <div className="mq-row rev">
+          <div className="mq-track">{[...SKILLS_B, ...SKILLS_B].map((s, i) => <span key={i} className="mq-item">{s}<i>✦</i></span>)}</div>
+        </div>
+      </div>
 
       {/* WHAT I DO (SOC scene) */}
       <section className="whatido" id="work">
@@ -375,6 +471,7 @@ export default function App() {
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={inView}>
           <motion.div className="contact-eyebrow" variants={riseSoft}>{'// Get in touch'}</motion.div>
           <motion.h2 variants={rise}>Let's build something <em>secure.</em></motion.h2>
+          <motion.div variants={riseSoft}><Terminal /></motion.div>
           <motion.div className="contact-grid" variants={riseSoft}>
             <div className="contact-links">
               <div className="clabel">Reach me</div>
