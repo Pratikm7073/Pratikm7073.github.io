@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
+import { initCursor } from './cursor.js';
 const lerp=(a,b,t)=>a+(b-a)*t;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
@@ -1662,10 +1663,29 @@ function runPreloader(done){
   const pre=document.getElementById('preloader');
   const fill=pre.querySelector('.fill');
   const pct=pre.querySelector('.pre-pct');
+  const log=pre.querySelector('.pre-log');
+  const LOG=[
+    '\u25b8 mounting neural cores',
+    '\u25b8 igniting arc reactor',
+    '\u25b8 loading ML profile',
+    '\u25b8 linking gesture uplink',
+    '\u25b8 welcome, visitor',
+  ];
+  let shown=0;
+  function pushLog(i){
+    if(!log||i>=LOG.length)return;
+    const line=document.createElement('div');line.className='pl-line';
+    line.innerHTML=LOG[i]+' <b>'+(i===LOG.length-1?'\u25c9':'OK')+'</b>';
+    log.appendChild(line);
+    requestAnimationFrame(()=>line.classList.add('in'));
+  }
   let p=0;
   const tick=setInterval(()=>{
     p+=Math.random()*16+6;
+    const want=Math.min(LOG.length,Math.floor(p/100*LOG.length)+1);
+    while(shown<want){pushLog(shown);shown++;}
     if(p>=100){p=100;clearInterval(tick);
+      while(shown<LOG.length){pushLog(shown);shown++;}
       fill.style.width='100%';pct.textContent='100%';
       setTimeout(()=>{
         pre.classList.add('done');
@@ -1740,9 +1760,72 @@ function proximityReveal(){
   update();
 }
 
+/* ════════════════════════════════════════════════
+   3D TILT + GLARE on project images
+════════════════════════════════════════════════ */
+function setupTilt(){
+  if(matchMedia('(hover:none)').matches)return;
+  document.querySelectorAll('.wimg').forEach(el=>{
+    let rect=null,raf=null,tx=0,ty=0,gx=50,gy=50,active=false;
+    el.classList.add('tilt');
+    const glare=document.createElement('div');glare.className='tilt-glare';el.appendChild(glare);
+    function render(){
+      raf=null;
+      el.style.transform=`perspective(700px) rotateX(${ty}deg) rotateY(${tx}deg) scale(${active?1.03:1})`;
+      glare.style.opacity=active?0.5:0;
+      glare.style.background=`radial-gradient(240px circle at ${gx}% ${gy}%,rgba(255,255,255,.4),transparent 60%)`;
+    }
+    el.addEventListener('mouseenter',()=>{rect=el.getBoundingClientRect();active=true;if(!raf)raf=requestAnimationFrame(render);});
+    el.addEventListener('mousemove',e=>{
+      if(!rect)rect=el.getBoundingClientRect();
+      const px=(e.clientX-rect.left)/rect.width,py=(e.clientY-rect.top)/rect.height;
+      tx=(px-0.5)*14;ty=-(py-0.5)*14;gx=px*100;gy=py*100;
+      if(!raf)raf=requestAnimationFrame(render);
+    });
+    el.addEventListener('mouseleave',()=>{active=false;tx=0;ty=0;if(!raf)raf=requestAnimationFrame(render);});
+  });
+}
+
+/* ════════════════════════════════════════════════
+   HUD SCROLL NAVIGATOR right rail + top progress bar
+   (cached section offsets — no per-frame layout reads)
+════════════════════════════════════════════════ */
+function setupScrollNav(){
+  const rail=document.getElementById('scrollRail');
+  const bar=document.getElementById('scrollProg');
+  if(!rail)return;
+  const dots=[...rail.querySelectorAll('.sr-dot')];
+  const ids=dots.map(d=>d.dataset.sec);
+  let offs=[];
+  function measure(){offs=ids.map(id=>{const el=document.getElementById(id)||document.querySelector('.'+id);return el?el.getBoundingClientRect().top+scrollY:0;});}
+  measure();addEventListener('resize',()=>requestAnimationFrame(measure),{passive:true});setTimeout(measure,2600);
+  dots.forEach((d,i)=>d.addEventListener('click',()=>{
+    const el=document.getElementById(ids[i])||document.querySelector('.'+ids[i]);
+    el&&el.scrollIntoView({behavior:'smooth'});
+  }));
+  let raf=null;
+  const queue=()=>{if(!raf)raf=requestAnimationFrame(update);};
+  addEventListener('scroll',queue,{passive:true});
+  function update(){
+    raf=null;
+    const sy=scrollY,mid=sy+innerHeight*0.4;
+    let act=0;offs.forEach((o,i)=>{if(o<=mid)act=i;});
+    dots.forEach((d,i)=>d.classList.toggle('on',i===act));
+    if(bar){const max=document.body.scrollHeight-innerHeight;bar.style.transform=`scaleX(${max>0?clamp(sy/max,0,1):0})`;}
+  }
+  update();
+}
+
+function setupMarquee(){
+  const mq=document.querySelector('.marquee');
+  if(!mq)return;
+  new IntersectionObserver(es=>{mq.classList.toggle('paused',!es[0].isIntersecting);},{threshold:0}).observe(mq);
+}
 function boot(){
   const bg=buildBackground();
+  window.bgPulse=(x,y)=>bg&&bg.pulse(x,y);   // terminal 'hire-me' shockwave
   aiGreeting();
+  initCursor();
   setupGestures(bg);
   buildHero();
   buildAbout();
@@ -1750,6 +1833,9 @@ function boot(){
   setupCareerViz();
   buildTech();
   proximityReveal();
+  setupTilt();
+  setupScrollNav();
+  setupMarquee();
 
   // nav scrolled state
   const nav=document.querySelector('nav');
