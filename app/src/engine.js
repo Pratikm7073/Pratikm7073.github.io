@@ -288,7 +288,10 @@ function buildHero(){
       if(qAge<4000&&qAge<mAge){
         /* Stark grab: mirror the wrist quaternion (snappy while held,
            gentle during the 4s pose-hold after release) */
-        core.quaternion.slerp(quatTarget,1-Math.pow(qAge<300?0.0005:0.05,dt));
+        /* continuous follow rate — the old 300ms step jumped the rate
+           100x and stuttered whenever tracking hiccuped mid-grab */
+        const Rq=lerp(0.0005,0.06,clamp((qAge-120)/900,0,1));
+        core.quaternion.slerp(quatTarget,1-Math.pow(Rq,dt));
       }else{
         const useManual=mAge<4000;
         const kR=1-Math.pow(mAge<250?0.0005:useManual?0.05:0.001,dt);
@@ -1318,22 +1321,84 @@ function setupGestures(bg){
       clamp((0.5+(ny-0.5)*Gy)*innerHeight,0,innerHeight),
     ];
   }
-  /* ── STARK GRAB: mirror the hand's own 3D orientation ── */
-  let grab=null,palmHold=0;
-  const gUp=new THREE.Vector3(),gAc=new THREE.Vector3(),gNorm=new THREE.Vector3(),gAxis=new THREE.Vector3();
-  const gSmUp=new THREE.Vector3(0,1,0),gSmAc=new THREE.Vector3(1,0,0);
-  const gM=new THREE.Matrix4(),gQ=new THREE.Quaternion(),gQ0inv=new THREE.Quaternion(),gQC0=new THREE.Quaternion(),gQd=new THREE.Quaternion(),gT=new THREE.Quaternion();
+  /* ═══════════════════════════════════════════════
+     STARK GRAB robust palm-frame estimation
+
+     The orientation is NOT taken from two noisy landmark
+     differences any more. Instead:
+       · the palm plane normal comes from NEWELL'S METHOD over
+         the palm pentagon (wrist → index → middle → ring →
+         pinky MCP), which averages error across 5 landmarks and
+         is stable for near-planar point sets;
+       · the up axis comes from wrist → centroid of the FOUR
+         knuckles, then Gram-Schmidt against that normal;
+       · Newell's magnitude (normalised by palm size) is a free
+         planarity score used to reject degenerate, edge-on
+         frames instead of injecting garbage;
+       · MediaPipe handedness flips the normal so a left and a
+         right hand drive the reactor identically.
+     ═══════════════════════════════════════════════ */
+  let grab=null,palmHold=0,handSign=1,handConf=1;
+  const GRAB_GAIN=1.8;
+  const PALM=[0,5,9,13,17];            // pentagon ring around the palm
+  const KNUCK=[5,9,13,17];
+  const pPts=[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()];
+  const gUp=new THREE.Vector3(),gAc=new THREE.Vector3(),gNorm=new THREE.Vector3(),gAxis=new THREE.Vector3(),gCen=new THREE.Vector3();
+  const gM=new THREE.Matrix4(),gQ=new THREE.Quaternion(),gSmQ=new THREE.Quaternion();
+  const gQ0inv=new THREE.Quaternion(),gQC0=new THREE.Quaternion(),gQd=new THREE.Quaternion(),gT=new THREE.Quaternion();
+  let smQReady=false,lastQT=0;
+  const TM={rot:0,ax:[0,0,0],track:0};
+
+  /* landmark → isotropic view space (x,z share a scale; y is the reference) */
+  function lmPt(lm,i,out){return out.set(-lm[i].x*camA,-lm[i].y,-lm[i].z*camA);}
+
   function handQuat(lm,reset){
-    /* palm frame in view space: mirror x, flip y (screen-down) and z */
-    gUp.set(-(lm[9].x-lm[0].x)*camA,-(lm[9].y-lm[0].y),-(lm[9].z-lm[0].z)*camA).normalize();
-    gAc.set(-(lm[5].x-lm[17].x)*camA,-(lm[5].y-lm[17].y),-(lm[5].z-lm[17].z)*camA).normalize();
-    if(reset){gSmUp.copy(gUp);gSmAc.copy(gAc);}
-    else{gSmUp.lerp(gUp,.45).normalize();gSmAc.lerp(gAc,.45).normalize();}
-    gNorm.crossVectors(gSmAc,gSmUp).normalize();
-    gAc.crossVectors(gSmUp,gNorm).normalize();
-    gM.makeBasis(gAc,gSmUp,gNorm);
-    return gQ.setFromRotationMatrix(gM);
+    for(let k=0;k<5;k++)lmPt(lm,PALM[k],pPts[k]);
+    /* palm size normaliser: wrist → middle knuckle */
+    const palmLen=pPts[0].distanceTo(pPts[2])||1e-4;
+    /* Newell plane normal over the pentagon — noise averaged over 5 points */
+    let nx=0,ny=0,nz=0;
+    for(let k=0;k<5;k++){
+      const a=pPts[k],b=pPts[(k+1)%5];
+      nx+=(a.y-b.y)*(a.z+b.z);
+      ny+=(a.z-b.z)*(a.x+b.x);
+      nz+=(a.x-b.x)*(a.y+b.y);
+    }
+    const nMag=Math.hypot(nx,ny,nz);
+    /* Newell's magnitude is 2x the TRUE palm area (rotation invariant), so
+       it detects a collapsed/failed detection — not merely an edge-on palm */
+    const planar=nMag/(palmLen*palmLen);
+    if(!(planar>0.12)||!isFinite(planar))return null;      // detection failed → caller holds
+    gNorm.set(nx/nMag,ny/nMag,nz/nMag).multiplyScalar(handSign);
+    /* up = wrist → knuckle centroid (4-point average), projected onto the plane */
+    gCen.set(0,0,0);
+    for(let k=0;k<KNUCK.length;k++)gCen.add(pPts[k+1]);
+    gCen.multiplyScalar(1/KNUCK.length).sub(pPts[0]);
+    gUp.copy(gCen).addScaledVector(gNorm,-gCen.dot(gNorm));
+    const upLen=gUp.length();
+    if(upLen<palmLen*0.2)return null;                      // ill-conditioned
+    gUp.multiplyScalar(1/upLen);
+    gAc.crossVectors(gUp,gNorm).normalize();               // right-handed basis
+    gM.makeBasis(gAc,gUp,gNorm);
+    gQ.setFromRotationMatrix(gM);
+    /* facing = how square the palm is to the camera. Edge-on palms are
+       still tracked (rejecting them would cap rotation at 90°) but they
+       lean on MediaPipe's noisy z channel, so they get filtered harder */
+    const facing=Math.abs(gNorm.z);
+    TM.track=clamp(planar/0.6,0,1)*clamp(0.35+facing*0.65,0,1)*handConf;
+
+    /* velocity-adaptive, frame-rate-independent quaternion smoothing:
+       heavy filtering when the hand is still, near-zero lag when it moves */
+    const now=performance.now();
+    if(reset||!smQReady){gSmQ.copy(gQ);smQReady=true;lastQT=now;return gSmQ;}
+    const dt=clamp((now-lastQT)/1000,0.016,0.2);lastQT=now;
+    const spd=gSmQ.angleTo(gQ);
+    const R=lerp(0.15,0.000001,clamp(spd/0.25,0,1));
+    const Rf=lerp(0.45,R,clamp(facing/0.35,0,1));          // edge-on → steadier
+    gSmQ.slerp(gQ,1-Math.pow(Rf,dt));
+    return gSmQ;
   }
+
   function heroUnderCursor(){
     const h=document.getElementById('hero');
     if(!h)return false;
@@ -1342,18 +1407,34 @@ function setupGestures(bg){
     return smX>=rc.left&&smX<=rc.right&&smY>=Math.max(0,rc.top)&&smY<=Math.min(rc.bottom,innerHeight);
   }
   function startGrab(mode,lm){
-    gQ0inv.copy(handQuat(lm,true)).invert();
+    const q=handQuat(lm,true);
+    if(!q)return false;                       // never anchor on a bad frame
+    gQ0inv.copy(q).invert();
     gQC0.copy(heroApi.getQuat());
-    grab={mode};
+    grab={mode,badSince:0};
     status.textContent='🔒 Grabbed '+(mode==='pinch'?'🤏':mode==='fist'?'✊':'✋')+' — rotate your hand';
+    return true;
   }
   function updateGrab(lm){
-    gQd.copy(handQuat(lm,false)).multiply(gQ0inv);
+    const q=handQuat(lm,false);
+    if(!q)return;                             // degenerate frame → hold last pose
+    gQd.copy(q).multiply(gQ0inv);
     if(gQd.w<0){gQd.x*=-1;gQd.y*=-1;gQd.z*=-1;gQd.w*=-1;}
-    const w=clamp(gQd.w,-1,1),ang=2*Math.acos(w),sn=Math.sqrt(Math.max(1e-9,1-w*w));
-    gAxis.set(gQd.x/sn,gQd.y/sn,gQd.z/sn);
-    gQd.setFromAxisAngle(gAxis,ang*1.8);   // amplified 1.8x, same axis
-    gT.copy(gQd).multiply(gQC0);
+    const vl=Math.hypot(gQd.x,gQd.y,gQd.z);
+    if(vl>1e-6){
+      /* atan2 form is stable at BOTH ends (acos is ill-conditioned at w≈1,
+         and dividing by sqrt(1-w²) there produced an unnormalised,
+         noise-dominated axis — the old jitter source) */
+      const ang=2*Math.atan2(vl,clamp(gQd.w,-1,1));
+      const amp=Math.min(ang*GRAB_GAIN,Math.PI*0.98);   // never wrap past π
+      gAxis.set(gQd.x/vl,gQd.y/vl,gQd.z/vl);
+      gQd.setFromAxisAngle(gAxis,amp);
+      TM.rot=amp;TM.ax[0]=gAxis.x;TM.ax[1]=gAxis.y;TM.ax[2]=gAxis.z;
+    }else{
+      gQd.set(0,0,0,1);                       // dead zone → exact identity
+      TM.rot=0;TM.ax[0]=TM.ax[1]=TM.ax[2]=0;
+    }
+    gT.copy(gQd).multiply(gQC0).normalize();  // kill accumulated float drift
     heroApi.manualQuat(gT);
   }
 
@@ -1376,10 +1457,38 @@ function setupGestures(bg){
     scrollRaf=active?requestAnimationFrame(scrollLoop):null;
   }
 
+  /* ── live telemetry HUD (only while gestures are active) ── */
+  const tmEl=document.getElementById('telemetry');
+  const tmF={rot:document.getElementById('tmRot'),axis:document.getElementById('tmAxis'),
+             track:document.getElementById('tmTrack'),fps:document.getElementById('tmFps'),
+             mode:document.getElementById('tmMode')};
+  let tmRaf=null,tmN=0,tmT0=0,tmFps=0,tmLast=0;
+  function tmLoop(){tmN++;const n=performance.now();
+    if(n-tmT0>=500){tmFps=Math.round(tmN/((n-tmT0)/1000));tmN=0;tmT0=n;}
+    tmRaf=requestAnimationFrame(tmLoop);}
+  function tmStart(){if(tmEl)tmEl.classList.add('on');tmN=0;tmT0=performance.now();if(!tmRaf)tmRaf=requestAnimationFrame(tmLoop);}
+  function tmStop(){if(tmEl)tmEl.classList.remove('on');if(tmRaf)cancelAnimationFrame(tmRaf);tmRaf=null;}
+  const MODES={grab:'\u{1F512} GRAB',pinch:'\u{1F90F} PINCH',fist:'\u270A FIST',two:'\u{1F64C} DUAL',idle:'IDLE'};
+  function tmPaint(){
+    if(!tmEl||!tmF.rot)return;
+    const n=performance.now();
+    if(n-tmLast<120)return; tmLast=n;                    // ~8Hz, cheap
+    tmF.rot.textContent=(TM.rot*180/Math.PI).toFixed(1)+'\u00b0';
+    tmF.axis.textContent=TM.ax.map(v=>v.toFixed(2)).join(', ');
+    tmF.track.textContent=TM.track.toFixed(2);
+    tmF.fps.textContent=tmFps||'\u2014';
+    tmF.mode.textContent=MODES[skelMode]||'IDLE';
+  }
+
   function onResults(r){
     busy=false;
     drawHands(r.multiHandLandmarks);
     const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
+    /* handedness decides the palm-normal sign so BOTH hands drive the
+       reactor identically (previously ignored → mirrored behaviour) */
+    const hd=r.multiHandedness&&r.multiHandedness[0];
+    handSign=(hd&&hd.label==='Left')?-1:1;
+    handConf=hd&&typeof hd.score==='number'?hd.score:1;
     const now=performance.now();
     if(!lm){
       twoHand=false;grab=null;palmHold=0;
@@ -1396,6 +1505,7 @@ function setupGestures(bg){
     }
     lastSeen=now;cursor.classList.remove('lost');
     skelMode='idle';
+    tmPaint();
     /* 🙌 two hands = Stark-lab control: DRAG to keep rotating
        (unlimited, full 360°+), TWIST to roll, SPREAD/CLOSE to zoom.
        Delta-based: only hand MOVEMENT changes the pose, so it's
@@ -1476,9 +1586,16 @@ function setupGestures(bg){
         :grab.mode==='fist'?(isFist&&overHero)
         :(overHero&&!isFist&&!pinchPose&&ny>0.3&&ny<0.6);
       if(alive){
+        grab.badSince=0;
         updateGrab(lm);skelMode='grab';
         cursor.classList.remove('scrollUp','scrollDn');
         scrollVel*=.85;lastX=nx;lastT=now;palmHold=0;
+        return;
+      }
+      /* hysteresis: one mis-classified frame must not drop the grab */
+      if(!grab.badSince)grab.badSince=now;
+      if(now-grab.badSince<350){
+        skelMode='grab';scrollVel*=.85;lastX=nx;lastT=now;
         return;
       }
       grab=null;
@@ -1557,6 +1674,7 @@ function setupGestures(bg){
       stream=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:'user'}});
       video.srcObject=stream;await video.play();sizeOverlay();
       if(video.videoWidth)camA=video.videoWidth/video.videoHeight;
+      tmStart();
       hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
       hands.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:.55,minTrackingConfidence:.6});
       hands.onResults(onResults);
@@ -1581,6 +1699,7 @@ function setupGestures(bg){
     stream&&stream.getTracks().forEach(t=>t.stop());stream=null;
     hands&&hands.close&&hands.close();hands=null;
     if(octx)octx.clearRect(0,0,overlay.width,overlay.height);
+    tmStop();
     hud.classList.remove('on');cursor.style.display='none';
     cursor.classList.remove('scrollUp','scrollDn','lost','pinch');
     btn.classList.remove('live');btn.innerHTML='<span class="gb-dot"></span>✋ Gesture Control';

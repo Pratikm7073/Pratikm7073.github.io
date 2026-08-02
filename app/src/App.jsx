@@ -282,6 +282,15 @@ export default function App() {
         <div className="g-status" id="gStatus">Starting camera…</div>
         <div className="g-priv">⛨ 100% in-browser · nothing uploaded</div>
       </div>
+      <div id="telemetry">
+        <div className="tm-hd">◈ REACTOR TELEMETRY</div>
+        <div className="tm-row"><span>ROT</span><b id="tmRot">0.0°</b></div>
+        <div className="tm-row"><span>AXIS</span><b id="tmAxis">0.00, 0.00, 0.00</b></div>
+        <div className="tm-row"><span>TRACK</span><b id="tmTrack">—</b></div>
+        <div className="tm-row"><span>FPS</span><b id="tmFps">—</b></div>
+        <div className="tm-row"><span>MODE</span><b id="tmMode">IDLE</b></div>
+      </div>
+
       <div id="handCursor"><div className="hc-ring"></div><div className="hc-core"></div><div className="hc-pulse"></div><div className="hc-arr u">▲</div><div className="hc-arr d">▼</div></div>
 
       <ProjectModal />
