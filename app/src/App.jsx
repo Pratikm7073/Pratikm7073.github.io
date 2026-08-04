@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { startEngine } from './engine.js';
+import DeviceShowcase from './DeviceShowcase.jsx';
 
 /* ── framer-motion variants: springy scroll reveals ── */
 const rise = {
@@ -22,7 +23,7 @@ const PROJECTS = {
     blurb: '"Zero-Touch" automated containment with Microsoft Sentinel & Azure Logic Apps to mitigate high-velocity ransomware.',
     desc: 'A "zero-touch" security orchestration engine that detects and contains high-velocity ransomware without a human in the loop, built on Microsoft Sentinel and Azure Logic Apps.',
     points: [
-      'Benchmarked automated containment vs manual triage — Mean-Time-to-Contain cut from 380s to 41s',
+      'Benchmarked automated containment against manual triage: Mean-Time-to-Contain cut from 380s to 41s',
       'Logic Apps playbooks isolate VMs, disable accounts and ban attacker IPs automatically',
       'Dissertation research on cloud-native SOAR architecture (2026)',
     ],
@@ -33,7 +34,7 @@ const PROJECTS = {
   wazuh: {
     num: '02', title: 'Enterprise SIEM & Incident Response Lab', type: 'Wazuh · Home Lab',
     modalType: 'Wazuh · Multi-OS Home Lab',
-    blurb: 'Multi-OS SIEM lab ingesting Windows & Linux endpoint logs. Detected simulated SSH brute-force (MITRE ATT&CK T1110) and fired an Active Response that auto-banned the attacker’s IP at the firewall.',
+    blurb: 'Multi-OS SIEM lab ingesting Windows and Linux endpoint logs. Detected simulated SSH brute-force (MITRE ATT&CK T1110) and fired an Active Response that auto-banned the attacker’s IP at the firewall.',
     desc: 'A local SIEM environment simulating real-world cyber threats: a Wazuh manager aggregating endpoint logs from Windows 10 and Ubuntu VMs over encrypted tunnels, with automated active response.',
     points: [
       'Wazuh agents deployed across Windows & Linux with secure agent-to-manager communication',
@@ -47,27 +48,27 @@ const PROJECTS = {
   wfm: {
     num: '03', title: 'AI-Enhanced WFM Capacity Planning Engine', type: 'Python · ML Forecasting',
     modalType: 'Python · ML Forecasting · Power BI',
-    blurb: 'Random Forest demand forecaster over 12 months of multi-site contact-centre data, cutting forecast error from ~15.5% to ~4.6% MAPE vs the traditional method — plus Erlang C capacity model and an interactive dashboard.',
+    blurb: 'Random Forest demand forecaster over 12 months of multi-site contact-centre data, cutting forecast error from ~15.5% to ~4.6% MAPE against the traditional method, plus an Erlang C capacity model and an interactive dashboard.',
     desc: 'An end-to-end workforce management engine: machine-learning demand forecasting, Erlang C capacity modelling, and stakeholder-ready dashboards across a multi-site, multi-channel contact-centre operation.',
     points: [
       'Random Forest with engineered time/lag features beats the day-of-week baseline: ~15.5% → ~4.6% MAPE',
       '4,380 rows · 4 UK sites · 3 channels · 12 months, with storm events & chatbot deflection built in',
       'Erlang C Excel model converts forecast volume into FTE requirements with shrinkage & SLA targets',
-      'Self-contained interactive dashboard in raw SVG + vanilla JS — runs offline in any browser',
+      'Self-contained interactive dashboard in raw SVG and vanilla JS, runs offline in any browser',
     ],
     tags: ['scikit-learn', 'Pandas', 'Erlang C', 'Power BI'], modalTags: ['scikit-learn', 'Pandas', 'Erlang C', 'Power BI', 'Feature Engineering'],
     img: 'https://raw.githubusercontent.com/pratikm7073/ai-wfm-capacity-planning-engine/main/ai_forecast_comparison.png', impact: '↯ MAPE 15.5% → 4.6%',
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/ai-wfm-capacity-planning-engine'], ['Live Dashboard ↗', 'https://pratikm7073.github.io/WFM_Dashboard.html']],
   },
   jarvis: {
-    num: '04', title: 'Jarvis-AI — Offline Voice Assistant', type: 'Local LLM · Zero-Trust',
+    num: '04', title: 'Jarvis-AI, Offline Voice Assistant', type: 'Local LLM · Zero-Trust',
     modalType: 'Local LLM · Zero-Trust Architecture',
-    blurb: 'Fully offline voice assistant: Vosk speech recognition, Microsoft Phi-3 reasoning via Ollama, and native text-to-speech — not a single byte leaves the machine. Voice kill-switch included.',
-    desc: 'A completely offline, zero-trust voice assistant: it listens, reasons with a locally hosted LLM, and speaks back — without sending a single byte to the cloud.',
+    blurb: 'Fully offline voice assistant: Vosk speech recognition, Microsoft Phi-3 reasoning via Ollama, and native text-to-speech. Not a single byte leaves the machine. Voice kill-switch included.',
+    desc: 'A completely offline, zero-trust voice assistant: it listens, reasons with a locally hosted LLM, and speaks back, without sending a single byte to the cloud.',
     points: [
       'Vosk transcribes speech locally; Microsoft Phi-3 reasons via Ollama; pyttsx3 speaks the reply natively',
       'Zero-trust: fully functional with the network cable unplugged',
-      'Voice kill-switch — saying "stop" or "shut down" terminates the assistant instantly',
+      'Voice kill-switch: saying "stop" or "shut down" terminates the assistant instantly',
     ],
     tags: ['Python', 'Ollama', 'Phi-3', 'Vosk'], modalTags: ['Python', 'Ollama', 'Phi-3', 'Vosk', 'pyttsx3'],
     img: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&w=900&q=80', impact: '↯ 100% offline LLM',
@@ -198,7 +199,7 @@ const SKILLS_B = ['Microsoft Sentinel', 'KQL', 'Azure', 'SOAR', 'Wazuh', 'MITRE 
 function Terminal() {
   const [open, setOpen] = useState(false);
   const [lines, setLines] = useState([
-    { t: 'sys', v: 'P·R·A·T·I·K portfolio shell v2.0 — type "help"' },
+    { t: 'sys', v: 'P·R·A·T·I·K portfolio shell v2.0 · type "help"' },
   ]);
   const [val, setVal] = useState('');
   const bodyRef = useRef(null);
@@ -215,8 +216,8 @@ function Terminal() {
     const out = (v) => push([{ t: 'out', v }]);
     switch (cmd) {
       case 'help': out('commands: whoami · projects · stack · contact · clear · sudo hire-me'); break;
-      case 'whoami': out('Pratik More — ML Engineer & SecOps specialist. 4.5+ yrs. MSc Cybersecurity (UK). Turns messy data + noisy alerts into automated decisions.'); break;
-      case 'projects': out('01 SOAR Engine · 02 Wazuh SIEM Lab · 03 WFM Forecasting · 04 Jarvis-AI · 05 Vendor Risk · 06 Secure Web+IDS — scroll up to explore, or pinch one with gesture control.'); break;
+      case 'whoami': out('Pratik More. AI and security engineer, 4.5+ yrs, MSc Cybersecurity (UK). Turns messy data and noisy alerts into automated decisions.'); break;
+      case 'projects': out('01 SOAR Engine · 02 Wazuh SIEM Lab · 03 WFM Forecasting · 04 Jarvis-AI · 05 Vendor Risk · 06 Secure Web+IDS. Scroll up to explore, or pinch one with gesture control.'); break;
       case 'stack': out('Python · PyTorch · scikit-learn · Pandas · Sentinel · KQL · Azure · SOAR · Wazuh · RBAC/MFA · Ollama/Phi-3'); break;
       case 'contact': out('mail: morepratik77@gmail.com · github.com/Pratikm7073 · linkedin.com/in/pratik-more-969749249'); break;
       case 'clear': setLines([]); return;
@@ -230,14 +231,14 @@ function Terminal() {
         break;
       case 'ls': out('about/  projects/  stack/  contact/  secrets/'); break;
       case 'cd secrets': case 'cat secrets': out('🔒 nice try. run "sudo hire-me" instead.'); break;
-      default: out(`command not found: ${cmd} — the AI suggests "help" (or just "sudo hire-me").`);
+      default: out(`command not found: ${cmd}. The AI suggests "help", or just "sudo hire-me".`);
     }
   };
 
   return (
     <div className={'term' + (open ? ' open' : '')}>
       <button className="term-trigger" type="button" onClick={() => setOpen((o) => !o)}>
-        <span className="tt-dot"></span>▸ talk to P·R·A·T·I·K {open ? '—' : '↗'}
+        <span className="tt-dot"></span>▸ talk to P·R·A·T·I·K {open ? '×' : '↗'}
       </button>
       {open && (
         <div className="term-card">
@@ -286,8 +287,8 @@ export default function App() {
         <div className="tm-hd">◈ REACTOR TELEMETRY</div>
         <div className="tm-row"><span>ROT</span><b id="tmRot">0.0°</b></div>
         <div className="tm-row"><span>AXIS</span><b id="tmAxis">0.00, 0.00, 0.00</b></div>
-        <div className="tm-row"><span>TRACK</span><b id="tmTrack">—</b></div>
-        <div className="tm-row"><span>FPS</span><b id="tmFps">—</b></div>
+        <div className="tm-row"><span>TRACK</span><b id="tmTrack">···</b></div>
+        <div className="tm-row"><span>FPS</span><b id="tmFps">···</b></div>
         <div className="tm-row"><span>MODE</span><b id="tmMode">IDLE</b></div>
       </div>
 
@@ -321,12 +322,12 @@ export default function App() {
             <div className="big cascade"><LetterWord text="PRATIK" base={0} /><br /><LetterWord text="MORE" base={6} /></div>
           </div>
           <div className="hero-side right">
-            <div className="small">A Machine Learning</div>
-            <div className="big cascade"><span className="ghost"><LetterWord text="ML" base={0} /></span><br /><LetterWord text="ENGINEER" base={2} /></div>
+            <div className="small">An AI &amp;</div>
+            <div className="big cascade"><span className="ghost"><LetterWord text="CYBER" base={0} /></span><br /><LetterWord text="ENGINEER" base={5} /></div>
           </div>
         </div>
         <div className="hero-meta">
-          <span><span className="dot"></span>SecOps · Trust &amp; Safety</span>
+          <span><span className="dot"></span>AI Security · Applied ML</span>
           <span>52.40 N · 1.51 W // Coventry, UK</span>
         </div>
         <div className="ai-line"><span id="aiText"></span><span className="ai-caret"></span></div>
@@ -340,9 +341,9 @@ export default function App() {
           <motion.div className="about-copy" variants={rise} initial="hidden" whileInView="show" viewport={inView}>
             <img className="about-photo" src="download.jfif" alt="Pratik More in Coventry, UK" />
             <div className="eyebrow">About Me</div>
-            <h2>Cybersecurity analyst building <em>secure systems</em> at scale.</h2>
-            <p>I'm <strong>Pratik More</strong> a SecOps &amp; Trust-and-Safety specialist with <strong>4.5+ years</strong> protecting platforms, automating incident response, and hunting threats. Currently completing an <strong>MSc Cybersecurity</strong> in the UK.</p>
-            <p>From moderating millions of data points at TikTok to engineering zero-touch ransomware kill-switches I build secure perimeters, automate the response, and protect the user experience.</p>
+            <h2>AI engineer securing intelligent systems at scale.</h2>
+            <p>I'm <strong>Pratik More</strong>, an AI and security engineer with <strong>4.5+ years</strong> in production: training models that predict, and building automation that defends. Currently completing an <strong>MSc Cybersecurity</strong> in the UK.</p>
+            <p>From forecasting demand with Random Forests at 4.6% MAPE to shipping zero-touch ransomware kill-switches, I work where machine learning meets the threat surface.</p>
             <div className="about-stats">
               <div className="about-stat"><div className="k">Experience</div><div className="v">4.5+ Years</div></div>
               <div className="about-stat"><div className="k">Location</div><div className="v">Coventry, UK</div></div>
@@ -351,6 +352,8 @@ export default function App() {
           </motion.div>
         </div>
       </section>
+
+      <DeviceShowcase />
 
       {/* SKILLS MARQUEE */}
       <div className="marquee" aria-hidden="true">
@@ -364,9 +367,9 @@ export default function App() {
 
       {/* WHAT I DO (SOC scene) */}
       <section className="whatido" id="work">
-        <div id="socStatus">● SOC LIVE — ALL SYSTEMS NOMINAL</div>
+        <div id="socStatus">● SOC LIVE · ALL SYSTEMS NOMINAL</div>
         <canvas id="desk-canvas"></canvas>
-        <div className="whatido-title">WHAT<br /><em>I DO</em></div>
+        <div className="whatido-title">WHAT<br />I DO</div>
         <motion.div className="do-cards" variants={stagger} initial="hidden" whileInView="show" viewport={inView}>
           <motion.div className="do-card" variants={rise}>
             <div className="role">Security Operations</div>
@@ -387,7 +390,7 @@ export default function App() {
       <section className="section-pad">
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }}>
           <motion.div className="section-eyebrow" variants={riseSoft}>Career &amp; Experience</motion.div>
-          <motion.h2 className="section-title" variants={riseSoft}>My career &amp; <em>experience</em></motion.h2>
+          <motion.h2 className="section-title" variants={riseSoft}>My career &amp; experience</motion.h2>
         </motion.div>
         <div className="career-split">
           <div className="career-list">
@@ -420,7 +423,7 @@ export default function App() {
             <div className="cv-node" data-i="0"><i></i><div className="cv-card"><span className="cv-year">2022</span><span className="cv-role">Lead WFM Analyst</span><span className="cv-org">Concentrix Daksh</span></div></div>
             <div className="cv-node alt" data-i="1"><i></i><div className="cv-card"><span className="cv-year">2019</span><span className="cv-role">Trust &amp; Safety · AI Policy</span><span className="cv-org">TikTok · ByteDance</span></div></div>
             <div className="cv-node" data-i="2"><i></i><div className="cv-card"><span className="cv-year">NOW</span><span className="cv-role">MSc Cybersecurity</span><span className="cv-org">United Kingdom · 2026</span></div></div>
-            <div className="cv-next">NEXT ▸ ML ENGINEER · <em>open to work</em></div>
+            <div className="cv-next">NEXT ▸ AI SECURITY ENGINEER · open to work</div>
           </div>
         </div>
       </section>
@@ -442,7 +445,7 @@ export default function App() {
       <section className="section-pad">
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }}>
           <motion.div className="section-eyebrow" variants={riseSoft}>Selected Projects</motion.div>
-          <motion.h2 className="section-title" variants={riseSoft}>My <em>Work</em></motion.h2>
+          <motion.h2 className="section-title" variants={riseSoft}>My Work</motion.h2>
         </motion.div>
         <div className="work-list">
           {Object.entries(PROJECTS).map(([k, p]) => (
@@ -479,7 +482,7 @@ export default function App() {
       <section id="contact">
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={inView}>
           <motion.div className="contact-eyebrow" variants={riseSoft}>{'// Get in touch'}</motion.div>
-          <motion.h2 variants={rise}>Let's build something <em>secure.</em></motion.h2>
+          <motion.h2 variants={rise}>Let's build something secure.</motion.h2>
           <motion.div variants={riseSoft}><Terminal /></motion.div>
           <motion.div className="contact-grid" variants={riseSoft}>
             <div className="contact-links">

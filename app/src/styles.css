@@ -201,7 +201,7 @@ section,footer{position:relative;z-index:1}
 
 /* ─── GLASSMORPHISM SURFACES ────────────────────────── */
 .do-card,.metric,.edu,.about-copy{
-  /* solid glass-look gradient — backdrop-filter removed: re-blurring
+  /* solid glass-look gradient, backdrop-filter removed: re-blurring
      the page behind every card on each scrolled frame was the main
      source of scroll jank */
   background:linear-gradient(145deg,rgba(38,42,58,.88),rgba(16,17,26,.9));
@@ -301,6 +301,23 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 .work-row{cursor:pointer}
 
 
+
+/* ─── PRODUCT SHOWCASE (Neural Security Module) ────── */
+.device{position:relative;z-index:1;height:340vh}
+.dv-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#device-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.dv-head{position:absolute;top:11vh;left:0;right:0;text-align:center;padding:0 5vw;pointer-events:none;z-index:2}
+.dv-head .section-eyebrow{margin-bottom:10px}
+.dv-head .section-title{margin-bottom:0;font-size:clamp(2rem,4.2vw,3.6rem)}
+.dv-spec{position:absolute;right:4vw;top:56%;transform:translateY(-50%);width:min(300px,30vw);text-align:left;pointer-events:none;z-index:2}
+.dv-k{font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.22em;color:var(--cyan);display:block;margin-bottom:10px}
+.dv-spec h3{font-size:clamp(1.3rem,2vw,1.7rem);font-weight:600;letter-spacing:-.02em;margin-bottom:10px;color:#fff}
+.dv-spec p{font-size:14px;line-height:1.65;color:#9aa5b4;font-weight:300}
+.dv-hint{position:absolute;bottom:7vh;left:0;right:0;text-align:center;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.42);pointer-events:none;z-index:2}
+
+/* headings carry a gradient instead of per-word accent spans */
+.section-title,#contact h2,.about-copy h2{background:linear-gradient(105deg,#ffffff 30%,var(--cyan) 62%,var(--violet) 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
 /* ─── REACTOR TELEMETRY HUD ─────────────────────────── */
 #telemetry{position:fixed;left:22px;bottom:104px;z-index:9600;font-family:'Geist Mono',monospace;font-size:10.5px;line-height:1.85;color:#8fa3b8;background:rgba(6,10,16,.82);border:1px solid rgba(92,225,230,.28);border-radius:12px;padding:11px 14px;min-width:196px;opacity:0;transform:translateY(10px);pointer-events:none;visibility:hidden;transition:opacity .4s var(--ease),transform .4s var(--ease),visibility .4s}
 #telemetry.on{opacity:1;transform:translateY(0);visibility:visible}
@@ -363,6 +380,9 @@ html.has-cursor,html.has-cursor *{cursor:none!important}
 .term-in input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'Geist Mono',monospace;font-size:12.5px}
 
 @media(max-width:980px){
+  .device{height:260vh}
+  .dv-spec{right:auto;left:5vw;top:auto;bottom:14vh;transform:none;width:90vw}
+  .dv-head .section-title{font-size:clamp(1.5rem,6vw,2.2rem)}
   #telemetry{display:none}
   #scrollRail{display:none}
   #cDot,#cRing{display:none}

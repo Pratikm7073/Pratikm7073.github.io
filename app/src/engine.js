@@ -288,7 +288,7 @@ function buildHero(){
       if(qAge<4000&&qAge<mAge){
         /* Stark grab: mirror the wrist quaternion (snappy while held,
            gentle during the 4s pose-hold after release) */
-        /* continuous follow rate — the old 300ms step jumped the rate
+        /* continuous follow rate, the old 300ms step jumped the rate
            100x and stuttered whenever tracking hiccuped mid-grab */
         const Rq=lerp(0.0005,0.06,clamp((qAge-120)/900,0,1));
         core.quaternion.slerp(quatTarget,1-Math.pow(Rq,dt));
@@ -371,10 +371,10 @@ function aiGreeting(){
   const el=document.getElementById('aiText');
   if(!el) return;
   const msgs=[
-    'Good day. I am P·R·A·T·I·K — portfolio intelligence.',
-    'Systems online · ML Engineer profile loaded.',
+    'Good day. I am P·R·A·T·I·K, your portfolio intelligence.',
+    'Systems online · AI security profile loaded.',
     'Six deployments indexed. Scroll to explore.',
-    'Tip: enable Gesture Control — bottom right.',
+    'Tip: enable Gesture Control, bottom right.',
   ];
   let mi=0;
   function type(i){
@@ -552,7 +552,7 @@ function makeTermScreen(){
     x.fillStyle='rgba(255,255,255,.05)';x.fillRect(0,0,W,36);
     ['#ff5f57','#febc2e','#28c840'].forEach((cc,i)=>{x.fillStyle=cc;x.beginPath();x.arc(24+i*24,18,6.5,0,7);x.fill();});
     x.fillStyle='rgba(255,255,255,.6)';x.font='600 14px monospace';
-    x.fillText('siem — live tail · sentinel / wazuh',84,23);
+    x.fillText('siem · live tail · sentinel / wazuh',84,23);
     x.fillStyle=state==='alert'?'#ff4d61':'#39d98a';
     x.beginPath();x.arc(W-30,18,5,0,7);x.fill();
     const cad=state==='alert'?0.14:0.55;
@@ -586,11 +586,11 @@ function makeTermScreen(){
       x.fillStyle='rgba(120,0,12,.92)';x.fillRect(0,H-62,W,62);
       x.strokeStyle=`rgba(255,77,97,${p})`;x.lineWidth=3;x.strokeRect(2,2,W-4,H-4);
       x.fillStyle=`rgba(255,225,230,${.6+.4*p})`;x.font='700 24px monospace';
-      x.fillText('⚠ INTRUSION DETECTED — SSH BRUTE FORCE (T1110)',20,H-22);
+      x.fillText('⚠ INTRUSION DETECTED · SSH BRUTE FORCE (T1110)',20,H-22);
     }else if(state==='contained'){
       x.fillStyle='rgba(16,110,64,.9)';x.fillRect(0,H-62,W,62);
       x.fillStyle='#c9ffe6';x.font='700 24px monospace';
-      x.fillText('✓ THREAT CONTAINED — IP BANNED · MTTC 41s',20,H-22);
+      x.fillText('✓ THREAT CONTAINED · IP BANNED · MTTC 41s',20,H-22);
     }
     tex.needsUpdate=true;
   }
@@ -643,7 +643,7 @@ function makeMapScreen(){
     x.beginPath();x.arc(hq[0],hq[1],9,0,7);x.stroke();
     x.fillStyle='rgba(255,255,255,.04)';x.fillRect(0,0,W,34);
     x.fillStyle='rgba(255,255,255,.6)';x.font='600 13px monospace';
-    x.fillText('GLOBAL THREAT MAP — LIVE FEED',18,22);
+    x.fillText('GLOBAL THREAT MAP · LIVE FEED',18,22);
     if(state==='alert'){x.fillStyle=`rgba(255,30,60,${.08+Math.sin(t*9)*.05})`;x.fillRect(0,0,W,H);}
     tex.needsUpdate=true;
   }
@@ -852,9 +852,9 @@ function buildDesk(){
   const DUR={calm:8.5,alert:3.4,contained:2.0};
   function setChip(){
     if(!socChip)return;
-    if(state==='alert'){socChip.textContent='⚠ INTRUSION DETECTED — T1110 BRUTE FORCE';socChip.className='alert';}
+    if(state==='alert'){socChip.textContent='⚠ INTRUSION DETECTED · T1110 BRUTE FORCE';socChip.className='alert';}
     else if(state==='contained'){socChip.textContent='✓ THREAT CONTAINED · MTTC 41s';socChip.className='ok';}
-    else{socChip.textContent='● SOC LIVE — ALL SYSTEMS NOMINAL';socChip.className='';}
+    else{socChip.textContent='● SOC LIVE · ALL SYSTEMS NOMINAL';socChip.className='';}
   }
   setChip();
 
@@ -1089,7 +1089,7 @@ function buildBackground(){
   const canvas=document.getElementById('bg3d');
   if(!canvas||matchMedia('(prefers-reduced-motion: reduce)').matches) return null;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:false,powerPreference:'high-performance'});
-  renderer.setPixelRatio(1); // nebula is soft — render small, stretch up
+  renderer.setPixelRatio(1); // nebula is soft, render small, stretch up
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(60,1,0.1,120);
   camera.position.z=16;
@@ -1356,7 +1356,7 @@ function setupGestures(bg){
     for(let k=0;k<5;k++)lmPt(lm,PALM[k],pPts[k]);
     /* palm size normaliser: wrist → middle knuckle */
     const palmLen=pPts[0].distanceTo(pPts[2])||1e-4;
-    /* Newell plane normal over the pentagon — noise averaged over 5 points */
+    /* Newell plane normal over the pentagon, noise averaged over 5 points */
     let nx=0,ny=0,nz=0;
     for(let k=0;k<5;k++){
       const a=pPts[k],b=pPts[(k+1)%5];
@@ -1366,7 +1366,7 @@ function setupGestures(bg){
     }
     const nMag=Math.hypot(nx,ny,nz);
     /* Newell's magnitude is 2x the TRUE palm area (rotation invariant), so
-       it detects a collapsed/failed detection — not merely an edge-on palm */
+       it detects a collapsed/failed detection, not merely an edge-on palm */
     const planar=nMag/(palmLen*palmLen);
     if(!(planar>0.12)||!isFinite(planar))return null;      // detection failed → caller holds
     gNorm.set(nx/nMag,ny/nMag,nz/nMag).multiplyScalar(handSign);
@@ -1412,7 +1412,7 @@ function setupGestures(bg){
     gQ0inv.copy(q).invert();
     gQC0.copy(heroApi.getQuat());
     grab={mode,badSince:0};
-    status.textContent='🔒 Grabbed '+(mode==='pinch'?'🤏':mode==='fist'?'✊':'✋')+' — rotate your hand';
+    status.textContent='🔒 Grabbed '+(mode==='pinch'?'🤏':mode==='fist'?'✊':'✋')+' · rotate your hand';
     return true;
   }
   function updateGrab(lm){
@@ -1424,7 +1424,7 @@ function setupGestures(bg){
     if(vl>1e-6){
       /* atan2 form is stable at BOTH ends (acos is ill-conditioned at w≈1,
          and dividing by sqrt(1-w²) there produced an unnormalised,
-         noise-dominated axis — the old jitter source) */
+         noise-dominated axis, the old jitter source) */
       const ang=2*Math.atan2(vl,clamp(gQd.w,-1,1));
       const amp=Math.min(ang*GRAB_GAIN,Math.PI*0.98);   // never wrap past π
       gAxis.set(gQd.x/vl,gQd.y/vl,gQd.z/vl);
@@ -1493,7 +1493,7 @@ function setupGestures(bg){
     if(!lm){
       twoHand=false;grab=null;palmHold=0;
       /* grace window: tracking drops for a few frames constantly
-         (especially with the hand low in the camera frame) — keep the
+         (especially with the hand low in the camera frame), keep the
          cursor up AND keep the current scroll velocity going so a
          downward scroll doesn't die the moment the hand dips out */
       if(now-lastSeen<700){cursor.classList.add('lost');return;}
@@ -1516,7 +1516,7 @@ function setupGestures(bg){
       if(A.x<B.x){const tm=A;A=B;B=tm;}   // stable order (mirrored: left hand first)
       const x1=1-A.x,y1=A.y,x2=1-B.x,y2=B.y;
       const mxN=(x1+x2)/2,myN=(y1+y2)/2;
-      /* geometry in aspect-true space — raw normalized webcam coords
+      /* geometry in aspect-true space: raw normalized webcam coords
          are anisotropic, which skewed angle and spread */
       const ang=Math.atan2(y2-y1,(x2-x1)*camA);
       const spread=Math.hypot((x2-x1)*camA,y2-y1);
@@ -1558,7 +1558,7 @@ function setupGestures(bg){
     /* parallax: hand steers the cosmos */
     bg&&bg.setPointer(nx*2-1,ny*2-1);
     /* hand geometry in ASPECT-TRUE space: x scaled by the camera
-       aspect so every distance is isotropic — pinch/fist/reach ratios
+       aspect so every distance is isotropic, so pinch/fist/reach ratios
        stay consistent no matter how the hand is oriented */
     const gX=i=>lm[i].x*camA, gY=i=>lm[i].y;
     const hand=Math.hypot(gX(0)-gX(9),gY(0)-gY(9))||.1;
@@ -1566,7 +1566,7 @@ function setupGestures(bg){
     const foldAvg=(fold(8)+fold(12)+fold(16)+fold(20))/4;
     /* pinch vs fist: both bring thumb & index tips together, but a
        pinch holds the contact point OUT from the wrist while a fist
-       pulls everything in — 'reach' tells them apart reliably */
+       pulls everything in, so 'reach' tells them apart reliably */
     const palmW=Math.hypot(gX(5)-gX(17),gY(5)-gY(17))||.08;
     const ratio=Math.hypot(gX(4)-gX(8),gY(4)-gY(8))/palmW;
     const reach=Math.hypot((gX(4)+gX(8))/2-gX(0),(gY(4)+gY(8))/2-gY(0))/palmW;
@@ -1636,7 +1636,7 @@ function setupGestures(bg){
       if(++palmHold>=4&&!grab){startGrab('palm',lm);lastX=nx;lastT=now;return;}
     }else palmHold=0;
 
-    /* scrolling: asymmetric zones — the DOWN zone starts just below
+    /* scrolling: asymmetric zones: the DOWN zone starts just below
        centre (holding a hand at the bottom edge of a webcam frame
        loses tracking, so never require it). Quadratic ease, capped.
        ✊ fist = turbo (faster, still capped) */
@@ -1824,7 +1824,7 @@ function runPreloader(done){
 /* ════════════════════════════════════════════════
    PROXIMITY REVEAL cursor torchlight over rows
    (in-memory rect cache: ZERO layout reads on the
-   scroll path — measurements happen once, then the
+   scroll path: measurements happen once, then the
    hot loop touches only cached numbers + scrollY)
 ════════════════════════════════════════════════ */
 function proximityReveal(){
@@ -1907,7 +1907,7 @@ function setupTilt(){
 
 /* ════════════════════════════════════════════════
    HUD SCROLL NAVIGATOR right rail + top progress bar
-   (cached section offsets — no per-frame layout reads)
+   (cached section offsets, no per-frame layout reads)
 ════════════════════════════════════════════════ */
 function setupScrollNav(){
   const rail=document.getElementById('scrollRail');
@@ -1940,6 +1940,179 @@ function setupMarquee(){
   if(!mq)return;
   new IntersectionObserver(es=>{mq.classList.toggle('paused',!es[0].isIntersecting);},{threshold:0}).observe(mq);
 }
+
+/* ════════════════════════════════════════════════
+   NEURAL SECURITY MODULE
+   An Apple-style product showcase: a real gadget in
+   PBR materials (anodised aluminium, sapphire glass,
+   gold contacts) under studio lighting, scroll
+   scrubbed by framer-motion. Rotates, tilts, then
+   separates into an exploded view and reassembles.
+════════════════════════════════════════════════ */
+function buildDevice(){
+  const canvas=document.getElementById('device-canvas');
+  if(!canvas)return;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+  const env=studioEnv(renderer);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(32,1,0.1,100);
+  camera.position.set(0,1.75,11.6);
+  const look=new THREE.Vector3(0,-0.1,0);
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
+  resize();new ResizeObserver(resize).observe(canvas);
+
+  /* studio lighting: soft key, cool rim, warm kick */
+  scene.add(new THREE.AmbientLight(0x3a4456,2.1));
+  const key=new THREE.DirectionalLight(0xffffff,3.4);key.position.set(-4,7,5);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x7fd4ff,1.6);rim.position.set(5,2,-4);scene.add(rim);
+  const kick=new THREE.PointLight(0xe0457b,1.2,16,2);kick.position.set(3.5,-1.5,3);scene.add(kick);
+  const fillL=new THREE.PointLight(0x8b6dff,1.0,18,2);fillL.position.set(-4,-1,2);scene.add(fillL);
+
+  /* ── materials: this is where the realism lives ── */
+  const alu=new THREE.MeshPhysicalMaterial({color:0xdfe4ea,metalness:.92,roughness:.22,
+    clearcoat:1,clearcoatRoughness:.10,envMap:env,envMapIntensity:2.6});
+  const aluDark=new THREE.MeshPhysicalMaterial({color:0x4a525e,metalness:.95,roughness:.3,
+    clearcoat:.85,clearcoatRoughness:.18,envMap:env,envMapIntensity:1.9});
+  const glass=new THREE.MeshPhysicalMaterial({color:0x16202e,metalness:.15,roughness:.02,
+    clearcoat:1,clearcoatRoughness:.02,envMap:env,envMapIntensity:3.2,transparent:true,opacity:.34});
+  const gold=new THREE.MeshPhysicalMaterial({color:0xd4a24a,metalness:1,roughness:.22,
+    clearcoat:.7,envMap:env,envMapIntensity:1.8});
+  const glow=new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:.9,
+    blending:THREE.AdditiveBlending,depthWrite:false});
+
+  /* PCB texture: etched traces + pads */
+  const pcbTex=(()=>{
+    const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');
+    x.fillStyle='#0a1420';x.fillRect(0,0,512,512);
+    x.strokeStyle='#1f6d78';x.lineWidth=2.5;x.lineCap='square';
+    for(let i=0;i<46;i++){
+      let px=20+Math.random()*472,py=20+Math.random()*472;
+      x.beginPath();x.moveTo(px,py);
+      for(let s=0;s<4;s++){
+        const horiz=Math.random()<.5;
+        px+=horiz?(Math.random()-.5)*150:0;py+=horiz?0:(Math.random()-.5)*150;
+        px=Math.max(12,Math.min(500,px));py=Math.max(12,Math.min(500,py));
+        x.lineTo(px,py);
+      }
+      x.stroke();
+    }
+    x.fillStyle='#c9a24a';
+    for(let i=0;i<70;i++)x.fillRect(Math.random()*490,Math.random()*490,7,7);
+    x.fillStyle='#134048';
+    for(let i=0;i<14;i++)x.fillRect(30+Math.random()*420,30+Math.random()*420,34,20);
+    const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
+  })();
+  /* engraved chassis lettering */
+  const engraveTex=(()=>{
+    const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');
+    x.fillStyle='#9aa3ae';x.fillRect(0,0,512,128);
+    x.fillStyle='#6d7581';x.font='600 34px monospace';x.textAlign='center';
+    x.fillText('NEURAL SECURITY MODULE',256,58);
+    x.font='400 22px monospace';x.fillStyle='#7c848f';
+    x.fillText('NSM-01  ·  P. MORE  ·  AI × SEC',256,94);
+    const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
+  })();
+
+  const D=new THREE.Group();D.position.y=-0.15;D.scale.setScalar(1.05);scene.add(D);
+  /* three layers that separate in the exploded view */
+  const LTop=new THREE.Group(),LMid=new THREE.Group(),LBot=new THREE.Group();
+  D.add(LBot,LMid,LTop);
+
+  /* ── BOTTOM: chassis + heat-sink fins + contact pins ── */
+  const chassis=new THREE.Mesh(new RoundedBoxGeometry(3.3,0.30,2.3,6,0.11),alu);
+  LBot.add(chassis);
+  const plate=new THREE.Mesh(new THREE.PlaneGeometry(1.9,0.48),
+    new THREE.MeshPhysicalMaterial({map:engraveTex,metalness:.95,roughness:.42,envMap:env,envMapIntensity:1.1}));
+  plate.rotation.x=-Math.PI/2;plate.position.set(0,-0.152,0.62);LBot.add(plate);
+  for(let i=0;i<16;i++){
+    const fin=new THREE.Mesh(new RoundedBoxGeometry(0.055,0.20,1.95,2,0.02),aluDark);
+    fin.position.set(-1.42+i*0.19,-0.30,0);LBot.add(fin);
+  }
+  [-1,1].forEach(sd=>{
+    for(let i=0;i<22;i++){
+      const pin=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.045,0.115),gold);
+      pin.position.set(-1.30+i*0.124,-0.02,sd*1.18);LBot.add(pin);
+    }
+  });
+
+  /* ── MIDDLE: PCB + processor die + capacitors + core ring ── */
+  const pcb=new THREE.Mesh(new RoundedBoxGeometry(3.0,0.07,2.0,4,0.03),
+    new THREE.MeshStandardMaterial({map:pcbTex,metalness:.35,roughness:.62,envMap:env,envMapIntensity:.7}));
+  LMid.add(pcb);
+  const die=new THREE.Mesh(new RoundedBoxGeometry(1.06,0.10,1.06,3,0.02),aluDark);
+  die.position.y=0.085;LMid.add(die);
+  const dieTop=new THREE.Mesh(new THREE.PlaneGeometry(0.88,0.88),gold);
+  dieTop.rotation.x=-Math.PI/2;dieTop.position.y=0.137;LMid.add(dieTop);
+  const coreRing=new THREE.Mesh(new THREE.TorusGeometry(0.66,0.016,8,64),glow);
+  coreRing.rotation.x=Math.PI/2;coreRing.position.y=0.09;LMid.add(coreRing);
+  const coreDisc=new THREE.Mesh(new THREE.CircleGeometry(0.3,40),
+    new THREE.MeshBasicMaterial({color:0xdffcff,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
+  coreDisc.rotation.x=-Math.PI/2;coreDisc.position.y=0.145;LMid.add(coreDisc);
+  const caps=[];
+  [[-1.24,0.62],[-1.24,-0.62],[1.24,0.62],[1.24,-0.62],[0,0.82],[0,-0.82]].forEach(([cx,cz])=>{
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.085,0.17,18),aluDark);
+    cap.position.set(cx,0.12,cz);LMid.add(cap);caps.push(cap);
+    const band=new THREE.Mesh(new THREE.TorusGeometry(0.086,0.012,8,20),gold);
+    band.rotation.x=Math.PI/2;band.position.set(cx,0.18,cz);LMid.add(band);
+  });
+
+  /* ── TOP: sapphire glass lid + aluminium bezel ── */
+  const bezel=new THREE.Mesh(new RoundedBoxGeometry(3.24,0.10,2.24,5,0.045),alu);
+  LTop.add(bezel);
+  const lid=new THREE.Mesh(new RoundedBoxGeometry(2.92,0.05,1.92,4,0.02),glass);
+  lid.position.y=0.045;LTop.add(lid);
+  const etch=new THREE.Mesh(new THREE.TorusGeometry(0.62,0.008,8,64),
+    new THREE.MeshBasicMaterial({color:0x9ff2f6,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}));
+  etch.rotation.x=Math.PI/2;etch.position.y=0.08;LTop.add(etch);
+
+  /* reflective stage */
+  const stage=new THREE.Mesh(new THREE.CircleGeometry(6,64),
+    new THREE.MeshPhysicalMaterial({color:0x05070c,metalness:.7,roughness:.24,envMap:env,envMapIntensity:.7}));
+  stage.rotation.x=-Math.PI/2;stage.position.y=-1.75;scene.add(stage);
+
+  /* scroll progress, pushed in by framer-motion */
+  let prog=0,shown=0,visible=false;
+  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
+  window.__device={setProgress(p){prog=clamp(p,0,1);}};
+
+  const clock=new THREE.Clock();
+  let t=0;
+  function frame(){
+    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
+    const dt=Math.min(clock.getDelta(),0.05);
+    if(visible){
+      t+=dt;
+      shown=lerp(shown,prog,1-Math.pow(0.004,dt));   // silky scrub, never snaps
+      /* choreography: spin in, explode apart, reassemble */
+      const spin=shown*Math.PI*2.15;
+      D.rotation.y=spin+Math.sin(t*0.25)*0.05;
+      D.rotation.x=lerp(0.16,0.52,Math.sin(Math.min(1,shown*1.3)*Math.PI*0.5))-shown*0.12;
+      D.rotation.z=Math.sin(shown*Math.PI)*0.06;
+      D.position.y=-0.15+Math.sin(t*0.7)*0.05;
+      /* exploded view peaks in the middle of the section */
+      const ex=Math.sin(clamp((shown-0.18)/0.64,0,1)*Math.PI);
+      LTop.position.y=ex*0.95;
+      LMid.position.y=ex*0.18;
+      LBot.position.y=-ex*0.34;
+      LTop.rotation.y=ex*0.28;
+      LBot.rotation.y=-ex*0.18;
+      /* the core breathes and brightens when the module is open */
+      const pulse=0.55+Math.sin(t*2.2)*0.16+ex*0.4;
+      glow.opacity=pulse;coreDisc.material.opacity=0.5+pulse*0.45;
+      etch.material.opacity=0.35+ex*0.4;
+      coreRing.scale.setScalar(1+Math.sin(t*2.2)*0.02);
+      camera.position.x=Math.sin(t*0.15)*0.35;
+      camera.position.y=1.75-shown*0.3;
+      camera.lookAt(look);
+      renderer.render(scene,camera);
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
 function boot(){
   const bg=buildBackground();
   window.bgPulse=(x,y)=>bg&&bg.pulse(x,y);   // terminal 'hire-me' shockwave
@@ -1955,6 +2128,7 @@ function boot(){
   setupTilt();
   setupScrollNav();
   setupMarquee();
+  buildDevice();
 
   // nav scrolled state
   const nav=document.querySelector('nav');
