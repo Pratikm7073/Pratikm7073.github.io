@@ -10,7 +10,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValueEvent } from 
    ═══════════════════════════════════════════════ */
 
 const SPECS = [
-  { at: 0.10, k: 'DETECT', t: 'Models on the edge',
+  { at: 0.10, k: 'INFER', t: 'Models at line rate',
     d: 'Random Forest and anomaly detectors score every event as it lands, not in tomorrow’s batch.' },
   { at: 0.45, k: 'DECIDE', t: 'Policy in silicon',
     d: 'Risk thresholds, RBAC and MFA gates resolve in milliseconds, fully auditable.' },
@@ -37,8 +37,8 @@ export default function DeviceShowcase() {
         <canvas id="device-canvas"></canvas>
 
         <motion.div className="dv-head" style={{ y: headY, opacity: headO }}>
-          <div className="section-eyebrow">Neural Security Module</div>
-          <h2 className="section-title">Intelligence and defence,<br />on one board.</h2>
+          <div className="section-eyebrow">NSM-100 AI Accelerator</div>
+          <h2 className="section-title">Intelligence and defence,<br />on one card.</h2>
         </motion.div>
 
         {SPECS.map((s) => (
