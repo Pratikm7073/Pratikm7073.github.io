@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 import { initCursor } from './cursor.js';
 const lerp=(a,b,t)=>a+(b-a)*t;
@@ -220,7 +221,7 @@ function buildHero(){
   camera.position.set(0,0.55,7.6);
   const lookTarget=new THREE.Vector3(0,0.45,0);
 
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
   resize();addEventListener('resize',resize);
 
   const AI=makeAICore(env);
@@ -403,7 +404,7 @@ function buildAbout(){
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
   camera.position.set(0,0,7);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();new ResizeObserver(resize).observe(canvas);
 
   const brain=new THREE.Group();brain.scale.setScalar(1.18);scene.add(brain);
@@ -663,7 +664,7 @@ function buildDesk(){
   const camera=new THREE.PerspectiveCamera(36,1,0.1,100);
   camera.position.set(-1.8,2.1,8.2);
   const look=new THREE.Vector3(0.1,0.95,-0.2);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();new ResizeObserver(resize).observe(canvas);
 
   /* dark room lit almost entirely by the screens */
@@ -947,7 +948,7 @@ function buildTech(){
   const camera=new THREE.PerspectiveCamera(45,1,0.1,100);
   camera.position.set(0,0,14);
 
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   resize();addEventListener('resize',resize);
 
   // bright studio for that pearl-white look
@@ -1942,175 +1943,306 @@ function setupMarquee(){
 }
 
 /* ════════════════════════════════════════════════
-   NEURAL SECURITY MODULE
-   An Apple-style product showcase: a real gadget in
-   PBR materials (anodised aluminium, sapphire glass,
-   gold contacts) under studio lighting, scroll
-   scrubbed by framer-motion. Rotates, tilts, then
-   separates into an exploded view and reassembles.
+   PRODUCT STUDIO ENVIRONMENT
+   A proper softbox rig for the PMREM probe. Flat,
+   uniform reflections are the main "CG" tell; a real
+   studio has a bright key, a broad fill, a narrow rim
+   and a floor bounce, and metal picks all of that up.
 ════════════════════════════════════════════════ */
-function buildDevice(){
+let PENV=null;
+function productEnv(renderer){
+  if(PENV)return PENV;
+  const s=new THREE.Scene();
+  /* graded dome */
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(60,32,24),
+    new THREE.ShaderMaterial({side:THREE.BackSide,
+      vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+      fragmentShader:'varying vec3 vP;void main(){float h=normalize(vP).y*.5+.5;vec3 c=mix(vec3(.012,.016,.026),vec3(.16,.19,.25),pow(h,1.5));gl_FragColor=vec4(c,1.);}'}));
+  s.add(dome);
+  const box=(w,h,x,y,z,rx,ry,rz,i,c=0xffffff)=>{
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));
+    m.material.color.multiplyScalar(i);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);s.add(m);
+  };
+  box(34,22,-15,20,10,-Math.PI/2.5,0,0.25,7.5);            // key softbox, top left
+  box(30,26,22,6,4,0,-Math.PI/2.3,0,2.4,0xdfe9ff);         // broad fill, right
+  box(40,5,0,10,-24,0,0,0,4.5,0xbfd8ff);                   // rim strip behind
+  box(46,46,0,-14,0,-Math.PI/2,0,0,0.42,0x8899bb);          // floor bounce
+  box(10,20,-20,2,-8,0,Math.PI/2.6,0,1.6,0xffd8c0);        // warm kicker
+  const pm=new THREE.PMREMGenerator(renderer);
+  pm.compileEquirectangularShader();
+  PENV=pm.fromScene(s,0.02).texture;
+  return PENV;
+}
+
+/* fine directional streaks: brushed-metal roughness + normal */
+function brushedMaps(streak=1400,rough=[0.16,0.34]){
+  const S=512;
+  const rc=document.createElement('canvas');rc.width=rc.height=S;const rx=rc.getContext('2d');
+  const base=Math.round(((rough[0]+rough[1])/2)*255);
+  rx.fillStyle=`rgb(${base},${base},${base})`;rx.fillRect(0,0,S,S);
+  for(let i=0;i<streak;i++){
+    const y=Math.random()*S,len=40+Math.random()*400,v=Math.round((rough[0]+Math.random()*(rough[1]-rough[0]))*255);
+    rx.strokeStyle=`rgba(${v},${v},${v},${0.25+Math.random()*0.5})`;rx.lineWidth=Math.random()<.85?1:2;
+    rx.beginPath();rx.moveTo(Math.random()*S,y);rx.lineTo(Math.random()*S+len,y);rx.stroke();
+  }
+  const nc=document.createElement('canvas');nc.width=nc.height=S;const nx=nc.getContext('2d');
+  nx.fillStyle='rgb(128,128,255)';nx.fillRect(0,0,S,S);
+  for(let i=0;i<streak;i++){
+    const y=Math.random()*S,d=Math.random()<.5?118:138;
+    nx.strokeStyle=`rgba(${d},128,255,.5)`;nx.lineWidth=1;
+    nx.beginPath();nx.moveTo(Math.random()*S,y);nx.lineTo(Math.random()*S+120,y);nx.stroke();
+  }
+  const R=new THREE.CanvasTexture(rc),N=new THREE.CanvasTexture(nc);
+  [R,N].forEach(t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;});
+  return {roughnessMap:R,normalMap:N};
+}
+
+/* ════════════════════════════════════════════════
+   AI ACCELERATOR CARD
+   Dual axial fans, chamfered brushed shroud, fin
+   stack, gold PCIe fingers, bracket, backplate and a
+   chasing RGB light bar. Scroll scrubbed by
+   framer-motion: rotate, tilt, explode, reassemble.
+════════════════════════════════════════════════ */
+function buildGPU(){
   const canvas=document.getElementById('device-canvas');
   if(!canvas)return;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
-  const env=studioEnv(renderer);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  const env=productEnv(renderer);
   const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(32,1,0.1,100);
-  camera.position.set(0,1.75,11.6);
-  const look=new THREE.Vector3(0,-0.1,0);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
+  const camera=new THREE.PerspectiveCamera(30,1,0.1,100);
+  camera.position.set(0,1.55,13.6);
+  const look=new THREE.Vector3(0,-0.5,0);
+  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
+    renderer.setSize(Math.round(w*0.85),Math.round(h*0.85),false);  // fewer pixels to shade
+    camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
   resize();new ResizeObserver(resize).observe(canvas);
 
-  /* studio lighting: soft key, cool rim, warm kick */
-  scene.add(new THREE.AmbientLight(0x3a4456,2.1));
-  const key=new THREE.DirectionalLight(0xffffff,3.4);key.position.set(-4,7,5);scene.add(key);
-  const rim=new THREE.DirectionalLight(0x7fd4ff,1.6);rim.position.set(5,2,-4);scene.add(rim);
-  const kick=new THREE.PointLight(0xe0457b,1.2,16,2);kick.position.set(3.5,-1.5,3);scene.add(kick);
-  const fillL=new THREE.PointLight(0x8b6dff,1.0,18,2);fillL.position.set(-4,-1,2);scene.add(fillL);
+  scene.add(new THREE.AmbientLight(0x39445a,1.1));
+  const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(-5,8,6);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x9fd0ff,1.5);rim.position.set(6,1,-5);scene.add(rim);
+  const rgbLight=new THREE.PointLight(0x5ce1e6,2.4,12,2);rgbLight.position.set(0,1.1,1.4);scene.add(rgbLight);
 
-  /* ── materials: this is where the realism lives ── */
-  const alu=new THREE.MeshPhysicalMaterial({color:0xdfe4ea,metalness:.92,roughness:.22,
-    clearcoat:1,clearcoatRoughness:.10,envMap:env,envMapIntensity:2.6});
-  const aluDark=new THREE.MeshPhysicalMaterial({color:0x4a525e,metalness:.95,roughness:.3,
-    clearcoat:.85,clearcoatRoughness:.18,envMap:env,envMapIntensity:1.9});
-  const glass=new THREE.MeshPhysicalMaterial({color:0x16202e,metalness:.15,roughness:.02,
-    clearcoat:1,clearcoatRoughness:.02,envMap:env,envMapIntensity:3.2,transparent:true,opacity:.34});
-  const gold=new THREE.MeshPhysicalMaterial({color:0xd4a24a,metalness:1,roughness:.22,
-    clearcoat:.7,envMap:env,envMapIntensity:1.8});
-  const glow=new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:.9,
+  const bm=brushedMaps(1500,[0.18,0.40]);
+  const shroudMat=new THREE.MeshPhysicalMaterial({color:0x4d525c,metalness:1,roughness:.3,
+    roughnessMap:bm.roughnessMap,normalMap:bm.normalMap,normalScale:new THREE.Vector2(.24,.24),
+    clearcoat:.55,clearcoatRoughness:.28,envMap:env,envMapIntensity:1.5});
+  shroudMat.roughnessMap.repeat.set(3,1);shroudMat.normalMap.repeat.set(3,1);
+  const bmPlate=brushedMaps(900,[0.22,0.44]);
+  const plateMat=new THREE.MeshStandardMaterial({color:0x3a3f48,metalness:1,roughness:.36,
+    roughnessMap:bmPlate.roughnessMap,normalMap:bmPlate.normalMap,normalScale:new THREE.Vector2(.2,.2),
+    envMap:env,envMapIntensity:1.25});
+  const darkPlastic=new THREE.MeshStandardMaterial({color:0x14171c,metalness:.1,roughness:.62,
+    envMap:env,envMapIntensity:.7});
+  const finMat=new THREE.MeshStandardMaterial({color:0xa8b0ba,metalness:1,roughness:.34,envMap:env,envMapIntensity:1.35});
+  const goldMat=new THREE.MeshStandardMaterial({color:0xd8ad5a,metalness:1,roughness:.24,envMap:env,envMapIntensity:1.8});
+  const pcbMat=new THREE.MeshStandardMaterial({color:0x14202c,metalness:.3,roughness:.72,envMap:env,envMapIntensity:.55});
+  const steelMat=new THREE.MeshStandardMaterial({color:0xc6ccd4,metalness:1,roughness:.26,envMap:env,envMapIntensity:1.7});
+
+  /* chasing RGB strip texture */
+  const rgbCan=document.createElement('canvas');rgbCan.width=512;rgbCan.height=16;
+  const rgbCtx=rgbCan.getContext('2d');
+  function paintRGB(off){
+    const g=rgbCtx.createLinearGradient(0,0,512,0);
+    for(let i=0;i<=6;i++){const h=((i/6)*360+off)%360;g.addColorStop(i/6,`hsl(${h},100%,62%)`);}
+    rgbCtx.fillStyle=g;rgbCtx.fillRect(0,0,512,16);
+    rgbTex.needsUpdate=true;
+  }
+  const rgbTex=new THREE.CanvasTexture(rgbCan);paintRGB(0);
+  const rgbMat=new THREE.MeshBasicMaterial({map:rgbTex,transparent:true,opacity:.95,
     blending:THREE.AdditiveBlending,depthWrite:false});
 
-  /* PCB texture: etched traces + pads */
-  const pcbTex=(()=>{
-    const c=document.createElement('canvas');c.width=512;c.height=512;const x=c.getContext('2d');
-    x.fillStyle='#0a1420';x.fillRect(0,0,512,512);
-    x.strokeStyle='#1f6d78';x.lineWidth=2.5;x.lineCap='square';
-    for(let i=0;i<46;i++){
-      let px=20+Math.random()*472,py=20+Math.random()*472;
-      x.beginPath();x.moveTo(px,py);
-      for(let s=0;s<4;s++){
-        const horiz=Math.random()<.5;
-        px+=horiz?(Math.random()-.5)*150:0;py+=horiz?0:(Math.random()-.5)*150;
-        px=Math.max(12,Math.min(500,px));py=Math.max(12,Math.min(500,py));
-        x.lineTo(px,py);
-      }
-      x.stroke();
+  /* etched branding */
+  const brandTex=(()=>{
+    const c=document.createElement('canvas');c.width=1024;c.height=256;const x=c.getContext('2d');
+    x.fillStyle='#3f444d';x.fillRect(0,0,1024,256);
+    x.fillStyle='#2a2e35';x.font='700 92px sans-serif';x.textAlign='left';
+    x.fillText('PM', 60, 150);
+    x.fillStyle='#565c66';x.font='600 52px monospace';
+    x.fillText('// AI ACCELERATOR', 210, 142);
+    x.fillStyle='#4a505a';x.font='400 34px monospace';
+    x.fillText('NSM-100  ·  24GB HBM  ·  P. MORE', 62, 210);
+    const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t;
+  })();
+
+  const D=new THREE.Group();D.position.y=-0.45;D.scale.setScalar(0.76);scene.add(D);
+  const LShroud=new THREE.Group(),LFins=new THREE.Group(),LPcb=new THREE.Group(),LBack=new THREE.Group();
+  D.add(LBack,LPcb,LFins,LShroud);
+
+  const CW=6.6,CH=0.30,CD=2.5;   // card width / shroud thickness / depth
+
+  /* ── SHROUD: chamfered top cover with two fan apertures ── */
+  const shroud=new THREE.Mesh(new RoundedBoxGeometry(CW,CH,CD,4,0.055),shroudMat);
+  shroud.position.y=0.62;LShroud.add(shroud);
+  /* brand plate inset */
+  const brand=new THREE.Mesh(new THREE.PlaneGeometry(2.5,0.62),
+    new THREE.MeshPhysicalMaterial({map:brandTex,metalness:.95,roughness:.42,envMap:env,envMapIntensity:1.1}));
+  brand.rotation.x=-Math.PI/2;brand.position.set(0,0.775,-0.86);LShroud.add(brand);
+  /* fan apertures + fans */
+  const fans=[];
+  [-1.62,1.62].forEach(fx=>{
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(1.0,0.055,12,48),shroudMat);
+    ring.rotation.x=Math.PI/2;ring.position.set(fx,0.79,0.12);LShroud.add(ring);
+    const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.30,0.32,0.14,28),darkPlastic);
+    hub.position.set(fx,0.70,0.12);LShroud.add(hub);
+    const cap=new THREE.Mesh(new THREE.CircleGeometry(0.29,28),
+      new THREE.MeshPhysicalMaterial({color:0x1b1f26,metalness:.4,roughness:.35,clearcoat:1,envMap:env,envMapIntensity:1.1}));
+    cap.rotation.x=-Math.PI/2;cap.position.set(fx,0.775,0.12);LShroud.add(cap);
+    /* 9 curved blades */
+    const blades=new THREE.Group();blades.position.set(fx,0.70,0.12);LShroud.add(blades);
+    const shape=new THREE.Shape();
+    shape.moveTo(0.30,-0.10);
+    shape.quadraticCurveTo(0.66,-0.20,0.94,0.02);
+    shape.quadraticCurveTo(0.66,0.10,0.30,0.13);
+    shape.lineTo(0.30,-0.10);
+    const bladeGeo=new THREE.ExtrudeGeometry(shape,{depth:0.028,bevelEnabled:true,bevelSize:0.012,bevelThickness:0.010,bevelSegments:2});
+    /* the 9 blades always move together, so bake them into one geometry */
+    const parts=[];
+    const mLay=new THREE.Matrix4().makeRotationX(-Math.PI/2);
+    const mTilt=new THREE.Matrix4().makeRotationX(0.42);
+    for(let i=0;i<9;i++){
+      const m=new THREE.Matrix4().makeRotationY((i/9)*Math.PI*2).multiply(mTilt).multiply(mLay);
+      parts.push(bladeGeo.clone().applyMatrix4(m));
     }
-    x.fillStyle='#c9a24a';
-    for(let i=0;i<70;i++)x.fillRect(Math.random()*490,Math.random()*490,7,7);
-    x.fillStyle='#134048';
-    for(let i=0;i<14;i++)x.fillRect(30+Math.random()*420,30+Math.random()*420,34,20);
-    const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
-  })();
-  /* engraved chassis lettering */
-  const engraveTex=(()=>{
-    const c=document.createElement('canvas');c.width=512;c.height=128;const x=c.getContext('2d');
-    x.fillStyle='#9aa3ae';x.fillRect(0,0,512,128);
-    x.fillStyle='#6d7581';x.font='600 34px monospace';x.textAlign='center';
-    x.fillText('NEURAL SECURITY MODULE',256,58);
-    x.font='400 22px monospace';x.fillStyle='#7c848f';
-    x.fillText('NSM-01  ·  P. MORE  ·  AI × SEC',256,94);
-    const t=new THREE.CanvasTexture(c);t.anisotropy=4;return t;
-  })();
+    blades.add(new THREE.Mesh(mergeGeometries(parts,false),darkPlastic));
+    fans.push(blades);
+  });
+  /* chasing RGB bar along the shroud front lip */
+  const rgbBar=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.5,0.075),rgbMat);
+  rgbBar.position.set(0,0.615,CD/2+0.005);LShroud.add(rgbBar);
+  const rgbTop=new THREE.Mesh(new THREE.PlaneGeometry(2.1,0.062),rgbMat);
+  rgbTop.rotation.x=-Math.PI/2;rgbTop.position.set(0,0.782,0.98);LShroud.add(rgbTop);
 
-  const D=new THREE.Group();D.position.y=-0.15;D.scale.setScalar(1.05);scene.add(D);
-  /* three layers that separate in the exploded view */
-  const LTop=new THREE.Group(),LMid=new THREE.Group(),LBot=new THREE.Group();
-  D.add(LBot,LMid,LTop);
-
-  /* ── BOTTOM: chassis + heat-sink fins + contact pins ── */
-  const chassis=new THREE.Mesh(new RoundedBoxGeometry(3.3,0.30,2.3,6,0.11),alu);
-  LBot.add(chassis);
-  const plate=new THREE.Mesh(new THREE.PlaneGeometry(1.9,0.48),
-    new THREE.MeshPhysicalMaterial({map:engraveTex,metalness:.95,roughness:.42,envMap:env,envMapIntensity:1.1}));
-  plate.rotation.x=-Math.PI/2;plate.position.set(0,-0.152,0.62);LBot.add(plate);
-  for(let i=0;i<16;i++){
-    const fin=new THREE.Mesh(new RoundedBoxGeometry(0.055,0.20,1.95,2,0.02),aluDark);
-    fin.position.set(-1.42+i*0.19,-0.30,0);LBot.add(fin);
+  /* ── FIN STACK ── */
+  {
+    const g=[],fg=new THREE.BoxGeometry(0.028,0.44,CD-0.34);
+    for(let i=0;i<26;i++)g.push(fg.clone().translate(-2.9+i*0.232,0.24,0));
+    LFins.add(new THREE.Mesh(mergeGeometries(g,false),finMat));
   }
-  [-1,1].forEach(sd=>{
-    for(let i=0;i<22;i++){
-      const pin=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.045,0.115),gold);
-      pin.position.set(-1.30+i*0.124,-0.02,sd*1.18);LBot.add(pin);
-    }
+  const heatpipe=[0.72,0,-0.72].map(pz=>{
+    const hp=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,CW-0.8,16),goldMat);
+    hp.rotation.z=Math.PI/2;hp.position.set(0,0.44,pz);LFins.add(hp);return hp;
   });
 
-  /* ── MIDDLE: PCB + processor die + capacitors + core ring ── */
-  const pcb=new THREE.Mesh(new RoundedBoxGeometry(3.0,0.07,2.0,4,0.03),
-    new THREE.MeshStandardMaterial({map:pcbTex,metalness:.35,roughness:.62,envMap:env,envMapIntensity:.7}));
-  LMid.add(pcb);
-  const die=new THREE.Mesh(new RoundedBoxGeometry(1.06,0.10,1.06,3,0.02),aluDark);
-  die.position.y=0.085;LMid.add(die);
-  const dieTop=new THREE.Mesh(new THREE.PlaneGeometry(0.88,0.88),gold);
-  dieTop.rotation.x=-Math.PI/2;dieTop.position.y=0.137;LMid.add(dieTop);
-  const coreRing=new THREE.Mesh(new THREE.TorusGeometry(0.66,0.016,8,64),glow);
-  coreRing.rotation.x=Math.PI/2;coreRing.position.y=0.09;LMid.add(coreRing);
-  const coreDisc=new THREE.Mesh(new THREE.CircleGeometry(0.3,40),
-    new THREE.MeshBasicMaterial({color:0xdffcff,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
-  coreDisc.rotation.x=-Math.PI/2;coreDisc.position.y=0.145;LMid.add(coreDisc);
-  const caps=[];
-  [[-1.24,0.62],[-1.24,-0.62],[1.24,0.62],[1.24,-0.62],[0,0.82],[0,-0.82]].forEach(([cx,cz])=>{
-    const cap=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.085,0.17,18),aluDark);
-    cap.position.set(cx,0.12,cz);LMid.add(cap);caps.push(cap);
-    const band=new THREE.Mesh(new THREE.TorusGeometry(0.086,0.012,8,20),gold);
-    band.rotation.x=Math.PI/2;band.position.set(cx,0.18,cz);LMid.add(band);
+  /* ── PCB, VRAM, power connector, PCIe fingers, bracket ── */
+  const pcb=new THREE.Mesh(new RoundedBoxGeometry(CW-0.15,0.075,CD-0.1,3,0.02),pcbMat);
+  LPcb.add(pcb);
+  const die=new THREE.Mesh(new RoundedBoxGeometry(0.86,0.075,0.86,3,0.015),
+    new THREE.MeshPhysicalMaterial({color:0x2b3038,metalness:.85,roughness:.3,envMap:env,envMapIntensity:1.4}));
+  die.position.set(-0.1,0.072,0);LPcb.add(die);
+  const dieTop=new THREE.Mesh(new THREE.PlaneGeometry(0.66,0.66),
+    new THREE.MeshPhysicalMaterial({color:0xc8ccd2,metalness:1,roughness:.14,envMap:env,envMapIntensity:2}));
+  dieTop.rotation.x=-Math.PI/2;dieTop.position.set(-0.1,0.111,0);LPcb.add(dieTop);
+  {
+    const g=[],vg=new RoundedBoxGeometry(0.42,0.055,0.34,2,0.012);
+    [[-1.15,.72],[-1.15,-.72],[0.95,.72],[0.95,-.72],[-0.1,.92],[-0.1,-.92]]
+      .forEach(([mx,mz])=>g.push(vg.clone().translate(mx,0.065,mz)));
+    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
+  }
+  const pwr=new THREE.Mesh(new RoundedBoxGeometry(0.78,0.20,0.30,3,0.03),darkPlastic);
+  pwr.position.set(1.95,0.90,-0.72);LShroud.add(pwr);
+  {
+    const g=[],pg=new THREE.BoxGeometry(0.055,0.055,0.055);
+    for(let i=0;i<6;i++)g.push(pg.clone().translate(1.70+(i%3)*0.24,0.94-Math.floor(i/3)*0.09,-0.72));
+    LShroud.add(new THREE.Mesh(mergeGeometries(g,false),goldMat));
+  }
+  /* gold PCIe edge fingers */
+  {
+    const g=[],fg=new THREE.BoxGeometry(0.052,0.11,0.30);
+    for(let i=0;i<38;i++)g.push(fg.clone().translate(-1.75+i*0.088,-0.085,0.86));
+    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),goldMat));
+  }
+  const notch=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.13,0.32),pcbMat);
+  notch.position.set(-1.30,-0.085,0.86);LPcb.add(notch);
+  /* IO bracket with port cutouts + honeycomb vent */
+  const bracket=new THREE.Mesh(new RoundedBoxGeometry(0.075,1.72,2.30,3,0.02),steelMat);
+  bracket.position.set(-3.36,0.34,0);LPcb.add(bracket);
+  [[-0.62,0.42],[0.06,0.42],[0.74,0.42]].forEach(([pz,py])=>{
+    const port=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.24,0.44),darkPlastic);
+    port.position.set(-3.38,py,pz);LPcb.add(port);
   });
+  {
+    const g=[],hg=new THREE.CylinderGeometry(0.055,0.055,0.09,6).rotateZ(Math.PI/2);
+    for(let r=0;r<5;r++)for(let cix=0;cix<7;cix++)
+      g.push(hg.clone().translate(-3.37,-0.30+r*0.145,-0.86+cix*0.145+(r%2)*0.07));
+    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
+  }
+  /* backplate */
+  const back=new THREE.Mesh(new RoundedBoxGeometry(CW-0.1,0.055,CD-0.12,3,0.02),plateMat);
+  back.position.y=-0.20;LBack.add(back);
+  const cut=new THREE.Mesh(new THREE.PlaneGeometry(1.5,0.9),rgbMat);
+  cut.rotation.x=Math.PI/2;cut.position.set(2.1,-0.23,0);LBack.add(cut);
 
-  /* ── TOP: sapphire glass lid + aluminium bezel ── */
-  const bezel=new THREE.Mesh(new RoundedBoxGeometry(3.24,0.10,2.24,5,0.045),alu);
-  LTop.add(bezel);
-  const lid=new THREE.Mesh(new RoundedBoxGeometry(2.92,0.05,1.92,4,0.02),glass);
-  lid.position.y=0.045;LTop.add(lid);
-  const etch=new THREE.Mesh(new THREE.TorusGeometry(0.62,0.008,8,64),
-    new THREE.MeshBasicMaterial({color:0x9ff2f6,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false}));
-  etch.rotation.x=Math.PI/2;etch.position.y=0.08;LTop.add(etch);
+  /* no floor plane: the card floats over the nebula like a hero product
+     shot, with only a faint contact shadow to give it weight */
+  const shadowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+    const g=x.createRadialGradient(128,128,4,128,128,124);
+    g.addColorStop(0,'rgba(0,0,0,.75)');g.addColorStop(.5,'rgba(0,0,0,.28)');g.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=g;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
+  const contact=new THREE.Mesh(new THREE.PlaneGeometry(7.5,2.8),
+    new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,opacity:.5,depthWrite:false}));
+  contact.rotation.x=-Math.PI/2;contact.position.y=-1.25;scene.add(contact);
 
-  /* reflective stage */
-  const stage=new THREE.Mesh(new THREE.CircleGeometry(6,64),
-    new THREE.MeshPhysicalMaterial({color:0x05070c,metalness:.7,roughness:.24,envMap:env,envMapIntensity:.7}));
-  stage.rotation.x=-Math.PI/2;stage.position.y=-1.75;scene.add(stage);
-
-  /* scroll progress, pushed in by framer-motion */
   let prog=0,shown=0,visible=false;
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
   window.__device={setProgress(p){prog=clamp(p,0,1);}};
+  window.__gpuProbe=()=>({fan:fans[0].rotation.y,rgb:rgbHue,shown});
 
   const clock=new THREE.Clock();
-  let t=0;
+  let t=0,rgbHue=0,lastRGB=-1;
+  const col=new THREE.Color();
   function frame(){
-    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
-    const dt=Math.min(clock.getDelta(),0.05);
+    /* the product scene is the most expensive canvas on the page, and it
+       only turns slowly, so it runs at 30fps (15 while actively scrolling) */
+    if((frame._h=!frame._h)||(scrollBusy()&&(frame._f=!frame._f))){requestAnimationFrame(frame);return;}
+    const dt=Math.min(clock.getDelta(),0.1);
     if(visible){
       t+=dt;
-      shown=lerp(shown,prog,1-Math.pow(0.004,dt));   // silky scrub, never snaps
-      /* choreography: spin in, explode apart, reassemble */
-      const spin=shown*Math.PI*2.15;
-      D.rotation.y=spin+Math.sin(t*0.25)*0.05;
-      D.rotation.x=lerp(0.16,0.52,Math.sin(Math.min(1,shown*1.3)*Math.PI*0.5))-shown*0.12;
-      D.rotation.z=Math.sin(shown*Math.PI)*0.06;
-      D.position.y=-0.15+Math.sin(t*0.7)*0.05;
-      /* exploded view peaks in the middle of the section */
+      shown=lerp(shown,prog,1-Math.pow(0.004,dt));
+      D.rotation.y=-0.5+shown*Math.PI*2.1+Math.sin(t*0.2)*0.04;
+      D.rotation.x=lerp(0.20,0.46,Math.sin(Math.min(1,shown*1.25)*Math.PI*0.5))-shown*0.10;
+      D.rotation.z=Math.sin(shown*Math.PI)*0.05;
+      /* exploded view */
       const ex=Math.sin(clamp((shown-0.18)/0.64,0,1)*Math.PI);
-      LTop.position.y=ex*0.95;
-      LMid.position.y=ex*0.18;
-      LBot.position.y=-ex*0.34;
-      LTop.rotation.y=ex*0.28;
-      LBot.rotation.y=-ex*0.18;
-      /* the core breathes and brightens when the module is open */
-      const pulse=0.55+Math.sin(t*2.2)*0.16+ex*0.4;
-      glow.opacity=pulse;coreDisc.material.opacity=0.5+pulse*0.45;
-      etch.material.opacity=0.35+ex*0.4;
-      coreRing.scale.setScalar(1+Math.sin(t*2.2)*0.02);
-      camera.position.x=Math.sin(t*0.15)*0.35;
-      camera.position.y=1.75-shown*0.3;
+      D.position.y=-0.45+Math.sin(t*0.6)*0.045-ex*0.42;
+      LShroud.position.y=ex*1.30;
+      LFins.position.y=ex*0.72;
+      LPcb.position.y=ex*0.05;
+      LBack.position.y=-ex*0.60;
+      LShroud.rotation.z=ex*0.05;
+      /* fans always turning, faster when the card is closed */
+      const rpm=6.2-ex*3.4;
+      fans.forEach((f,i)=>{f.rotation.y+=dt*rpm*(i?-1:1);});
+      /* chasing RGB */
+      rgbHue=(rgbHue+dt*46)%360;
+      if(t-lastRGB>0.066){paintRGB(rgbHue);lastRGB=t;}   // 15fps is plenty for a chase
+      col.setHSL(((rgbHue+40)%360)/360,1,0.6);
+      rgbLight.color.copy(col);
+      rgbLight.intensity=2.1+Math.sin(t*3)*0.35+ex*1.2;
+      camera.position.x=Math.sin(t*0.13)*0.5;
+      camera.position.y=1.55-shown*0.28;
       camera.lookAt(look);
       renderer.render(scene,camera);
     }
     requestAnimationFrame(frame);
   }
   frame();
+}
+
+/* A large WebGL canvas costs the compositor on every frame even when it is
+   scrolled far off screen and rendering nothing. Taking it out of the layout
+   entirely while it is out of view is worth more than any shader tuning. */
+function idleCanvases(){
+  ['device-canvas','desk-canvas','about-canvas','tech-canvas'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(!c)return;
+    const io=new IntersectionObserver(es=>{
+      c.style.display=es[0].isIntersecting?'':'none';
+    },{rootMargin:'400px 0px 400px 0px'});
+    io.observe(c.parentElement||c);
+  });
 }
 
 function boot(){
@@ -2128,7 +2260,8 @@ function boot(){
   setupTilt();
   setupScrollNav();
   setupMarquee();
-  buildDevice();
+  buildGPU();
+  idleCanvases();
 
   // nav scrolled state
   const nav=document.querySelector('nav');

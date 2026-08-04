@@ -151,7 +151,7 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .work-row .winfo .wtags{display:flex;flex-wrap:wrap;gap:7px}
 .work-row .winfo .wtag{font-family:'Geist Mono',monospace;font-size:10px;padding:4px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.12);color:#aaa;letter-spacing:.04em}
 .work-row .wimg{border-radius:12px;overflow:hidden;aspect-ratio:16/10;position:relative;border:1px solid rgba(255,255,255,.08)}
-.work-row .wimg img{width:100%;height:100%;object-fit:cover;filter:saturate(.7) brightness(.8);transition:transform .8s var(--ease),filter .5s}
+.work-row .wimg img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) brightness(.98);transition:transform .8s var(--ease),filter .5s}
 .work-row:hover .wimg img{transform:scale(1.05);filter:saturate(1) brightness(.95)}
 .work-row .wimpact{position:absolute;top:12px;left:12px;font-family:'Geist Mono',monospace;font-size:10px;background:rgba(0,0,0,.75);border:1px solid rgba(92,225,230,.3);color:var(--cyan);padding:5px 11px;border-radius:14px;letter-spacing:.05em;z-index:2}
 
@@ -194,7 +194,8 @@ section,footer{position:relative;z-index:1}
 .techstack::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(92,225,230,.06) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
 
 /* ─── PROXIMITY REVEAL (career + work rows) ─────────── */
-.career-row,.work-row{--r:0;--mx:50%;--my:50%;position:relative;opacity:calc(.26 + .74*var(--r));transition:opacity .12s linear;will-change:opacity}
+.career-row,.work-row{--r:0;--mx:50%;--my:50%;position:relative;opacity:calc(.62 + .38*var(--r));transition:opacity .12s linear;will-change:opacity}
+.work-row .wimg{opacity:1}
 .career-row::before,.work-row::before{content:'';position:absolute;left:0;top:14%;bottom:14%;width:2px;background:var(--cyan);opacity:calc(var(--r)*.9);transform:scaleY(var(--r));transform-origin:center;transition:transform .2s var(--ease)}
 .career-row::after,.work-row::after{content:'';position:absolute;inset:0;background:radial-gradient(360px circle at var(--mx) var(--my),rgba(92,225,230,.09),transparent 68%);opacity:var(--r);pointer-events:none}
 @media(hover:none){.career-row,.work-row{--r:1}}
@@ -305,7 +306,7 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 /* ─── PRODUCT SHOWCASE (Neural Security Module) ────── */
 .device{position:relative;z-index:1;height:340vh}
 .dv-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#device-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#device-canvas{position:absolute;left:0;right:0;top:8%;height:84%;width:100%;display:block}
 .dv-head{position:absolute;top:11vh;left:0;right:0;text-align:center;padding:0 5vw;pointer-events:none;z-index:2}
 .dv-head .section-eyebrow{margin-bottom:10px}
 .dv-head .section-title{margin-bottom:0;font-size:clamp(2rem,4.2vw,3.6rem)}
