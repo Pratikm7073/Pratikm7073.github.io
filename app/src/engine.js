@@ -1999,191 +1999,217 @@ function brushedMaps(streak=1400,rough=[0.16,0.34]){
 
 /* ════════════════════════════════════════════════
    AI ACCELERATOR CARD
-   Dual axial fans, chamfered brushed shroud, fin
-   stack, gold PCIe fingers, bracket, backplate and a
-   chasing RGB light bar. Scroll scrubbed by
-   framer-motion: rotate, tilt, explode, reassemble.
+   Modelled on a Founders-Edition reference photo:
+   squircle fan apertures cut straight through a thin
+   matte-graphite shroud, mirror-polished chamfer
+   frames tracing each aperture and crossing in an X,
+   nine swept sickle blades per fan over a radial-spun
+   hub, and the fin stack visible through the gaps.
 ════════════════════════════════════════════════ */
+function squircle(size,r,cx=0,Ctor=THREE.Shape){
+  const h=size/2,sh=new Ctor();
+  sh.moveTo(cx-h+r,-h);
+  sh.lineTo(cx+h-r,-h);sh.quadraticCurveTo(cx+h,-h,cx+h,-h+r);
+  sh.lineTo(cx+h,h-r);sh.quadraticCurveTo(cx+h,h,cx+h-r,h);
+  sh.lineTo(cx-h+r,h);sh.quadraticCurveTo(cx-h,h,cx-h,h-r);
+  sh.lineTo(cx-h,-h+r);sh.quadraticCurveTo(cx-h,-h,cx-h+r,-h);
+  return sh;
+}
+function roundRectShape(w,d,r,Ctor=THREE.Shape){
+  const x=w/2,y=d/2,sh=new Ctor();
+  sh.moveTo(-x+r,-y);
+  sh.lineTo(x-r,-y);sh.quadraticCurveTo(x,-y,x,-y+r);
+  sh.lineTo(x,y-r);sh.quadraticCurveTo(x,y,x-r,y);
+  sh.lineTo(-x+r,y);sh.quadraticCurveTo(-x,y,-x,y-r);
+  sh.lineTo(-x,-y+r);sh.quadraticCurveTo(-x,-y,-x+r,-y);
+  return sh;
+}
+/* one swept, widening sickle blade in the XY plane */
+function bladeShape(rIn,rOut,sweep,wIn,wOut){
+  const sh=new THREE.Shape(),N=16;
+  for(let i=0;i<=N;i++){
+    const t=i/N,r=rIn+(rOut-rIn)*t,a=sweep*t;
+    const x=Math.cos(a)*r,y=Math.sin(a)*r;
+    i?sh.lineTo(x,y):sh.moveTo(x,y);
+  }
+  for(let i=N;i>=0;i--){
+    const t=i/N,r=rIn+(rOut-rIn)*t;
+    const a=sweep*t-(wIn+(wOut-wIn)*t)/r;
+    sh.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+  }
+  return sh;
+}
+
 function buildGPU(){
   const canvas=document.getElementById('device-canvas');
   if(!canvas)return;
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.92;
   const env=productEnv(renderer);
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(30,1,0.1,100);
   camera.position.set(0,1.55,13.6);
   const look=new THREE.Vector3(0,-0.5,0);
   function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
-    renderer.setSize(Math.round(w*0.85),Math.round(h*0.85),false);  // fewer pixels to shade
+    renderer.setSize(Math.round(w*0.85),Math.round(h*0.85),false);
     camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
   resize();new ResizeObserver(resize).observe(canvas);
 
-  scene.add(new THREE.AmbientLight(0x39445a,1.1));
-  const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(-5,8,6);scene.add(key);
-  const rim=new THREE.DirectionalLight(0x9fd0ff,1.5);rim.position.set(6,1,-5);scene.add(rim);
-  const rgbLight=new THREE.PointLight(0x5ce1e6,2.4,12,2);rgbLight.position.set(0,1.1,1.4);scene.add(rgbLight);
+  scene.add(new THREE.AmbientLight(0x39445a,0.9));
+  const key=new THREE.DirectionalLight(0xffffff,2.6);key.position.set(-5,8,6);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x9fd0ff,1.3);rim.position.set(6,1,-5);scene.add(rim);
+  const rgbLight=new THREE.PointLight(0x5ce1e6,2.0,12,2);rgbLight.position.set(0,1.1,1.4);scene.add(rgbLight);
 
-  const bm=brushedMaps(1500,[0.18,0.40]);
-  const shroudMat=new THREE.MeshPhysicalMaterial({color:0x4d525c,metalness:1,roughness:.3,
-    roughnessMap:bm.roughnessMap,normalMap:bm.normalMap,normalScale:new THREE.Vector2(.24,.24),
-    clearcoat:.55,clearcoatRoughness:.28,envMap:env,envMapIntensity:1.5});
-  shroudMat.roughnessMap.repeat.set(3,1);shroudMat.normalMap.repeat.set(3,1);
-  const bmPlate=brushedMaps(900,[0.22,0.44]);
-  const plateMat=new THREE.MeshStandardMaterial({color:0x3a3f48,metalness:1,roughness:.36,
-    roughnessMap:bmPlate.roughnessMap,normalMap:bmPlate.normalMap,normalScale:new THREE.Vector2(.2,.2),
-    envMap:env,envMapIntensity:1.25});
-  const darkPlastic=new THREE.MeshStandardMaterial({color:0x14171c,metalness:.1,roughness:.62,
-    envMap:env,envMapIntensity:.7});
-  const finMat=new THREE.MeshStandardMaterial({color:0xa8b0ba,metalness:1,roughness:.34,envMap:env,envMapIntensity:1.35});
+  /* ── materials, matched to the reference ── */
+  const graphite=new THREE.MeshPhysicalMaterial({color:0x1a1c20,metalness:.5,roughness:.62,
+    clearcoat:.22,clearcoatRoughness:.6,envMap:env,envMapIntensity:.55});
+  const polish=new THREE.MeshStandardMaterial({color:0x848b95,metalness:1,roughness:.15,
+    envMap:env,envMapIntensity:1.45});
+  const bladeMat=new THREE.MeshPhysicalMaterial({color:0x2c2f35,metalness:.25,roughness:.5,
+    clearcoat:.35,clearcoatRoughness:.45,envMap:env,envMapIntensity:.6});
+  /* radial-spun hub */
+  const spunTex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');
+    x.fillStyle='#6a6f77';x.fillRect(0,0,512,512);
+    x.translate(256,256);
+    for(let i=0;i<2600;i++){const a=Math.random()*Math.PI*2,v=90+Math.random()*90;
+      x.strokeStyle=`rgba(${v},${v},${v},.5)`;x.lineWidth=Math.random()*1.6;
+      x.beginPath();x.moveTo(Math.cos(a)*40,Math.sin(a)*40);x.lineTo(Math.cos(a)*250,Math.sin(a)*250);x.stroke();}
+    const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t;})();
+  const hubMat=new THREE.MeshStandardMaterial({color:0x5f666e,metalness:1,roughness:.26,
+    roughnessMap:spunTex,envMap:env,envMapIntensity:1.15});
+  const finMat=new THREE.MeshStandardMaterial({color:0x8e959e,metalness:1,roughness:.38,envMap:env,envMapIntensity:1.2});
   const goldMat=new THREE.MeshStandardMaterial({color:0xd8ad5a,metalness:1,roughness:.24,envMap:env,envMapIntensity:1.8});
   const pcbMat=new THREE.MeshStandardMaterial({color:0x14202c,metalness:.3,roughness:.72,envMap:env,envMapIntensity:.55});
-  const steelMat=new THREE.MeshStandardMaterial({color:0xc6ccd4,metalness:1,roughness:.26,envMap:env,envMapIntensity:1.7});
+  const darkPlastic=new THREE.MeshStandardMaterial({color:0x14171c,metalness:.1,roughness:.62,envMap:env,envMapIntensity:.7});
+  const steelMat=new THREE.MeshStandardMaterial({color:0x71777f,metalness:1,roughness:.3,envMap:env,envMapIntensity:1.4});
 
-  /* chasing RGB strip texture */
+  /* chasing RGB strip */
   const rgbCan=document.createElement('canvas');rgbCan.width=512;rgbCan.height=16;
   const rgbCtx=rgbCan.getContext('2d');
   function paintRGB(off){
     const g=rgbCtx.createLinearGradient(0,0,512,0);
     for(let i=0;i<=6;i++){const h=((i/6)*360+off)%360;g.addColorStop(i/6,`hsl(${h},100%,62%)`);}
-    rgbCtx.fillStyle=g;rgbCtx.fillRect(0,0,512,16);
-    rgbTex.needsUpdate=true;
+    rgbCtx.fillStyle=g;rgbCtx.fillRect(0,0,512,16);rgbTex.needsUpdate=true;
   }
   const rgbTex=new THREE.CanvasTexture(rgbCan);paintRGB(0);
   const rgbMat=new THREE.MeshBasicMaterial({map:rgbTex,transparent:true,opacity:.95,
     blending:THREE.AdditiveBlending,depthWrite:false});
 
-  /* etched branding */
-  const brandTex=(()=>{
-    const c=document.createElement('canvas');c.width=1024;c.height=256;const x=c.getContext('2d');
-    x.fillStyle='#3f444d';x.fillRect(0,0,1024,256);
-    x.fillStyle='#2a2e35';x.font='700 92px sans-serif';x.textAlign='left';
-    x.fillText('PM', 60, 150);
-    x.fillStyle='#565c66';x.font='600 52px monospace';
-    x.fillText('// AI ACCELERATOR', 210, 142);
-    x.fillStyle='#4a505a';x.font='400 34px monospace';
-    x.fillText('NSM-100  ·  24GB HBM  ·  P. MORE', 62, 210);
-    const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t;
-  })();
-
-  const D=new THREE.Group();D.position.y=-0.45;D.scale.setScalar(0.76);scene.add(D);
+  /* D is the turntable (spins about world Y like a product shot);
+     DI holds the card standing upright so the face meets the camera */
+  const D=new THREE.Group();D.position.y=-0.62;D.scale.setScalar(0.88);scene.add(D);
+  const DI=new THREE.Group();DI.rotation.x=Math.PI/2;D.add(DI);
   const LShroud=new THREE.Group(),LFins=new THREE.Group(),LPcb=new THREE.Group(),LBack=new THREE.Group();
-  D.add(LBack,LPcb,LFins,LShroud);
+  DI.add(LBack,LPcb,LFins,LShroud);
 
-  const CW=6.6,CH=0.30,CD=2.5;   // card width / shroud thickness / depth
+  const CW=7.0,CD=2.6,AP=1.92,FX=1.74;   // card width / depth, aperture size, fan offset
 
-  /* ── SHROUD: chamfered top cover with two fan apertures ── */
-  const shroud=new THREE.Mesh(new RoundedBoxGeometry(CW,CH,CD,4,0.055),shroudMat);
-  shroud.position.y=0.62;LShroud.add(shroud);
-  /* brand plate inset */
-  const brand=new THREE.Mesh(new THREE.PlaneGeometry(2.5,0.62),
-    new THREE.MeshPhysicalMaterial({map:brandTex,metalness:.95,roughness:.42,envMap:env,envMapIntensity:1.1}));
-  brand.rotation.x=-Math.PI/2;brand.position.set(0,0.775,-0.86);LShroud.add(brand);
-  /* fan apertures + fans */
+  /* ── SHROUD: thin plate with two squircle apertures cut through ── */
+  const topShape=roundRectShape(CW,CD,0.22);
+  [-FX,FX].forEach(fx=>topShape.holes.push(squircle(AP,0.46,fx,THREE.Path)));
+  const shroud=new THREE.Mesh(new THREE.ExtrudeGeometry(topShape,
+    {depth:0.13,bevelEnabled:true,bevelSize:0.03,bevelThickness:0.03,bevelSegments:3,curveSegments:24}),graphite);
+  shroud.rotation.x=-Math.PI/2;shroud.position.y=0.60;LShroud.add(shroud);
+
+  /* polished chamfer frame tracing each aperture */
+  [-FX,FX].forEach(fx=>{
+    const outer=squircle(AP+0.20,0.55);
+    outer.holes.push(squircle(AP,0.46,0,THREE.Path));
+    const ring=new THREE.Mesh(new THREE.ExtrudeGeometry(outer,
+      {depth:0.05,bevelEnabled:true,bevelSize:0.028,bevelThickness:0.030,bevelSegments:3,curveSegments:24}),polish);
+    ring.rotation.x=-Math.PI/2;ring.position.set(fx,0.785,0);LShroud.add(ring);
+  });
+  /* polished perimeter chamfer */
+  {
+    const outer=roundRectShape(CW,CD,0.22);
+    outer.holes.push(roundRectShape(CW-0.13,CD-0.13,0.19,THREE.Path));
+    const per=new THREE.Mesh(new THREE.ExtrudeGeometry(outer,
+      {depth:0.045,bevelEnabled:true,bevelSize:0.024,bevelThickness:0.026,bevelSegments:3,curveSegments:20}),polish);
+    per.rotation.x=-Math.PI/2;per.position.y=0.782;LShroud.add(per);
+  }
+  /* the signature X chamfer crossing the centre panel */
+  [1,-1].forEach(sd=>{
+    const bar=new THREE.Mesh(new RoundedBoxGeometry(1.85,0.045,0.085,3,0.02),polish);
+    bar.position.set(0,0.784,0);bar.rotation.y=sd*0.63;LShroud.add(bar);
+  });
+
+  /* ── FANS: nine swept sickle blades over a spun hub ── */
   const fans=[];
-  [-1.62,1.62].forEach(fx=>{
-    const ring=new THREE.Mesh(new THREE.TorusGeometry(1.0,0.055,12,48),shroudMat);
-    ring.rotation.x=Math.PI/2;ring.position.set(fx,0.79,0.12);LShroud.add(ring);
-    const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.30,0.32,0.14,28),darkPlastic);
-    hub.position.set(fx,0.70,0.12);LShroud.add(hub);
-    const cap=new THREE.Mesh(new THREE.CircleGeometry(0.29,28),
-      new THREE.MeshPhysicalMaterial({color:0x1b1f26,metalness:.4,roughness:.35,clearcoat:1,envMap:env,envMapIntensity:1.1}));
-    cap.rotation.x=-Math.PI/2;cap.position.set(fx,0.775,0.12);LShroud.add(cap);
-    /* 9 curved blades */
-    const blades=new THREE.Group();blades.position.set(fx,0.70,0.12);LShroud.add(blades);
-    const shape=new THREE.Shape();
-    shape.moveTo(0.30,-0.10);
-    shape.quadraticCurveTo(0.66,-0.20,0.94,0.02);
-    shape.quadraticCurveTo(0.66,0.10,0.30,0.13);
-    shape.lineTo(0.30,-0.10);
-    const bladeGeo=new THREE.ExtrudeGeometry(shape,{depth:0.028,bevelEnabled:true,bevelSize:0.012,bevelThickness:0.010,bevelSegments:2});
-    /* the 9 blades always move together, so bake them into one geometry */
-    const parts=[];
-    const mLay=new THREE.Matrix4().makeRotationX(-Math.PI/2);
-    const mTilt=new THREE.Matrix4().makeRotationX(0.42);
+  const bGeo=new THREE.ExtrudeGeometry(bladeShape(0.30,0.95,1.16,0.20,0.60),
+    {depth:0.022,bevelEnabled:true,bevelSize:0.008,bevelThickness:0.008,bevelSegments:1,curveSegments:10});
+  [-FX,FX].forEach(fx=>{
+    const blades=new THREE.Group();blades.position.set(fx,0.64,0);LShroud.add(blades);
+    const parts=[],mLay=new THREE.Matrix4().makeRotationX(-Math.PI/2),mTilt=new THREE.Matrix4().makeRotationX(0.16);
     for(let i=0;i<9;i++){
       const m=new THREE.Matrix4().makeRotationY((i/9)*Math.PI*2).multiply(mTilt).multiply(mLay);
-      parts.push(bladeGeo.clone().applyMatrix4(m));
+      parts.push(bGeo.clone().applyMatrix4(m));
     }
-    blades.add(new THREE.Mesh(mergeGeometries(parts,false),darkPlastic));
+    blades.add(new THREE.Mesh(mergeGeometries(parts,false),bladeMat));
+    const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.27,0.05,40),hubMat);
+    hub.position.set(fx,0.685,0);LShroud.add(hub);
+    const hubEdge=new THREE.Mesh(new THREE.TorusGeometry(0.272,0.012,10,40),polish);
+    hubEdge.rotation.x=Math.PI/2;hubEdge.position.set(fx,0.665,0);LShroud.add(hubEdge);
     fans.push(blades);
   });
-  /* chasing RGB bar along the shroud front lip */
-  const rgbBar=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.5,0.075),rgbMat);
-  rgbBar.position.set(0,0.615,CD/2+0.005);LShroud.add(rgbBar);
-  const rgbTop=new THREE.Mesh(new THREE.PlaneGeometry(2.1,0.062),rgbMat);
-  rgbTop.rotation.x=-Math.PI/2;rgbTop.position.set(0,0.782,0.98);LShroud.add(rgbTop);
+  /* RGB accent along the front lip */
+  const rgbBar=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.7,0.055),rgbMat);
+  rgbBar.position.set(0,0.665,CD/2+0.004);LShroud.add(rgbBar);
 
-  /* ── FIN STACK ── */
+  /* ── FIN STACK, visible through the apertures ── */
   {
-    const g=[],fg=new THREE.BoxGeometry(0.028,0.44,CD-0.34);
-    for(let i=0;i<26;i++)g.push(fg.clone().translate(-2.9+i*0.232,0.24,0));
+    const g=[],fg=new THREE.BoxGeometry(0.026,0.40,CD-0.42);
+    for(let i=0;i<30;i++)g.push(fg.clone().translate(-3.05+i*0.21,0.30,0));
     LFins.add(new THREE.Mesh(mergeGeometries(g,false),finMat));
   }
-  const heatpipe=[0.72,0,-0.72].map(pz=>{
-    const hp=new THREE.Mesh(new THREE.CylinderGeometry(0.055,0.055,CW-0.8,16),goldMat);
-    hp.rotation.z=Math.PI/2;hp.position.set(0,0.44,pz);LFins.add(hp);return hp;
+  [0.62,-0.62].forEach(pz=>{
+    const hp=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,CW-1.0,14),goldMat);
+    hp.rotation.z=Math.PI/2;hp.position.set(0,0.48,pz);LFins.add(hp);
   });
 
-  /* ── PCB, VRAM, power connector, PCIe fingers, bracket ── */
-  const pcb=new THREE.Mesh(new RoundedBoxGeometry(CW-0.15,0.075,CD-0.1,3,0.02),pcbMat);
+  /* ── PCB, VRAM, PCIe fingers, bracket ── */
+  const pcb=new THREE.Mesh(new RoundedBoxGeometry(CW-0.5,0.065,CD-0.3,3,0.02),pcbMat);
   LPcb.add(pcb);
-  const die=new THREE.Mesh(new RoundedBoxGeometry(0.86,0.075,0.86,3,0.015),
-    new THREE.MeshPhysicalMaterial({color:0x2b3038,metalness:.85,roughness:.3,envMap:env,envMapIntensity:1.4}));
-  die.position.set(-0.1,0.072,0);LPcb.add(die);
-  const dieTop=new THREE.Mesh(new THREE.PlaneGeometry(0.66,0.66),
-    new THREE.MeshPhysicalMaterial({color:0xc8ccd2,metalness:1,roughness:.14,envMap:env,envMapIntensity:2}));
-  dieTop.rotation.x=-Math.PI/2;dieTop.position.set(-0.1,0.111,0);LPcb.add(dieTop);
+  const die=new THREE.Mesh(new RoundedBoxGeometry(0.84,0.07,0.84,3,0.015),steelMat);
+  die.position.set(-0.1,0.066,0);LPcb.add(die);
   {
-    const g=[],vg=new RoundedBoxGeometry(0.42,0.055,0.34,2,0.012);
-    [[-1.15,.72],[-1.15,-.72],[0.95,.72],[0.95,-.72],[-0.1,.92],[-0.1,-.92]]
-      .forEach(([mx,mz])=>g.push(vg.clone().translate(mx,0.065,mz)));
+    const g=[],vg=new RoundedBoxGeometry(0.40,0.05,0.32,2,0.012);
+    [[-1.15,.66],[-1.15,-.66],[0.95,.66],[0.95,-.66],[-0.1,.86],[-0.1,-.86]]
+      .forEach(([mx,mz])=>g.push(vg.clone().translate(mx,0.058,mz)));
     LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
   }
-  const pwr=new THREE.Mesh(new RoundedBoxGeometry(0.78,0.20,0.30,3,0.03),darkPlastic);
-  pwr.position.set(1.95,0.90,-0.72);LShroud.add(pwr);
   {
-    const g=[],pg=new THREE.BoxGeometry(0.055,0.055,0.055);
-    for(let i=0;i<6;i++)g.push(pg.clone().translate(1.70+(i%3)*0.24,0.94-Math.floor(i/3)*0.09,-0.72));
-    LShroud.add(new THREE.Mesh(mergeGeometries(g,false),goldMat));
-  }
-  /* gold PCIe edge fingers */
-  {
-    const g=[],fg=new THREE.BoxGeometry(0.052,0.11,0.30);
-    for(let i=0;i<38;i++)g.push(fg.clone().translate(-1.75+i*0.088,-0.085,0.86));
+    const g=[],fg=new THREE.BoxGeometry(0.05,0.10,0.28);
+    for(let i=0;i<40;i++)g.push(fg.clone().translate(-1.80+i*0.086,-0.075,0.90));
     LPcb.add(new THREE.Mesh(mergeGeometries(g,false),goldMat));
   }
-  const notch=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.13,0.32),pcbMat);
-  notch.position.set(-1.30,-0.085,0.86);LPcb.add(notch);
-  /* IO bracket with port cutouts + honeycomb vent */
-  const bracket=new THREE.Mesh(new RoundedBoxGeometry(0.075,1.72,2.30,3,0.02),steelMat);
-  bracket.position.set(-3.36,0.34,0);LPcb.add(bracket);
-  [[-0.62,0.42],[0.06,0.42],[0.74,0.42]].forEach(([pz,py])=>{
-    const port=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.24,0.44),darkPlastic);
-    port.position.set(-3.38,py,pz);LPcb.add(port);
-  });
+  /* IO bracket with DisplayPort / HDMI cutouts */
+  const bracket=new THREE.Mesh(new RoundedBoxGeometry(0.07,1.62,2.34,3,0.02),steelMat);
+  bracket.position.set(-3.52,0.32,0);LPcb.add(bracket);
   {
-    const g=[],hg=new THREE.CylinderGeometry(0.055,0.055,0.09,6).rotateZ(Math.PI/2);
-    for(let r=0;r<5;r++)for(let cix=0;cix<7;cix++)
-      g.push(hg.clone().translate(-3.37,-0.30+r*0.145,-0.86+cix*0.145+(r%2)*0.07));
+    const g=[],pg=new THREE.BoxGeometry(0.10,0.20,0.42);
+    [[-0.66,0.62],[-0.66,0.14],[-0.66,-0.34],[-0.66,-0.82]]
+      .forEach(([py,pz])=>g.push(pg.clone().translate(-3.55,py+0.34,pz)));
+    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
+  }
+  {
+    const g=[],hg=new THREE.CylinderGeometry(0.05,0.05,0.09,6).rotateZ(Math.PI/2);
+    for(let r=0;r<4;r++)for(let cix=0;cix<6;cix++)
+      g.push(hg.clone().translate(-3.53,0.72+r*0.13,-0.80+cix*0.13+(r%2)*0.065));
     LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
   }
   /* backplate */
-  const back=new THREE.Mesh(new RoundedBoxGeometry(CW-0.1,0.055,CD-0.12,3,0.02),plateMat);
-  back.position.y=-0.20;LBack.add(back);
-  const cut=new THREE.Mesh(new THREE.PlaneGeometry(1.5,0.9),rgbMat);
-  cut.rotation.x=Math.PI/2;cut.position.set(2.1,-0.23,0);LBack.add(cut);
+  const back=new THREE.Mesh(new RoundedBoxGeometry(CW-0.2,0.05,CD-0.2,3,0.02),graphite);
+  back.position.y=-0.19;LBack.add(back);
 
-  /* no floor plane: the card floats over the nebula like a hero product
-     shot, with only a faint contact shadow to give it weight */
+  /* soft contact shadow, no floor plane */
   const shadowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
     const g=x.createRadialGradient(128,128,4,128,128,124);
     g.addColorStop(0,'rgba(0,0,0,.75)');g.addColorStop(.5,'rgba(0,0,0,.28)');g.addColorStop(1,'rgba(0,0,0,0)');
     x.fillStyle=g;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
-  const contact=new THREE.Mesh(new THREE.PlaneGeometry(7.5,2.8),
+  const contact=new THREE.Mesh(new THREE.PlaneGeometry(7.4,2.2),
     new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,opacity:.5,depthWrite:false}));
-  contact.rotation.x=-Math.PI/2;contact.position.y=-1.25;scene.add(contact);
+  contact.rotation.x=-Math.PI/2;contact.position.y=-1.55;scene.add(contact);
 
   let prog=0,shown=0,visible=false;
   new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
@@ -2194,33 +2220,31 @@ function buildGPU(){
   let t=0,rgbHue=0,lastRGB=-1;
   const col=new THREE.Color();
   function frame(){
-    /* the product scene is the most expensive canvas on the page, and it
-       only turns slowly, so it runs at 30fps (15 while actively scrolling) */
     if((frame._h=!frame._h)||(scrollBusy()&&(frame._f=!frame._f))){requestAnimationFrame(frame);return;}
     const dt=Math.min(clock.getDelta(),0.1);
     if(visible){
       t+=dt;
       shown=lerp(shown,prog,1-Math.pow(0.004,dt));
-      D.rotation.y=-0.5+shown*Math.PI*2.1+Math.sin(t*0.2)*0.04;
-      D.rotation.x=lerp(0.20,0.46,Math.sin(Math.min(1,shown*1.25)*Math.PI*0.5))-shown*0.10;
-      D.rotation.z=Math.sin(shown*Math.PI)*0.05;
-      /* exploded view */
       const ex=Math.sin(clamp((shown-0.18)/0.64,0,1)*Math.PI);
-      D.position.y=-0.45+Math.sin(t*0.6)*0.045-ex*0.42;
-      LShroud.position.y=ex*1.30;
+      /* rest pose mirrors the reference: card standing, face toward the
+         camera, turned ~20deg. Scroll spins it and lays it back for the
+         exploded view. */
+      D.rotation.y=-0.30+shown*Math.PI*2.0+Math.sin(t*0.18)*0.03;   // turntable
+      D.rotation.x=lerp(-0.10,-0.62,Math.min(1,shown*1.6));          // elevation
+      DI.rotation.z=Math.sin(shown*Math.PI)*0.04;
+      D.position.y=-0.62+Math.sin(t*0.6)*0.04-ex*0.22;
+      LShroud.position.y=ex*1.45;
       LFins.position.y=ex*0.72;
       LPcb.position.y=ex*0.05;
       LBack.position.y=-ex*0.60;
       LShroud.rotation.z=ex*0.05;
-      /* fans always turning, faster when the card is closed */
       const rpm=6.2-ex*3.4;
       fans.forEach((f,i)=>{f.rotation.y+=dt*rpm*(i?-1:1);});
-      /* chasing RGB */
       rgbHue=(rgbHue+dt*46)%360;
-      if(t-lastRGB>0.066){paintRGB(rgbHue);lastRGB=t;}   // 15fps is plenty for a chase
+      if(t-lastRGB>0.066){paintRGB(rgbHue);lastRGB=t;}
       col.setHSL(((rgbHue+40)%360)/360,1,0.6);
       rgbLight.color.copy(col);
-      rgbLight.intensity=2.1+Math.sin(t*3)*0.35+ex*1.2;
+      rgbLight.intensity=1.8+Math.sin(t*3)*0.3+ex*1.0;
       camera.position.x=Math.sin(t*0.13)*0.5;
       camera.position.y=1.55-shown*0.28;
       camera.lookAt(look);
