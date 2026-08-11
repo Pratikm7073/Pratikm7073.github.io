@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { startEngine } from './engine.js';
-import DeviceShowcase from './DeviceShowcase.jsx';
+import Hero from './Hero.jsx';
+import Sectors from './Sectors.jsx';
 
 /* ── framer-motion variants: springy scroll reveals ── */
 const rise = {
@@ -140,7 +141,11 @@ function ProjectModal() {
 
   useEffect(() => {
     document.body.style.overflow = key ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (window.__scrollLock) window.__scrollLock(!!key);
+    return () => {
+      document.body.style.overflow = '';
+      if (window.__scrollLock) window.__scrollLock(false);
+    };
   }, [key]);
 
   const p = key ? PROJECTS[key] : null;
@@ -176,19 +181,6 @@ function ProjectModal() {
         </div>
       )}
     </AnimatePresence>
-  );
-}
-
-/* ── per-letter cascade word (hero) ── */
-function LetterWord({ text, base = 0 }) {
-  return (
-    <span className="lw">
-      {text.split('').map((ch, i) => (
-        <span key={i} className="lw-c" style={{ animationDelay: `${1.15 + (base + i) * 0.045}s` }}>
-          {ch === ' ' ? ' ' : ch}
-        </span>
-      ))}
-    </span>
   );
 }
 
@@ -269,7 +261,7 @@ export default function App() {
       <div id="scrollProg"></div>
 
       <div id="scrollRail">
-        {[['hero', 'Home'], ['about', 'About'], ['whatido', 'Ops'], ['career-split', 'Career'], ['work-list', 'Work'], ['techstack', 'Stack'], ['contact', 'Contact']].map(([sec, lab]) => (
+        {[['hero', 'Home'], ['about', 'About'], ['sectors', 'Sectors'], ['whatido', 'Ops'], ['career-split', 'Career'], ['work-list', 'Work'], ['techstack', 'Stack'], ['contact', 'Contact']].map(([sec, lab]) => (
           <button key={sec} className="sr-dot" data-sec={sec} type="button"><span className="sr-lab">{lab}</span></button>
         ))}
       </div>
@@ -284,9 +276,7 @@ export default function App() {
         <div className="g-priv">⛨ 100% in-browser · nothing uploaded</div>
       </div>
       <div id="telemetry">
-        <div className="tm-hd">◈ REACTOR TELEMETRY</div>
-        <div className="tm-row"><span>ROT</span><b id="tmRot">0.0°</b></div>
-        <div className="tm-row"><span>AXIS</span><b id="tmAxis">0.00, 0.00, 0.00</b></div>
+        <div className="tm-hd">◈ TRACKING TELEMETRY</div>
         <div className="tm-row"><span>TRACK</span><b id="tmTrack">···</b></div>
         <div className="tm-row"><span>FPS</span><b id="tmFps">···</b></div>
         <div className="tm-row"><span>MODE</span><b id="tmMode">IDLE</b></div>
@@ -313,26 +303,7 @@ export default function App() {
         </ul>
       </nav>
 
-      {/* HERO */}
-      <section id="hero">
-        <canvas id="hero-canvas"></canvas>
-        <div className="hero-grid">
-          <div className="hero-side left">
-            <div className="small">Hello! I'm</div>
-            <div className="big cascade"><LetterWord text="PRATIK" base={0} /><br /><LetterWord text="MORE" base={6} /></div>
-          </div>
-          <div className="hero-side right">
-            <div className="small">An AI &amp;</div>
-            <div className="big cascade"><span className="ghost"><LetterWord text="CYBER" base={0} /></span><br /><LetterWord text="ENGINEER" base={5} /></div>
-          </div>
-        </div>
-        <div className="hero-meta">
-          <span><span className="dot"></span>AI Security · Applied ML</span>
-          <span>52.40 N · 1.51 W // Coventry, UK</span>
-        </div>
-        <div className="ai-line"><span id="aiText"></span><span className="ai-caret"></span></div>
-        <div className="scroll-hint"><div className="mouse"></div></div>
-      </section>
+      <Hero />
 
       {/* ABOUT */}
       <section className="section-pad" id="about">
@@ -353,7 +324,7 @@ export default function App() {
         </div>
       </section>
 
-      <DeviceShowcase />
+      <Sectors />
 
       {/* SKILLS MARQUEE */}
       <div className="marquee" aria-hidden="true">

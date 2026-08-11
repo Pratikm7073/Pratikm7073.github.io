@@ -1,10 +1,16 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 import { initCursor } from './cursor.js';
 const lerp=(a,b,t)=>a+(b-a)*t;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* Lenis drives the page scroll, so native smooth-scroll APIs would fight
+   it. Route every programmatic jump through Lenis when it is running. */
+function smoothTo(el){
+  if(window.__lenis) window.__lenis.scrollTo(el,{duration:1.1});
+  else el.scrollIntoView({behavior:'smooth'});
+}
 
 /* while the user is actively scrolling, section scenes drop to half
    frame-rate so the main thread/GPU budget goes to the scroll itself;
@@ -29,9 +35,6 @@ function studioEnv(renderer){
   return ENV;
 }
 
-/* ════════════════════════════════════════════════
-   GLASS UI HELPERS frosted holo panels + code screen
-════════════════════════════════════════════════ */
 function glassPanelTexture(accent='#5ce1e6'){
   const c=document.createElement('canvas');c.width=440;c.height=300;const x=c.getContext('2d');
   x.clearRect(0,0,440,300);
@@ -53,6 +56,7 @@ function glassPanel(w,h,accent){
     new THREE.MeshBasicMaterial({map:glassPanelTexture(accent),transparent:true,side:THREE.DoubleSide,depthWrite:false})
   );
 }
+
 function makeCodeScreen(){
   const c=document.createElement('canvas');c.width=640;c.height=400;const x=c.getContext('2d');
   const cols=['#5ce1e6','#e0457b','#c9d1d9','#8b6dff','#7ee787','#ffd07a'];
@@ -86,284 +90,7 @@ function makeCodeScreen(){
    reactor energy heart in gyroscopic HUD rings
 ════════════════════════════════════════════════ */
 let aiSpeaking=false,heroApi=null;
-function makeAICore(env){
-  const g=new THREE.Group();
 
-  const glowTex=(()=>{const c=document.createElement('canvas');c.width=128;c.height=128;const x=c.getContext('2d');
-    const gr=x.createRadialGradient(64,64,2,64,64,64);
-    gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(.25,'rgba(92,225,230,.55)');gr.addColorStop(.6,'rgba(139,109,255,.18)');gr.addColorStop(1,'rgba(0,0,0,0)');
-    x.fillStyle=gr;x.fillRect(0,0,128,128);return new THREE.CanvasTexture(c);})();
-
-  /* fresnel energy shell */
-  const shellMat=new THREE.ShaderMaterial({
-    transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,
-    uniforms:{uBoost:{value:0}},
-    vertexShader:`varying vec3 vN,vV;void main(){vN=normalize(normalMatrix*normal);vec4 mv=modelViewMatrix*vec4(position,1.);vV=normalize(-mv.xyz);gl_Position=projectionMatrix*mv;}`,
-    fragmentShader:`varying vec3 vN,vV;uniform float uBoost;
-      void main(){float f=pow(1.-abs(dot(vN,vV)),2.2);
-      vec3 col=mix(vec3(.36,.88,.9),vec3(.55,.43,1.),f);
-      gl_FragColor=vec4(col*(1.+uBoost*1.4),f*(.8+uBoost)+.07);}`
-  });
-  const shell=new THREE.Mesh(new THREE.SphereGeometry(1.05,48,48),shellMat);g.add(shell);
-
-  /* ── THE ARC REACTOR metal housing, copper coils,
-     segment rotor, glowing palladium core ── */
-  const reactorG=new THREE.Group();g.add(reactorG);
-  const metal=new THREE.MeshStandardMaterial({color:0x3a3f4a,metalness:.9,roughness:.28,envMap:env,envMapIntensity:1.3});
-  const metalDark=new THREE.MeshStandardMaterial({color:0x1c2028,metalness:.85,roughness:.4,envMap:env,envMapIntensity:.9});
-  const copper=new THREE.MeshStandardMaterial({color:0xb87333,metalness:.9,roughness:.32,envMap:env,envMapIntensity:1.1});
-  const slitMat=new THREE.MeshBasicMaterial({color:0x9ff2f6,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
-  const coreMat=new THREE.MeshBasicMaterial({color:0xcffdff,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
-  /* outer housing ring with copper coil wraps */
-  const housing=new THREE.Mesh(new THREE.TorusGeometry(.95,.13,20,72),metal);
-  reactorG.add(housing);
-  const Z=new THREE.Vector3(0,0,1),T=new THREE.Vector3();
-  for(let i=0;i<10;i++){
-    const a=i/10*Math.PI*2;
-    const wrap=new THREE.Mesh(new THREE.TorusGeometry(.145,.038,10,18,Math.PI*1.35),copper);
-    wrap.position.set(Math.cos(a)*.95,Math.sin(a)*.95,0);
-    T.set(-Math.sin(a),Math.cos(a),0);
-    wrap.quaternion.setFromUnitVectors(Z,T);
-    reactorG.add(wrap);
-  }
-  /* rotor: 10 plates with glowing slits between */
-  const rotor=new THREE.Group();reactorG.add(rotor);
-  for(let i=0;i<10;i++){
-    const a=i/10*Math.PI*2;
-    const seg=new THREE.Mesh(new RoundedBoxGeometry(.34,.2,.12,2,.03),metalDark);
-    seg.position.set(Math.cos(a)*.62,Math.sin(a)*.62,0);
-    seg.rotation.z=a+Math.PI/2;
-    rotor.add(seg);
-    const b=(i+.5)/10*Math.PI*2;
-    const slit=new THREE.Mesh(new THREE.PlaneGeometry(.09,.22),slitMat);
-    slit.position.set(Math.cos(b)*.62,Math.sin(b)*.62,0);
-    slit.rotation.z=b+Math.PI/2;
-    rotor.add(slit);
-  }
-  /* inner ring + palladium core */
-  const innerRing=new THREE.Mesh(new THREE.TorusGeometry(.38,.055,14,48),metal);
-  reactorG.add(innerRing);
-  const glowRing=new THREE.Mesh(new THREE.TorusGeometry(.38,.02,8,48),slitMat);
-  glowRing.position.z=.05;reactorG.add(glowRing);
-  const coreDisc=new THREE.Mesh(new THREE.CircleGeometry(.3,48),coreMat);
-  coreDisc.position.z=.03;reactorG.add(coreDisc);
-  const coreBack=new THREE.Mesh(new THREE.CircleGeometry(.3,48),coreMat);
-  coreBack.rotation.y=Math.PI;coreBack.position.z=-.03;reactorG.add(coreBack);
-  const halo=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,transparent:true,opacity:.85,depthWrite:false,blending:THREE.AdditiveBlending}));
-  halo.scale.setScalar(3.4);g.add(halo);
-
-  /* gyroscopic rings */
-  const rMat=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false});
-  const r1=new THREE.Mesh(new THREE.TorusGeometry(1.55,.012,8,128),rMat(0x5ce1e6,.6));g.add(r1);
-  const r2=new THREE.Mesh(new THREE.TorusGeometry(1.8,.01,8,128),rMat(0x8b6dff,.5));g.add(r2);
-  const arcG=new THREE.Group();g.add(arcG);
-  const arc=new THREE.Mesh(new THREE.TorusGeometry(1.66,.022,8,64,Math.PI*.66),rMat(0xe0457b,.75));
-  arcG.add(arc);arcG.rotation.x=1.05;
-
-  /* flat HUD tick rings (canvas-drawn) */
-  function tickPlane(radius,n,maj,op){
-    const S=512,c=document.createElement('canvas');c.width=S;c.height=S;const x=c.getContext('2d');
-    x.translate(S/2,S/2);
-    x.strokeStyle='rgba(92,225,230,.9)';
-    for(let i=0;i<n;i++){
-      const a=i/n*Math.PI*2,big=i%maj===0;
-      x.lineWidth=big?4:2;
-      x.beginPath();
-      x.moveTo(Math.cos(a)*(S*.44),Math.sin(a)*(S*.44));
-      x.lineTo(Math.cos(a)*(S*(big?.485:.465)),Math.sin(a)*(S*(big?.485:.465)));
-      x.stroke();
-    }
-    x.lineWidth=1.6;x.globalAlpha=.5;
-    x.beginPath();x.arc(0,0,S*.44,0,7);x.stroke();
-    const tex=new THREE.CanvasTexture(c);tex.anisotropy=4;
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(radius*2,radius*2),
-      new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
-    return m;
-  }
-  const t1=tickPlane(2.05,72,6,.55);t1.rotation.x=Math.PI/2-0.35;g.add(t1);
-  const t2=tickPlane(2.4,36,3,.35);t2.rotation.x=0.25;g.add(t2);
-
-  /* voice waveform ring around the core */
-  const WN=96,wPos=new Float32Array(WN*3);
-  const wGeo=new THREE.BufferGeometry();
-  wGeo.setAttribute('position',new THREE.BufferAttribute(wPos,3));
-  const wave=new THREE.LineLoop(wGeo,new THREE.LineBasicMaterial({color:0x9ff2f6,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));
-  g.add(wave);
-
-  /* orbiting data particles */
-  const PN=120,pGeo=new THREE.BufferGeometry(),pArr=new Float32Array(PN*3),pMeta=[];
-  for(let i=0;i<PN;i++){
-    pMeta.push({r:1.5+Math.random()*1.1,a:Math.random()*Math.PI*2,s:(.2+Math.random()*.5)*(Math.random()<.5?1:-1),y:(Math.random()-.5)*.5,ph:Math.random()*7});
-  }
-  pGeo.setAttribute('position',new THREE.BufferAttribute(pArr,3));
-  const parts=new THREE.Points(pGeo,new THREE.PointsMaterial({map:glowTex,color:0x8be9ff,size:.075,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}));
-  g.add(parts);
-
-  /* expanding scan pulse */
-  const pulse=new THREE.Mesh(new THREE.TorusGeometry(1.3,.014,8,96),rMat(0x5ce1e6,0));
-  g.add(pulse);
-
-  return {group:g,shellMat,reactorG,rotor,coreMat,slitMat,halo,r1,r2,arcG,t1,t2,wGeo,wPos,WN,pGeo,pArr,pMeta,PN,pulse,wave};
-}
-
-/* ════════════════════════════════════════════════
-   HERO SCENE the AI boots up and greets you
-════════════════════════════════════════════════ */
-function buildHero(){
-  const canvas=document.getElementById('hero-canvas');
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.25));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-  const env=studioEnv(renderer);
-  const scene=new THREE.Scene();
-
-  const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
-  camera.position.set(0,0.55,7.6);
-  const lookTarget=new THREE.Vector3(0,0.45,0);
-
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(lookTarget);}
-  resize();addEventListener('resize',resize);
-
-  const AI=makeAICore(env);
-  const core=AI.group;
-  core.position.y=0.55;
-  core.scale.setScalar(0.001); // ignition
-  scene.add(core);
-  let manualRot=null,manualAt=0,zoomCur=1;
-  const quatTarget=new THREE.Quaternion();let quatAt=-1e9;
-  heroApi={
-    manual(rx,ry,rz,sc){manualRot={rx,ry,rz,sc};manualAt=performance.now();},
-    manualQuat(q){quatTarget.copy(q);quatAt=performance.now();},
-    getQuat(){return core.quaternion;},
-  };
-
-  // base ring + orbit dots grounding the hologram
-  const ringGrp=new THREE.Group();ringGrp.position.y=-1.55;scene.add(ringGrp);
-  const ring=new THREE.Mesh(new THREE.TorusGeometry(1.9,0.014,8,120),new THREE.MeshBasicMaterial({color:0x5ce1e6,transparent:true,opacity:0.28}));
-  ring.rotation.x=Math.PI/2;ringGrp.add(ring);
-  for(let i=0;i<7;i++){
-    const d=new THREE.Mesh(new THREE.SphereGeometry(0.032,10,10),new THREE.MeshBasicMaterial({color:i%2?0xe0457b:0x5ce1e6}));
-    const a=i/7*Math.PI*2;d.position.set(Math.cos(a)*1.9,Math.sin(a*2)*0.08,Math.sin(a)*1.9);
-    ringGrp.add(d);
-  }
-  // light cone from ring to core (hologram projector feel)
-  const coneTex=(()=>{const c=document.createElement('canvas');c.width=64;c.height=128;const x=c.getContext('2d');
-    const gr=x.createLinearGradient(0,128,0,0);
-    gr.addColorStop(0,'rgba(92,225,230,.28)');gr.addColorStop(1,'rgba(92,225,230,0)');
-    x.fillStyle=gr;x.fillRect(0,0,64,128);return new THREE.CanvasTexture(c);})();
-  const cone=new THREE.Mesh(new THREE.CylinderGeometry(0.55,1.85,2.1,48,1,true),
-    new THREE.MeshBasicMaterial({map:coneTex,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
-  cone.position.y=-0.55;scene.add(cone);
-
-  // floating glass UI shards
-  const shards=[];
-  [[-2.5,1.15,-0.9,'#5ce1e6',1.0,0.68,0.5],[2.6,0.25,-1.2,'#e0457b',0.9,0.6,-0.45],[2.0,1.95,-0.5,'#8b6dff',0.7,0.48,-0.18]].forEach(([sx,sy,sz,ac,w,h,ry],i)=>{
-    const p=glassPanel(w,h,ac);p.position.set(sx,sy,sz);p.rotation.y=ry;
-    p.userData={by:sy,ph:i*2.1};
-    scene.add(p);shards.push(p);
-  });
-
-  let px=0,py=0,tx=0,ty=0;
-  addEventListener('mousemove',e=>{tx=(e.clientX/innerWidth-0.5);ty=(e.clientY/innerHeight-0.5);},{passive:true});
-
-  let vis=true;
-  new IntersectionObserver(es=>{vis=es[0].isIntersecting;},{threshold:0.15}).observe(canvas);
-
-  const clock=new THREE.Clock();
-  let t=0,born=0,pulseT=9,nextPulse=3.5;
-  const easeOutBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
-
-  function frame(){
-    if(scrollBusy()&&(frame._f=!frame._f)){requestAnimationFrame(frame);return;}
-    const dt=Math.min(clock.getDelta(),0.05);
-    if(vis){
-      t+=dt;
-      if(born<1){born=Math.min(1,born+dt/1.1);}
-      px=lerp(px,tx,1-Math.pow(0.001,dt));py=lerp(py,ty,1-Math.pow(0.001,dt));
-
-      /* gimbal: cursor-follow by default; both-hands gesture takes
-         over with free rotation + zoom, and the pose HOLDS for 4s
-         after release before drifting home (Stark-lab style) */
-      const nowMs=performance.now();
-      const qAge=nowMs-quatAt,mAge=manualRot?nowMs-manualAt:1e9;
-      if(qAge<4000&&qAge<mAge){
-        /* Stark grab: mirror the wrist quaternion (snappy while held,
-           gentle during the 4s pose-hold after release) */
-        /* continuous follow rate, the old 300ms step jumped the rate
-           100x and stuttered whenever tracking hiccuped mid-grab */
-        const Rq=lerp(0.0005,0.06,clamp((qAge-120)/900,0,1));
-        core.quaternion.slerp(quatTarget,1-Math.pow(Rq,dt));
-      }else{
-        const useManual=mAge<4000;
-        const kR=1-Math.pow(mAge<250?0.0005:useManual?0.05:0.001,dt);
-        core.rotation.x=lerp(core.rotation.x,useManual?manualRot.rx:py*0.35,kR);
-        core.rotation.y=lerp(core.rotation.y,useManual?manualRot.ry:px*0.55,kR);
-        core.rotation.z=lerp(core.rotation.z,useManual?manualRot.rz:0,kR);
-        zoomCur=lerp(zoomCur,useManual?manualRot.sc:1,kR);
-      }
-      core.scale.setScalar(Math.max(0.001,easeOutBack(Math.min(1,born))*0.85*zoomCur));
-      core.position.y=0.55+Math.sin(t*1.1)*0.05;
-
-      /* gyro ring motion */
-      AI.r1.rotation.x=t*0.7;AI.r1.rotation.y=t*0.33;
-      AI.r2.rotation.y=-t*0.48;AI.r2.rotation.x=Math.sin(t*0.4)*0.8;
-      AI.arcG.rotation.y=t*1.15;
-      AI.t1.rotation.z=t*0.22;
-      AI.t2.rotation.z=-t*0.1;
-
-      /* arc-reactor heartbeat: lub-dub every 4s */
-      const hb=t%4;
-      const boost=Math.exp(-Math.pow(hb-0.12,2)/0.004)+0.55*Math.exp(-Math.pow(hb-0.42,2)/0.005);
-      AI.shellMat.uniforms.uBoost.value=boost*0.9+(aiSpeaking?0.25:0);
-      AI.rotor.rotation.z=t*0.45;
-      AI.reactorG.rotation.x=Math.sin(t*0.31)*0.14;   // 4D precession wobble
-      AI.reactorG.rotation.y=Math.sin(t*0.23)*0.1;
-      AI.coreMat.opacity=0.72+boost*0.28;
-      AI.slitMat.opacity=0.5+boost*0.5+Math.sin(t*2.1)*0.08;
-      AI.halo.material.opacity=0.65+boost*0.35+Math.sin(t*1.7)*0.08;
-      AI.halo.scale.setScalar(3.4+boost*0.7);
-
-      /* voice waveform: animated while the AI 'speaks' */
-      const amp=aiSpeaking?0.075*(0.55+0.45*Math.sin(t*7.3)):0.012;
-      for(let i=0;i<AI.WN;i++){
-        const a=i/AI.WN*Math.PI*2;
-        const r=1.35+(Math.sin(a*3+t*9)+Math.sin(a*5-t*13)*0.6+Math.sin(a*8+t*21)*0.35)*amp;
-        AI.wPos[i*3]=Math.cos(a)*r;AI.wPos[i*3+1]=Math.sin(a)*r;AI.wPos[i*3+2]=0;
-      }
-      AI.wGeo.attributes.position.needsUpdate=true;
-      AI.wave.rotation.z=t*0.15;
-      AI.wave.material.opacity=aiSpeaking?0.95:0.4;
-
-      /* orbiting data particles */
-      for(let i=0;i<AI.PN;i++){
-        const m=AI.pMeta[i];m.a+=m.s*dt;
-        AI.pArr[i*3]=Math.cos(m.a)*m.r;
-        AI.pArr[i*3+1]=m.y+Math.sin(m.a*2+m.ph)*0.18;
-        AI.pArr[i*3+2]=Math.sin(m.a)*m.r;
-      }
-      AI.pGeo.attributes.position.needsUpdate=true;
-
-      /* scan pulse every ~5s */
-      if(t>nextPulse&&pulseT>1){pulseT=0;nextPulse=t+4.5+Math.random()*2;}
-      if(pulseT<=1){
-        pulseT+=dt*0.9;
-        const p=Math.min(1,pulseT);
-        AI.pulse.scale.setScalar(1+p*1.9);
-        AI.pulse.material.opacity=0.5*(1-p);
-        AI.pulse.rotation.x=py*0.35;AI.pulse.rotation.y=px*0.55;
-      }
-
-      cone.material.opacity=0.4+boost*0.25;
-      ringGrp.rotation.y=t*0.25;
-      ring.material.opacity=0.22+Math.sin(t*0.8)*0.07+boost*0.2;
-      shards.forEach(s=>{s.position.y=s.userData.by+Math.sin(t*1.1+s.userData.ph)*0.09;s.rotation.z=Math.sin(t*0.7+s.userData.ph)*0.05;});
-      camera.lookAt(lookTarget);
-      renderer.render(scene,camera);
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-}
 
 /* ════════════════════════════════════════════════
    AI GREETING JARVIS-style typewriter line
@@ -1447,12 +1174,13 @@ function setupGestures(bg){
     let idx=0;
     secs.forEach((s,i)=>{if(s.offsetTop<=mid)idx=i;});
     const next=secs[clamp(idx+dir,0,secs.length-1)];
-    next&&next.scrollIntoView({behavior:'smooth'});
+    next&&smoothTo(next);
   }
   function scrollLoop(){
     scrollVel*=0.92;
     if(Math.abs(scrollVel)>.4){
       if(window.projModalApi&&window.projModalApi.isOpen()) window.projModalApi.scrollBody(scrollVel);
+      else if(window.__lenis) window.__lenis.scrollTo(window.__lenis.actualScroll+scrollVel,{immediate:true});
       else scrollBy(0,scrollVel);
     }
     scrollRaf=active?requestAnimationFrame(scrollLoop):null;
@@ -1460,8 +1188,7 @@ function setupGestures(bg){
 
   /* ── live telemetry HUD (only while gestures are active) ── */
   const tmEl=document.getElementById('telemetry');
-  const tmF={rot:document.getElementById('tmRot'),axis:document.getElementById('tmAxis'),
-             track:document.getElementById('tmTrack'),fps:document.getElementById('tmFps'),
+  const tmF={track:document.getElementById('tmTrack'),fps:document.getElementById('tmFps'),
              mode:document.getElementById('tmMode')};
   let tmRaf=null,tmN=0,tmT0=0,tmFps=0,tmLast=0;
   function tmLoop(){tmN++;const n=performance.now();
@@ -1471,11 +1198,9 @@ function setupGestures(bg){
   function tmStop(){if(tmEl)tmEl.classList.remove('on');if(tmRaf)cancelAnimationFrame(tmRaf);tmRaf=null;}
   const MODES={grab:'\u{1F512} GRAB',pinch:'\u{1F90F} PINCH',fist:'\u270A FIST',two:'\u{1F64C} DUAL',idle:'IDLE'};
   function tmPaint(){
-    if(!tmEl||!tmF.rot)return;
+    if(!tmEl||!tmF.track)return;
     const n=performance.now();
     if(n-tmLast<120)return; tmLast=n;                    // ~8Hz, cheap
-    tmF.rot.textContent=(TM.rot*180/Math.PI).toFixed(1)+'\u00b0';
-    tmF.axis.textContent=TM.ax.map(v=>v.toFixed(2)).join(', ');
     tmF.track.textContent=TM.track.toFixed(2);
     tmF.fps.textContent=tmFps||'\u2014';
     tmF.mode.textContent=MODES[skelMode]||'IDLE';
@@ -1810,10 +1535,10 @@ function runPreloader(done){
       setTimeout(()=>{
         pre.classList.add('done');
         document.body.classList.remove('loading');
-        document.querySelector('nav').classList.add('in');
-        document.querySelectorAll('.hero-side').forEach(s=>s.classList.add('in'));
-        document.querySelector('.hero-meta').classList.add('in');
-        document.querySelector('.scroll-hint').classList.add('in');
+        /* the hero reveals itself through framer-motion now; only the
+           nav still needs its entrance class flipped from here */
+        const nav=document.querySelector('nav');
+        if(nav)nav.classList.add('in');
         done();
       },400);
       return;
@@ -1921,7 +1646,7 @@ function setupScrollNav(){
   measure();addEventListener('resize',()=>requestAnimationFrame(measure),{passive:true});setTimeout(measure,2600);
   dots.forEach((d,i)=>d.addEventListener('click',()=>{
     const el=document.getElementById(ids[i])||document.querySelector('.'+ids[i]);
-    el&&el.scrollIntoView({behavior:'smooth'});
+    el&&smoothTo(el);
   }));
   let raf=null;
   const queue=()=>{if(!raf)raf=requestAnimationFrame(update);};
@@ -1950,316 +1675,15 @@ function setupMarquee(){
    and a floor bounce, and metal picks all of that up.
 ════════════════════════════════════════════════ */
 let PENV=null;
-function productEnv(renderer){
-  if(PENV)return PENV;
-  const s=new THREE.Scene();
-  /* graded dome */
-  const dome=new THREE.Mesh(new THREE.SphereGeometry(60,32,24),
-    new THREE.ShaderMaterial({side:THREE.BackSide,
-      vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-      fragmentShader:'varying vec3 vP;void main(){float h=normalize(vP).y*.5+.5;vec3 c=mix(vec3(.012,.016,.026),vec3(.16,.19,.25),pow(h,1.5));gl_FragColor=vec4(c,1.);}'}));
-  s.add(dome);
-  const box=(w,h,x,y,z,rx,ry,rz,i,c=0xffffff)=>{
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));
-    m.material.color.multiplyScalar(i);m.position.set(x,y,z);m.rotation.set(rx,ry,rz);s.add(m);
-  };
-  box(34,22,-15,20,10,-Math.PI/2.5,0,0.25,7.5);            // key softbox, top left
-  box(30,26,22,6,4,0,-Math.PI/2.3,0,2.4,0xdfe9ff);         // broad fill, right
-  box(40,5,0,10,-24,0,0,0,4.5,0xbfd8ff);                   // rim strip behind
-  box(46,46,0,-14,0,-Math.PI/2,0,0,0.42,0x8899bb);          // floor bounce
-  box(10,20,-20,2,-8,0,Math.PI/2.6,0,1.6,0xffd8c0);        // warm kicker
-  const pm=new THREE.PMREMGenerator(renderer);
-  pm.compileEquirectangularShader();
-  PENV=pm.fromScene(s,0.02).texture;
-  return PENV;
-}
 
-/* fine directional streaks: brushed-metal roughness + normal */
-function brushedMaps(streak=1400,rough=[0.16,0.34]){
-  const S=512;
-  const rc=document.createElement('canvas');rc.width=rc.height=S;const rx=rc.getContext('2d');
-  const base=Math.round(((rough[0]+rough[1])/2)*255);
-  rx.fillStyle=`rgb(${base},${base},${base})`;rx.fillRect(0,0,S,S);
-  for(let i=0;i<streak;i++){
-    const y=Math.random()*S,len=40+Math.random()*400,v=Math.round((rough[0]+Math.random()*(rough[1]-rough[0]))*255);
-    rx.strokeStyle=`rgba(${v},${v},${v},${0.25+Math.random()*0.5})`;rx.lineWidth=Math.random()<.85?1:2;
-    rx.beginPath();rx.moveTo(Math.random()*S,y);rx.lineTo(Math.random()*S+len,y);rx.stroke();
-  }
-  const nc=document.createElement('canvas');nc.width=nc.height=S;const nx=nc.getContext('2d');
-  nx.fillStyle='rgb(128,128,255)';nx.fillRect(0,0,S,S);
-  for(let i=0;i<streak;i++){
-    const y=Math.random()*S,d=Math.random()<.5?118:138;
-    nx.strokeStyle=`rgba(${d},128,255,.5)`;nx.lineWidth=1;
-    nx.beginPath();nx.moveTo(Math.random()*S,y);nx.lineTo(Math.random()*S+120,y);nx.stroke();
-  }
-  const R=new THREE.CanvasTexture(rc),N=new THREE.CanvasTexture(nc);
-  [R,N].forEach(t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;});
-  return {roughnessMap:R,normalMap:N};
-}
 
-/* ════════════════════════════════════════════════
-   AI ACCELERATOR CARD
-   Modelled on a Founders-Edition reference photo:
-   squircle fan apertures cut straight through a thin
-   matte-graphite shroud, mirror-polished chamfer
-   frames tracing each aperture and crossing in an X,
-   nine swept sickle blades per fan over a radial-spun
-   hub, and the fin stack visible through the gaps.
-════════════════════════════════════════════════ */
-function squircle(size,r,cx=0,Ctor=THREE.Shape){
-  const h=size/2,sh=new Ctor();
-  sh.moveTo(cx-h+r,-h);
-  sh.lineTo(cx+h-r,-h);sh.quadraticCurveTo(cx+h,-h,cx+h,-h+r);
-  sh.lineTo(cx+h,h-r);sh.quadraticCurveTo(cx+h,h,cx+h-r,h);
-  sh.lineTo(cx-h+r,h);sh.quadraticCurveTo(cx-h,h,cx-h,h-r);
-  sh.lineTo(cx-h,-h+r);sh.quadraticCurveTo(cx-h,-h,cx-h+r,-h);
-  return sh;
-}
-function roundRectShape(w,d,r,Ctor=THREE.Shape){
-  const x=w/2,y=d/2,sh=new Ctor();
-  sh.moveTo(-x+r,-y);
-  sh.lineTo(x-r,-y);sh.quadraticCurveTo(x,-y,x,-y+r);
-  sh.lineTo(x,y-r);sh.quadraticCurveTo(x,y,x-r,y);
-  sh.lineTo(-x+r,y);sh.quadraticCurveTo(-x,y,-x,y-r);
-  sh.lineTo(-x,-y+r);sh.quadraticCurveTo(-x,-y,-x+r,-y);
-  return sh;
-}
-/* one swept, widening sickle blade in the XY plane */
-function bladeShape(rIn,rOut,sweep,wIn,wOut){
-  const sh=new THREE.Shape(),N=16;
-  for(let i=0;i<=N;i++){
-    const t=i/N,r=rIn+(rOut-rIn)*t,a=sweep*t;
-    const x=Math.cos(a)*r,y=Math.sin(a)*r;
-    i?sh.lineTo(x,y):sh.moveTo(x,y);
-  }
-  for(let i=N;i>=0;i--){
-    const t=i/N,r=rIn+(rOut-rIn)*t;
-    const a=sweep*t-(wIn+(wOut-wIn)*t)/r;
-    sh.lineTo(Math.cos(a)*r,Math.sin(a)*r);
-  }
-  return sh;
-}
 
-function buildGPU(){
-  const canvas=document.getElementById('device-canvas');
-  if(!canvas)return;
-  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
-  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=0.92;
-  const env=productEnv(renderer);
-  const scene=new THREE.Scene();
-  const camera=new THREE.PerspectiveCamera(30,1,0.1,100);
-  camera.position.set(0,1.55,13.6);
-  const look=new THREE.Vector3(0,-0.5,0);
-  function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;
-    renderer.setSize(Math.round(w*0.85),Math.round(h*0.85),false);
-    camera.aspect=w/h;camera.updateProjectionMatrix();camera.lookAt(look);}
-  resize();new ResizeObserver(resize).observe(canvas);
-
-  scene.add(new THREE.AmbientLight(0x39445a,0.9));
-  const key=new THREE.DirectionalLight(0xffffff,2.6);key.position.set(-5,8,6);scene.add(key);
-  const rim=new THREE.DirectionalLight(0x9fd0ff,1.3);rim.position.set(6,1,-5);scene.add(rim);
-  const rgbLight=new THREE.PointLight(0x5ce1e6,2.0,12,2);rgbLight.position.set(0,1.1,1.4);scene.add(rgbLight);
-
-  /* ── materials, matched to the reference ── */
-  const graphite=new THREE.MeshPhysicalMaterial({color:0x1a1c20,metalness:.5,roughness:.62,
-    clearcoat:.22,clearcoatRoughness:.6,envMap:env,envMapIntensity:.55});
-  const polish=new THREE.MeshStandardMaterial({color:0x848b95,metalness:1,roughness:.15,
-    envMap:env,envMapIntensity:1.45});
-  const bladeMat=new THREE.MeshPhysicalMaterial({color:0x2c2f35,metalness:.25,roughness:.5,
-    clearcoat:.35,clearcoatRoughness:.45,envMap:env,envMapIntensity:.6});
-  /* radial-spun hub */
-  const spunTex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');
-    x.fillStyle='#6a6f77';x.fillRect(0,0,512,512);
-    x.translate(256,256);
-    for(let i=0;i<2600;i++){const a=Math.random()*Math.PI*2,v=90+Math.random()*90;
-      x.strokeStyle=`rgba(${v},${v},${v},.5)`;x.lineWidth=Math.random()*1.6;
-      x.beginPath();x.moveTo(Math.cos(a)*40,Math.sin(a)*40);x.lineTo(Math.cos(a)*250,Math.sin(a)*250);x.stroke();}
-    const t=new THREE.CanvasTexture(c);t.anisotropy=8;return t;})();
-  const hubMat=new THREE.MeshStandardMaterial({color:0x5f666e,metalness:1,roughness:.26,
-    roughnessMap:spunTex,envMap:env,envMapIntensity:1.15});
-  const finMat=new THREE.MeshStandardMaterial({color:0x8e959e,metalness:1,roughness:.38,envMap:env,envMapIntensity:1.2});
-  const goldMat=new THREE.MeshStandardMaterial({color:0xd8ad5a,metalness:1,roughness:.24,envMap:env,envMapIntensity:1.8});
-  const pcbMat=new THREE.MeshStandardMaterial({color:0x14202c,metalness:.3,roughness:.72,envMap:env,envMapIntensity:.55});
-  const darkPlastic=new THREE.MeshStandardMaterial({color:0x14171c,metalness:.1,roughness:.62,envMap:env,envMapIntensity:.7});
-  const steelMat=new THREE.MeshStandardMaterial({color:0x71777f,metalness:1,roughness:.3,envMap:env,envMapIntensity:1.4});
-
-  /* chasing RGB strip */
-  const rgbCan=document.createElement('canvas');rgbCan.width=512;rgbCan.height=16;
-  const rgbCtx=rgbCan.getContext('2d');
-  function paintRGB(off){
-    const g=rgbCtx.createLinearGradient(0,0,512,0);
-    for(let i=0;i<=6;i++){const h=((i/6)*360+off)%360;g.addColorStop(i/6,`hsl(${h},100%,62%)`);}
-    rgbCtx.fillStyle=g;rgbCtx.fillRect(0,0,512,16);rgbTex.needsUpdate=true;
-  }
-  const rgbTex=new THREE.CanvasTexture(rgbCan);paintRGB(0);
-  const rgbMat=new THREE.MeshBasicMaterial({map:rgbTex,transparent:true,opacity:.95,
-    blending:THREE.AdditiveBlending,depthWrite:false});
-
-  /* D is the turntable (spins about world Y like a product shot);
-     DI holds the card standing upright so the face meets the camera */
-  const D=new THREE.Group();D.position.y=-0.62;D.scale.setScalar(0.88);scene.add(D);
-  const DI=new THREE.Group();DI.rotation.x=Math.PI/2;D.add(DI);
-  const LShroud=new THREE.Group(),LFins=new THREE.Group(),LPcb=new THREE.Group(),LBack=new THREE.Group();
-  DI.add(LBack,LPcb,LFins,LShroud);
-
-  const CW=7.0,CD=2.6,AP=1.92,FX=1.74;   // card width / depth, aperture size, fan offset
-
-  /* ── SHROUD: thin plate with two squircle apertures cut through ── */
-  const topShape=roundRectShape(CW,CD,0.22);
-  [-FX,FX].forEach(fx=>topShape.holes.push(squircle(AP,0.46,fx,THREE.Path)));
-  const shroud=new THREE.Mesh(new THREE.ExtrudeGeometry(topShape,
-    {depth:0.13,bevelEnabled:true,bevelSize:0.03,bevelThickness:0.03,bevelSegments:3,curveSegments:24}),graphite);
-  shroud.rotation.x=-Math.PI/2;shroud.position.y=0.60;LShroud.add(shroud);
-
-  /* polished chamfer frame tracing each aperture */
-  [-FX,FX].forEach(fx=>{
-    const outer=squircle(AP+0.20,0.55);
-    outer.holes.push(squircle(AP,0.46,0,THREE.Path));
-    const ring=new THREE.Mesh(new THREE.ExtrudeGeometry(outer,
-      {depth:0.05,bevelEnabled:true,bevelSize:0.028,bevelThickness:0.030,bevelSegments:3,curveSegments:24}),polish);
-    ring.rotation.x=-Math.PI/2;ring.position.set(fx,0.785,0);LShroud.add(ring);
-  });
-  /* polished perimeter chamfer */
-  {
-    const outer=roundRectShape(CW,CD,0.22);
-    outer.holes.push(roundRectShape(CW-0.13,CD-0.13,0.19,THREE.Path));
-    const per=new THREE.Mesh(new THREE.ExtrudeGeometry(outer,
-      {depth:0.045,bevelEnabled:true,bevelSize:0.024,bevelThickness:0.026,bevelSegments:3,curveSegments:20}),polish);
-    per.rotation.x=-Math.PI/2;per.position.y=0.782;LShroud.add(per);
-  }
-  /* the signature X chamfer crossing the centre panel */
-  [1,-1].forEach(sd=>{
-    const bar=new THREE.Mesh(new RoundedBoxGeometry(1.85,0.045,0.085,3,0.02),polish);
-    bar.position.set(0,0.784,0);bar.rotation.y=sd*0.63;LShroud.add(bar);
-  });
-
-  /* ── FANS: nine swept sickle blades over a spun hub ── */
-  const fans=[];
-  const bGeo=new THREE.ExtrudeGeometry(bladeShape(0.30,0.95,1.16,0.20,0.60),
-    {depth:0.022,bevelEnabled:true,bevelSize:0.008,bevelThickness:0.008,bevelSegments:1,curveSegments:10});
-  [-FX,FX].forEach(fx=>{
-    const blades=new THREE.Group();blades.position.set(fx,0.64,0);LShroud.add(blades);
-    const parts=[],mLay=new THREE.Matrix4().makeRotationX(-Math.PI/2),mTilt=new THREE.Matrix4().makeRotationX(0.16);
-    for(let i=0;i<9;i++){
-      const m=new THREE.Matrix4().makeRotationY((i/9)*Math.PI*2).multiply(mTilt).multiply(mLay);
-      parts.push(bGeo.clone().applyMatrix4(m));
-    }
-    blades.add(new THREE.Mesh(mergeGeometries(parts,false),bladeMat));
-    const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.27,0.27,0.05,40),hubMat);
-    hub.position.set(fx,0.685,0);LShroud.add(hub);
-    const hubEdge=new THREE.Mesh(new THREE.TorusGeometry(0.272,0.012,10,40),polish);
-    hubEdge.rotation.x=Math.PI/2;hubEdge.position.set(fx,0.665,0);LShroud.add(hubEdge);
-    fans.push(blades);
-  });
-  /* RGB accent along the front lip */
-  const rgbBar=new THREE.Mesh(new THREE.PlaneGeometry(CW-0.7,0.055),rgbMat);
-  rgbBar.position.set(0,0.665,CD/2+0.004);LShroud.add(rgbBar);
-
-  /* ── FIN STACK, visible through the apertures ── */
-  {
-    const g=[],fg=new THREE.BoxGeometry(0.026,0.40,CD-0.42);
-    for(let i=0;i<30;i++)g.push(fg.clone().translate(-3.05+i*0.21,0.30,0));
-    LFins.add(new THREE.Mesh(mergeGeometries(g,false),finMat));
-  }
-  [0.62,-0.62].forEach(pz=>{
-    const hp=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,CW-1.0,14),goldMat);
-    hp.rotation.z=Math.PI/2;hp.position.set(0,0.48,pz);LFins.add(hp);
-  });
-
-  /* ── PCB, VRAM, PCIe fingers, bracket ── */
-  const pcb=new THREE.Mesh(new RoundedBoxGeometry(CW-0.5,0.065,CD-0.3,3,0.02),pcbMat);
-  LPcb.add(pcb);
-  const die=new THREE.Mesh(new RoundedBoxGeometry(0.84,0.07,0.84,3,0.015),steelMat);
-  die.position.set(-0.1,0.066,0);LPcb.add(die);
-  {
-    const g=[],vg=new RoundedBoxGeometry(0.40,0.05,0.32,2,0.012);
-    [[-1.15,.66],[-1.15,-.66],[0.95,.66],[0.95,-.66],[-0.1,.86],[-0.1,-.86]]
-      .forEach(([mx,mz])=>g.push(vg.clone().translate(mx,0.058,mz)));
-    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
-  }
-  {
-    const g=[],fg=new THREE.BoxGeometry(0.05,0.10,0.28);
-    for(let i=0;i<40;i++)g.push(fg.clone().translate(-1.80+i*0.086,-0.075,0.90));
-    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),goldMat));
-  }
-  /* IO bracket with DisplayPort / HDMI cutouts */
-  const bracket=new THREE.Mesh(new RoundedBoxGeometry(0.07,1.62,2.34,3,0.02),steelMat);
-  bracket.position.set(-3.52,0.32,0);LPcb.add(bracket);
-  {
-    const g=[],pg=new THREE.BoxGeometry(0.10,0.20,0.42);
-    [[-0.66,0.62],[-0.66,0.14],[-0.66,-0.34],[-0.66,-0.82]]
-      .forEach(([py,pz])=>g.push(pg.clone().translate(-3.55,py+0.34,pz)));
-    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
-  }
-  {
-    const g=[],hg=new THREE.CylinderGeometry(0.05,0.05,0.09,6).rotateZ(Math.PI/2);
-    for(let r=0;r<4;r++)for(let cix=0;cix<6;cix++)
-      g.push(hg.clone().translate(-3.53,0.72+r*0.13,-0.80+cix*0.13+(r%2)*0.065));
-    LPcb.add(new THREE.Mesh(mergeGeometries(g,false),darkPlastic));
-  }
-  /* backplate */
-  const back=new THREE.Mesh(new RoundedBoxGeometry(CW-0.2,0.05,CD-0.2,3,0.02),graphite);
-  back.position.y=-0.19;LBack.add(back);
-
-  /* soft contact shadow, no floor plane */
-  const shadowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
-    const g=x.createRadialGradient(128,128,4,128,128,124);
-    g.addColorStop(0,'rgba(0,0,0,.75)');g.addColorStop(.5,'rgba(0,0,0,.28)');g.addColorStop(1,'rgba(0,0,0,0)');
-    x.fillStyle=g;x.fillRect(0,0,256,256);return new THREE.CanvasTexture(c);})();
-  const contact=new THREE.Mesh(new THREE.PlaneGeometry(7.4,2.2),
-    new THREE.MeshBasicMaterial({map:shadowTex,transparent:true,opacity:.5,depthWrite:false}));
-  contact.rotation.x=-Math.PI/2;contact.position.y=-1.55;scene.add(contact);
-
-  let prog=0,shown=0,visible=false;
-  new IntersectionObserver(es=>{visible=es[0].isIntersecting;},{threshold:0.05}).observe(canvas);
-  window.__device={setProgress(p){prog=clamp(p,0,1);}};
-  window.__gpuProbe=()=>({fan:fans[0].rotation.y,rgb:rgbHue,shown});
-
-  const clock=new THREE.Clock();
-  let t=0,rgbHue=0,lastRGB=-1;
-  const col=new THREE.Color();
-  function frame(){
-    if((frame._h=!frame._h)||(scrollBusy()&&(frame._f=!frame._f))){requestAnimationFrame(frame);return;}
-    const dt=Math.min(clock.getDelta(),0.1);
-    if(visible){
-      t+=dt;
-      shown=lerp(shown,prog,1-Math.pow(0.004,dt));
-      const ex=Math.sin(clamp((shown-0.18)/0.64,0,1)*Math.PI);
-      /* rest pose mirrors the reference: card standing, face toward the
-         camera, turned ~20deg. Scroll spins it and lays it back for the
-         exploded view. */
-      D.rotation.y=-0.30+shown*Math.PI*2.0+Math.sin(t*0.18)*0.03;   // turntable
-      D.rotation.x=lerp(-0.10,-0.62,Math.min(1,shown*1.6));          // elevation
-      DI.rotation.z=Math.sin(shown*Math.PI)*0.04;
-      D.position.y=-0.62+Math.sin(t*0.6)*0.04-ex*0.22;
-      LShroud.position.y=ex*1.45;
-      LFins.position.y=ex*0.72;
-      LPcb.position.y=ex*0.05;
-      LBack.position.y=-ex*0.60;
-      LShroud.rotation.z=ex*0.05;
-      const rpm=6.2-ex*3.4;
-      fans.forEach((f,i)=>{f.rotation.y+=dt*rpm*(i?-1:1);});
-      rgbHue=(rgbHue+dt*46)%360;
-      if(t-lastRGB>0.066){paintRGB(rgbHue);lastRGB=t;}
-      col.setHSL(((rgbHue+40)%360)/360,1,0.6);
-      rgbLight.color.copy(col);
-      rgbLight.intensity=1.8+Math.sin(t*3)*0.3+ex*1.0;
-      camera.position.x=Math.sin(t*0.13)*0.5;
-      camera.position.y=1.55-shown*0.28;
-      camera.lookAt(look);
-      renderer.render(scene,camera);
-    }
-    requestAnimationFrame(frame);
-  }
-  frame();
-}
 
 /* A large WebGL canvas costs the compositor on every frame even when it is
    scrolled far off screen and rendering nothing. Taking it out of the layout
    entirely while it is out of view is worth more than any shader tuning. */
 function idleCanvases(){
-  ['device-canvas','desk-canvas','about-canvas','tech-canvas'].forEach(id=>{
+  ['desk-canvas','about-canvas','tech-canvas'].forEach(id=>{
     const c=document.getElementById(id);
     if(!c)return;
     const io=new IntersectionObserver(es=>{
@@ -2275,7 +1699,6 @@ function boot(){
   aiGreeting();
   initCursor();
   setupGestures(bg);
-  buildHero();
   buildAbout();
   buildDesk();
   setupCareerViz();
@@ -2284,7 +1707,6 @@ function boot(){
   setupTilt();
   setupScrollNav();
   setupMarquee();
-  buildGPU();
   idleCanvases();
 
   // nav scrolled state
