@@ -44,29 +44,74 @@ nav.scrolled{background:rgba(8,8,10,.7);backdrop-filter:blur(20px);padding:14px 
 .nav-links a:hover{color:#fff}
 .nav-links a:hover::after{width:100%}
 
-/* HERO */
-#hero{position:relative;height:100vh;width:100%;overflow:hidden}
-#hero-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
-.hero-grid{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;pointer-events:none}
-.hero-side{max-width:30vw}
-.hero-side .small{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(1rem,1.6vw,1.4rem);color:var(--cyan);font-weight:400;margin-bottom:6px;opacity:0;transform:translateY(20px)}
-.hero-side .big{font-size:clamp(2rem,4.5vw,4rem);font-weight:600;letter-spacing:-.03em;line-height:1;color:#fff;opacity:0;transform:translateY(24px)}
-.hero-side.right{text-align:right}
-.hero-side.right .big{color:#fff;position:relative}
-.hero-side.right .big .ghost{color:rgba(255,255,255,.12)}
-.hero-side.in .small{animation:heroUp 1s .3s var(--ease) forwards}
-.hero-side.in .big{animation:heroUp 1s .45s var(--ease) forwards}
-.hero-side .big.cascade{opacity:1;transform:none;animation:none}
-@keyframes heroUp{to{opacity:1;transform:translateY(0)}}
-.hero-meta{position:absolute;bottom:4vh;left:0;right:0;display:flex;justify-content:space-between;padding:0 5vw;font-family:'Geist Mono',monospace;font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.04em;text-transform:uppercase;z-index:3;opacity:0}
-.hero-meta.in{animation:heroUp 1s 1s forwards}
-.hero-meta .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:8px;vertical-align:middle;box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
+/* ═══ HERO cinematic full-bleed plate carousel ═══ */
+#hero{position:relative;height:100vh;min-height:620px;width:100%;overflow:hidden;background:#06070a}
+.hero-plates{position:absolute;inset:-8% 0 -8% 0;z-index:1;will-change:transform}
+.hero-plate{position:absolute;inset:0;will-change:opacity,transform}
+.hero-plate img{width:100%;height:100%;object-fit:cover;display:block;
+  /* graded to the site palette: pull the stock warmth out, sink the
+     blacks, and let the cyan accent own the highlights */
+  filter:saturate(.52) contrast(1.16) brightness(.62)}
+.hero-scrim{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(6,7,10,.86) 0%,rgba(6,7,10,.25) 26%,rgba(6,7,10,.55) 64%,rgba(6,7,10,.97) 100%),
+    linear-gradient(90deg,rgba(6,7,10,.9) 0%,rgba(6,7,10,.35) 46%,rgba(6,7,10,.12) 100%),
+    radial-gradient(120% 80% at 78% 32%,rgba(92,225,230,.13),transparent 62%)}
+.hero-copy{position:absolute;left:0;right:0;bottom:19vh;z-index:3;padding:0 5vw;max-width:1500px}
+.hero-eyebrow{display:flex;align-items:center;gap:14px;font-family:'Geist Mono',monospace;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:26px}
+.hero-eyebrow i{color:var(--cyan);font-style:normal;margin:0 2px}
+.he-rule{display:block;width:clamp(26px,4vw,64px);height:1px;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.hero-h1{font-size:clamp(2rem,4.9vw,4.5rem);font-weight:500;letter-spacing:-.035em;
+  line-height:1.05;color:#fff;max-width:15ch;margin:0}
+/* the JARVIS status line lives under the headline now; neutralise the
+   centred absolute positioning the old hero gave it */
+.hero-copy .ai-line{position:static;transform:none;margin-top:22px;
+  white-space:normal;max-width:60ch;display:block}
+/* the mask needs a little room below the baseline or the tight
+   line-height clips descenders as the word rides up */
+.hw{display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-bottom:.14em;margin-bottom:-.14em}
+.hw>span{display:inline-block;will-change:transform}
+/* both items stay left: the fixed Gesture Control button owns the
+   bottom-right corner, and a right-aligned item lands underneath it */
+.hero-meta{position:absolute;bottom:4.5vh;left:0;right:0;display:flex;flex-wrap:wrap;
+  gap:8px 30px;padding:0 5vw;font-family:'Geist Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,.5);letter-spacing:.05em;text-transform:uppercase;z-index:3;
+  max-width:min(100%,74ch)}
+.hero-meta i{font-style:normal;color:rgba(255,255,255,.28);margin:0 4px}
+.hero-meta .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);
+  margin-right:9px;vertical-align:middle;box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(92,225,230,.5)}50%{box-shadow:0 0 0 7px rgba(92,225,230,0)}}
-.scroll-hint{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);z-index:3;opacity:0}
-.scroll-hint.in{animation:heroUp 1s 1.3s forwards}
-.scroll-hint .mouse{width:22px;height:34px;border:1px solid rgba(255,255,255,.3);border-radius:12px;position:relative}
-.scroll-hint .mouse::before{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:3px;height:6px;background:var(--cyan);border-radius:2px;animation:scrollDot 1.6s infinite}
-@keyframes scrollDot{0%{opacity:0;transform:translate(-50%,0)}40%{opacity:1}80%{opacity:0;transform:translate(-50%,10px)}}
+@keyframes heroUp{to{opacity:1;transform:translateY(0)}}
+
+/* frame ticks + pause/play, mirroring the reference site's carousel controls */
+.hero-ctrl{position:absolute;right:5vw;bottom:19vh;z-index:4;display:flex;align-items:center;gap:10px}
+.hc-tick{width:44px;height:2px;padding:0;border:0;background:rgba(255,255,255,.22);cursor:pointer;
+  position:relative;overflow:hidden;border-radius:2px;transition:background .3s}
+.hc-tick:hover{background:rgba(255,255,255,.4)}
+.hc-tick i{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan);display:block}
+.hc-tick.on i{animation:tickFill linear forwards}
+@keyframes tickFill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hc-pp{margin-left:8px;width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.26);
+  background:rgba(10,12,16,.55);color:rgba(255,255,255,.8);font-size:8.5px;cursor:pointer;
+  display:grid;place-items:center;transition:border-color .3s,color .3s}
+.hc-pp:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.hero-scroll{position:absolute;left:50%;transform:translateX(-50%);bottom:5vh;z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;
+  font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);transition:color .3s}
+.hero-scroll:hover{color:var(--cyan)}
+.hero-scroll i{font-style:normal;font-size:14px;display:block}
+@media(max-width:900px){
+  .hero-copy{bottom:22vh}
+  .hero-h1{max-width:none}
+  .hero-ctrl{bottom:12vh;right:auto;left:5vw}
+  .hero-meta{font-size:9.5px;gap:6px 18px}
+  .hero-scroll{display:none}
+}
 
 /* ABOUT (character zoom) */
 .section-pad{padding:14vh 5vw;position:relative}
@@ -303,23 +348,69 @@ nav.scrolled{background:rgba(8,8,12,.6)}
 
 
 
-/* ─── PRODUCT SHOWCASE (Neural Security Module) ────── */
-.device{position:relative;z-index:1;height:340vh}
-.dv-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#device-canvas{position:absolute;left:0;right:0;top:8%;height:84%;width:100%;display:block}
-.dv-head{position:absolute;top:11vh;left:0;right:0;text-align:center;padding:0 5vw;pointer-events:none;z-index:2}
-.dv-head .section-eyebrow{margin-bottom:10px}
-.dv-head .section-title{margin-bottom:0;font-size:clamp(2rem,4.2vw,3.6rem)}
-.dv-spec{position:absolute;right:4vw;top:56%;transform:translateY(-50%);width:min(300px,30vw);text-align:left;pointer-events:none;z-index:2}
-.dv-k{font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.22em;color:var(--cyan);display:block;margin-bottom:10px}
-.dv-spec h3{font-size:clamp(1.3rem,2vw,1.7rem);font-weight:600;letter-spacing:-.02em;margin-bottom:10px;color:#fff}
-.dv-spec p{font-size:14px;line-height:1.65;color:#9aa5b4;font-weight:300}
-.dv-hint{position:absolute;bottom:7vh;left:0;right:0;text-align:center;font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.42);pointer-events:none;z-index:2}
+/* ═══ SECTORS photographic card carousel ═══ */
+.sectors{position:relative;z-index:1;padding:14vh 0 12vh}
+.sec-head{padding:0 5vw;max-width:1500px;margin:0 auto 52px;position:relative}
+.sec-head .section-title{font-size:clamp(1.7rem,3.5vw,3.1rem);margin-bottom:0;max-width:22ch}
+.sec-nav{position:absolute;right:5vw;bottom:0;display:flex;align-items:center;gap:16px}
+.sec-nav button{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.03);color:#fff;font-size:15px;cursor:pointer;
+  display:grid;place-items:center;transition:border-color .3s,background .3s,opacity .3s}
+.sec-nav button:hover:not(:disabled){border-color:var(--cyan);background:rgba(92,225,230,.1);color:var(--cyan)}
+.sec-nav button:disabled{opacity:.24;cursor:default}
+.sec-count{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.55)}
+.sec-count i{font-style:normal;color:rgba(255,255,255,.26);margin:0 3px}
+
+.sec-viewport{overflow:hidden;padding:0 5vw;outline:none}
+.sec-viewport:focus-visible{outline:1px solid var(--cyan);outline-offset:6px}
+.sec-track{display:flex;column-gap:26px;cursor:grab;will-change:transform}
+.sec-track:active{cursor:grabbing}
+/* every card stays fully legible; the active one is marked by its
+   border and a brighter grade, not by dimming its neighbours (and the
+   entrance animation writes an inline opacity, so a resting opacity
+   here would never win anyway) */
+.sec-card{flex:0 0 clamp(280px,32vw,430px);position:relative;border-radius:16px;overflow:hidden;
+  background:#0b0d12;border:1px solid rgba(255,255,255,.07);
+  transition:border-color .45s,transform .45s}
+.sec-card.on{border-color:rgba(92,225,230,.32)}
+.sec-card:hover{transform:translateY(-6px);border-color:rgba(92,225,230,.5)}
+.sc-media{position:relative;aspect-ratio:4/3;overflow:hidden}
+.sc-media img{width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.5) contrast(1.14) brightness(.66);transition:transform .9s var(--ease),filter .6s;
+  -webkit-user-drag:none;user-select:none}
+.sec-card.on .sc-media img{filter:saturate(.72) contrast(1.1) brightness(.82)}
+.sc-media.dim img{filter:saturate(.4) contrast(1.22) brightness(.48)}
+.sec-card.on .sc-media.dim img{filter:saturate(.56) contrast(1.18) brightness(.6)}
+.sec-card:hover .sc-media img{transform:scale(1.06)}
+.sc-media::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(6,7,10,.1),rgba(11,13,18,.96))}
+.sc-idx{position:absolute;top:16px;left:18px;z-index:2;font-family:'Geist Mono',monospace;
+  font-size:10.5px;letter-spacing:.2em;color:var(--cyan);text-shadow:0 0 12px rgba(92,225,230,.6)}
+.sc-body{padding:0 24px 26px;margin-top:-56px;position:relative;z-index:2}
+.sc-body h3{font-size:clamp(1.3rem,2.1vw,1.85rem);font-weight:600;letter-spacing:-.02em;color:#fff;margin:0 0 10px}
+.sc-body p{font-size:13.5px;line-height:1.7;color:#94a0b0;font-weight:300;margin:0 0 18px;min-height:4.6em}
+.sc-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+.sc-stat{font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--cyan)}
+.sc-go{font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.08em;
+  color:rgba(255,255,255,.4);transition:color .3s}
+.sec-card:hover .sc-go{color:#fff}
+
+.sec-bar{margin:44px 5vw 0;max-width:1500px;height:1px;background:rgba(255,255,255,.1);overflow:hidden}
+.sec-bar i{display:block;height:100%;background:var(--cyan);transform-origin:left;
+  box-shadow:0 0 10px var(--cyan)}
+@media(max-width:900px){
+  .sectors{padding:10vh 0 8vh}
+  .sec-head{margin-bottom:80px}
+  .sec-nav{right:auto;left:5vw;bottom:-60px}
+  .sec-card{flex:0 0 78vw}
+  .sc-body p{min-height:0}
+}
 
 /* headings carry a gradient instead of per-word accent spans */
 .section-title,#contact h2,.about-copy h2{background:linear-gradient(105deg,#ffffff 30%,var(--cyan) 62%,var(--violet) 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-/* ─── REACTOR TELEMETRY HUD ─────────────────────────── */
+/* ─── TRACKING TELEMETRY HUD ─────────────────────────── */
 #telemetry{position:fixed;left:22px;bottom:104px;z-index:9600;font-family:'Geist Mono',monospace;font-size:10.5px;line-height:1.85;color:#8fa3b8;background:rgba(6,10,16,.82);border:1px solid rgba(92,225,230,.28);border-radius:12px;padding:11px 14px;min-width:196px;opacity:0;transform:translateY(10px);pointer-events:none;visibility:hidden;transition:opacity .4s var(--ease),transform .4s var(--ease),visibility .4s}
 #telemetry.on{opacity:1;transform:translateY(0);visibility:visible}
 #telemetry .tm-hd{color:var(--cyan);letter-spacing:.16em;font-size:9.5px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -337,10 +428,6 @@ html.has-cursor,html.has-cursor *{cursor:none!important}
 #cRing.m-aim{width:44px;height:44px;margin:-22px 0 0 -22px;border-color:rgba(255,255,255,.5);border-style:dashed}
 #cRing .cr-label{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--pink);opacity:0;transition:opacity .2s;white-space:nowrap}
 #cRing.m-open .cr-label{opacity:1}
-.lw{display:inline-block}
-.lw-c{display:inline-block;opacity:0;transform:translateY(0.6em) rotate(6deg);animation:lwIn .7s var(--ease) forwards;transition:transform .25s var(--ease),color .25s}
-@keyframes lwIn{to{opacity:1;transform:translateY(0) rotate(0)}}
-.big.cascade:hover .lw-c{transform:translateY(-6px);color:var(--cyan)}
 .pre-log{margin-top:22px;font-family:'Geist Mono',monospace;font-size:11px;line-height:1.9;color:#5a6474;min-height:96px;text-align:left;width:min(300px,72vw)}
 .pre-log .pl-line{opacity:0;transform:translateX(-8px);transition:opacity .3s,transform .3s}
 .pre-log .pl-line.in{opacity:1;transform:none}
@@ -381,9 +468,6 @@ html.has-cursor,html.has-cursor *{cursor:none!important}
 .term-in input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'Geist Mono',monospace;font-size:12.5px}
 
 @media(max-width:980px){
-  .device{height:260vh}
-  .dv-spec{right:auto;left:5vw;top:auto;bottom:14vh;transform:none;width:90vw}
-  .dv-head .section-title{font-size:clamp(1.5rem,6vw,2.2rem)}
   #telemetry{display:none}
   #scrollRail{display:none}
   #cDot,#cRing{display:none}
@@ -393,8 +477,11 @@ html.has-cursor,html.has-cursor *{cursor:none!important}
   .about-photo{float:none;display:block;margin:0 auto 20px;transform:rotate(0)}
   nav{padding:16px 5vw}
   .nav-links{gap:20px}
-  .hero-grid{flex-direction:column;justify-content:center;text-align:center;gap:40vh}
-  .hero-side,.hero-side.right{max-width:90vw;text-align:center}
+  /* the email and the nav links collide well before this width */
+  .nav-mail{display:none}
+  /* lift the hero furniture clear of the fixed Gesture Control button */
+  .hero-ctrl{bottom:19vh}
+  .hero-meta{bottom:12vh;flex-direction:column;gap:5px}
   .about-split{grid-template-columns:1fr;gap:40px}
   #about-canvas{height:50vh}
   .whatido{grid-template-columns:1fr;gap:30px;padding-top:6vh}
