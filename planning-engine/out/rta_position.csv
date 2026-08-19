@@ -1,0 +1,17 @@
+line_key,channel,forecast,actual_so_far,variance_pct,revised_forecast,revision_pct,damping,adherence_pct,conformance_pct,understaffed_hours
+billing.voice,voice,1862.5,841.0,-19.4,1559.4,-16.3,0.63,88.8,90.1,21.7
+billing.webchat,webchat,1636.5,810.0,-11.7,1476.3,-9.8,0.63,94.2,95.8,6.5
+billing.email,email,772.0,367.0,-15.2,673.9,-12.7,0.63,89.8,91.3,9.0
+billing.messaging,messaging,480.0,211.0,-21.6,393.3,-18.1,0.63,93.7,96.5,2.1
+metering.voice,voice,664.0,271.0,-27.2,512.9,-22.8,0.63,92.7,96.2,4.6
+metering.email,email,240.5,166.0,23.2,287.1,19.4,0.63,95.9,99.1,1.7
+operations.voice,voice,715.0,290.0,-22.8,581.6,-18.7,0.61,92.1,96.6,4.3
+operations.messaging,messaging,214.0,133.0,18.2,245.8,14.9,0.61,94.6,97.1,1.2
+quality.voice,voice,240.5,138.0,9.1,258.5,7.5,0.61,91.3,94.6,3.0
+affordability.voice,voice,609.0,286.0,-16.2,526.3,-13.6,0.63,93.3,95.8,5.7
+affordability.back_office,back_office,348.0,178.0,-8.7,322.5,-7.3,0.63,94.4,97.4,3.5
+movehome.voice,voice,372.5,176.0,-15.7,323.5,-13.1,0.63,96.0,100.7,1.6
+movehome.webchat,webchat,373.5,216.0,3.2,383.5,2.7,0.63,97.0,100.8,1.0
+welsh.voice,voice,62.5,34.0,-2.9,61.0,-2.5,0.63,93.5,97.0,0.6
+complaints.back_office,back_office,165.0,69.0,-25.4,129.9,-21.3,0.63,89.6,92.4,4.5
+billing.back_office,back_office,531.0,248.0,-16.7,456.9,-14.0,0.63,89.0,91.4,10.1

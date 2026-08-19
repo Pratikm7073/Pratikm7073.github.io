@@ -1,0 +1,8 @@
+scenario,label,peak_required_fte,mean_required_fte,weeks_short,worst_gap_fte,total_cost,premium_cost,unmet_fte_weeks,idle_fte_weeks,cost_vs_base,cost_vs_base_pct,fte_vs_base
+base,Base plan,460.4,343.7,6,-57.7,6850718,183552,0.0,946.8,0.0,0.0,0.0
+volume_up_10,Contact volume +10%,501.8,373.5,13,-82.3,7245954,441631,10.0,601.3,395236.0,5.77,29.8
+volume_down_5,Contact volume -5%,439.7,328.8,4,-33.3,6800066,94679,0.0,1287.0,-50652.0,-0.74,-14.9
+aht_up_5,AHT +5%,481.4,358.7,10,-78.7,6992740,325575,0.0,707.1,142022.0,2.07,15.0
+shrinkage_up_3pt,Shrinkage +3 points,477.6,356.5,10,-74.9,6969115,301950,0.0,739.4,118397.0,1.73,12.8
+attrition_up_50,Attrition 1.5x,460.4,343.7,9,-70.7,6779919,264150,0.0,744.4,-70799.0,-1.03,0.0
+digital_shift,"Digital deflection: -7% volume, +6% AHT",454.8,339.7,5,-52.1,6825553,158387,0.0,1026.4,-25165.0,-0.37,-4.0
