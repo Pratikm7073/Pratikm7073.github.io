@@ -1,0 +1,1794 @@
+{
+ "billing.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 29.530625907770514,
+  "chosen_wape": 12.541147396009638,
+  "improvement_pct": 57.53172508033555,
+  "ensemble_weights": {
+   "seasonal_naive": 0.18707871608077645,
+   "decomposition": 0.3724072379998501,
+   "ridge_log": 0.4405140459193735
+  },
+  "accuracy": [
+   {
+    "line_key": "billing.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 223088.0,
+    "wape": 21.15263931722011,
+    "mape": 31.247163610813928,
+    "bias_pct": -0.13761385641540558,
+    "bias_ratio": -0.006505753459492679
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 705024.0,
+    "wape": 29.530625907770514,
+    "mape": 36.257432071655934,
+    "bias_pct": -6.123337645243283,
+    "bias_ratio": -0.2073554981315863
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1965179.0,
+    "wape": 32.677659388788506,
+    "mape": 41.11900054863711,
+    "bias_pct": 1.272021530863092,
+    "bias_ratio": 0.03892633544309218
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 223088.0,
+    "wape": 14.157887112215874,
+    "mape": 24.7738011956577,
+    "bias_pct": -2.2745649140262425,
+    "bias_ratio": -0.1606570878830977
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 705024.0,
+    "wape": 14.83470517264663,
+    "mape": 23.604411810684773,
+    "bias_pct": -7.8145666412429,
+    "bias_ratio": -0.5267759992731098
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1965179.0,
+    "wape": 14.656573574911707,
+    "mape": 24.230243148852843,
+    "bias_pct": -5.4887276240557235,
+    "bias_ratio": -0.3744891393614
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 223088.0,
+    "wape": 13.098582985251642,
+    "mape": 23.135946840383646,
+    "bias_pct": -1.5610791355291151,
+    "bias_ratio": -0.1191792377302807
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 705024.0,
+    "wape": 12.541147396009638,
+    "mape": 22.314564307489952,
+    "bias_pct": -3.094143668608977,
+    "bias_ratio": -0.2467193448020136
+   },
+   {
+    "line_key": "billing.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1965179.0,
+    "wape": 13.35403620410483,
+    "mape": 23.416810215530543,
+    "bias_pct": -1.1781756104348051,
+    "bias_ratio": -0.08822618064137429
+   }
+  ]
+ },
+ "billing.webchat": {
+  "chosen": "ridge_log",
+  "baseline_wape": 28.567645005176605,
+  "chosen_wape": 12.773666720596982,
+  "improvement_pct": 55.286245267041345,
+  "ensemble_weights": {
+   "seasonal_naive": 0.19724305135736825,
+   "decomposition": 0.3616330650963911,
+   "ridge_log": 0.4411238835462407
+  },
+  "accuracy": [
+   {
+    "line_key": "billing.webchat",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 154463.0,
+    "wape": 22.945948220609466,
+    "mape": 33.136280349726036,
+    "bias_pct": -2.4568990632060754,
+    "bias_ratio": -0.10707332900713823
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 498396.0,
+    "wape": 28.567645005176605,
+    "mape": 35.63873665265257,
+    "bias_pct": -10.540814934309264,
+    "bias_ratio": -0.36897738446411016
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1487576.0,
+    "wape": 28.68918966157023,
+    "mape": 36.25534252571198,
+    "bias_pct": -9.7174530914723,
+    "bias_ratio": -0.3387147983649407
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 154463.0,
+    "wape": 15.164975735218498,
+    "mape": 26.429927529961457,
+    "bias_pct": -3.070536735818696,
+    "bias_ratio": -0.20247554558810216
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 498396.0,
+    "wape": 15.581455388801906,
+    "mape": 25.053788380866525,
+    "bias_pct": -10.727098969586716,
+    "bias_ratio": -0.6884529526873386
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1487576.0,
+    "wape": 16.69841429687424,
+    "mape": 26.845556529947334,
+    "bias_pct": -11.344149326521109,
+    "bias_ratio": -0.6793548851308957
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 154463.0,
+    "wape": 12.259638954058437,
+    "mape": 22.610550163921236,
+    "bias_pct": -1.860938362203413,
+    "bias_ratio": -0.15179389614792588
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 498396.0,
+    "wape": 12.773666720596982,
+    "mape": 22.29916847595958,
+    "bias_pct": -5.024349622182918,
+    "bias_ratio": -0.39333652052165824
+   },
+   {
+    "line_key": "billing.webchat",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 1487576.0,
+    "wape": 13.34117166916353,
+    "mape": 23.242196252881804,
+    "bias_pct": -6.152676498024003,
+    "bias_ratio": -0.46117962129556844
+   }
+  ]
+ },
+ "billing.email": {
+  "chosen": "ridge_log",
+  "baseline_wape": 34.67471065628697,
+  "chosen_wape": 21.803576570636693,
+  "improvement_pct": 37.119658223641366,
+  "ensemble_weights": {
+   "seasonal_naive": 0.24426495606646564,
+   "decomposition": 0.3672750751006313,
+   "ridge_log": 0.388459968832903
+  },
+  "accuracy": [
+   {
+    "line_key": "billing.email",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 77127.0,
+    "wape": 30.323362765309163,
+    "mape": 45.07364813792113,
+    "bias_pct": -11.636002956163212,
+    "bias_ratio": -0.383730625334046
+   },
+   {
+    "line_key": "billing.email",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 241754.0,
+    "wape": 34.67471065628697,
+    "mape": 46.21115001855235,
+    "bias_pct": -16.546778957121703,
+    "bias_ratio": -0.47720020279741143
+   },
+   {
+    "line_key": "billing.email",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 699807.0,
+    "wape": 35.74578419478514,
+    "mape": 48.23559343346802,
+    "bias_pct": -13.225860844489981,
+    "bias_ratio": -0.3699977813445052
+   },
+   {
+    "line_key": "billing.email",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 77127.0,
+    "wape": 23.27199631635865,
+    "mape": 39.35860879614806,
+    "bias_pct": -11.31233359486228,
+    "bias_ratio": -0.48609210147177917
+   },
+   {
+    "line_key": "billing.email",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 241754.0,
+    "wape": 23.06123461483103,
+    "mape": 36.747440161182354,
+    "bias_pct": -17.152796958636575,
+    "bias_ratio": -0.7437935238560625
+   },
+   {
+    "line_key": "billing.email",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 699807.0,
+    "wape": 22.551506109529175,
+    "mape": 37.15494782257153,
+    "bias_pct": -15.867848058573061,
+    "bias_ratio": -0.7036269764646926
+   },
+   {
+    "line_key": "billing.email",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 77127.0,
+    "wape": 20.320714405072682,
+    "mape": 36.239115772812895,
+    "bias_pct": -12.591770763764815,
+    "bias_ratio": -0.6196519725025769
+   },
+   {
+    "line_key": "billing.email",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 241754.0,
+    "wape": 21.803576570636693,
+    "mape": 35.707571530466964,
+    "bias_pct": -14.002514850526513,
+    "bias_ratio": -0.642211831859915
+   },
+   {
+    "line_key": "billing.email",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 699807.0,
+    "wape": 20.64575713590844,
+    "mape": 35.26544091962176,
+    "bias_pct": -14.230810916304208,
+    "bias_ratio": -0.6892850101173116
+   }
+  ]
+ },
+ "billing.messaging": {
+  "chosen": "ridge_log",
+  "baseline_wape": 28.93650184839112,
+  "chosen_wape": 12.333844697245008,
+  "improvement_pct": 57.37617227588008,
+  "ensemble_weights": {
+   "seasonal_naive": 0.19067231627688283,
+   "decomposition": 0.36199029884300377,
+   "ridge_log": 0.4473373848801135
+  },
+  "accuracy": [
+   {
+    "line_key": "billing.messaging",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 38386.0,
+    "wape": 20.64945553066222,
+    "mape": 30.36798317335525,
+    "bias_pct": -2.6949929661855885,
+    "bias_ratio": -0.1305115750961963
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122539.0,
+    "wape": 28.93650184839112,
+    "mape": 35.704930082451355,
+    "bias_pct": -9.780151625196876,
+    "bias_ratio": -0.3379866604622305
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 364472.0,
+    "wape": 28.93692793959481,
+    "mape": 36.37305419736635,
+    "bias_pct": -8.734004258214622,
+    "bias_ratio": -0.30182900812576446
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 38386.0,
+    "wape": 14.5484645398496,
+    "mape": 25.125093782197915,
+    "bias_pct": -4.052891427760208,
+    "bias_ratio": -0.27857863739908495
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122539.0,
+    "wape": 15.241816838787562,
+    "mape": 23.950763784324415,
+    "bias_pct": -9.983941422255619,
+    "bias_ratio": -0.6550361763204215
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 364472.0,
+    "wape": 14.996364802226344,
+    "mape": 24.33677051151889,
+    "bias_pct": -9.349233487110753,
+    "bias_ratio": -0.6234333193683563
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 38386.0,
+    "wape": 12.542135244881877,
+    "mape": 22.938579796930185,
+    "bias_pct": -2.315491083006364,
+    "bias_ratio": -0.18461697612065353
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122539.0,
+    "wape": 12.333844697245008,
+    "mape": 22.238784176229128,
+    "bias_pct": -4.292442337766189,
+    "bias_ratio": -0.3480214355808278
+   },
+   {
+    "line_key": "billing.messaging",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 364472.0,
+    "wape": 12.023225918842188,
+    "mape": 22.147967243044867,
+    "bias_pct": -4.072315080371294,
+    "bias_ratio": -0.3387040306702853
+   }
+  ]
+ },
+ "metering.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 17.87213248632764,
+  "chosen_wape": 12.073764264727862,
+  "improvement_pct": 32.443628235385944,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2602580290907898,
+   "decomposition": 0.35449625345474994,
+   "ridge_log": 0.3852457174544603
+  },
+  "accuracy": [
+   {
+    "line_key": "metering.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 52211.0,
+    "wape": 23.135929210319663,
+    "mape": 31.076533492360696,
+    "bias_pct": -11.649843902625884,
+    "bias_ratio": -0.5035390537687818
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 149389.0,
+    "wape": 17.87213248632764,
+    "mape": 26.194875229970993,
+    "bias_pct": -8.682700868203147,
+    "bias_ratio": -0.4858234390801153
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 461260.0,
+    "wape": 21.094718813684256,
+    "mape": 29.549060911873077,
+    "bias_pct": -10.64269609330963,
+    "bias_ratio": -0.5045194575623192
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 52211.0,
+    "wape": 13.303085426000516,
+    "mape": 24.799063851111917,
+    "bias_pct": -4.402773000097208,
+    "bias_ratio": -0.3309587858085997
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 149389.0,
+    "wape": 13.121058209250828,
+    "mape": 22.835652145821218,
+    "bias_pct": -5.063716623481463,
+    "bias_ratio": -0.38592288386552215
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 461260.0,
+    "wape": 13.072839637431176,
+    "mape": 23.29452606996615,
+    "bias_pct": -5.027996509000045,
+    "bias_ratio": -0.38461395140222576
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 52211.0,
+    "wape": 12.767547995508208,
+    "mape": 23.177288399352197,
+    "bias_pct": -3.672204206984706,
+    "bias_ratio": -0.28762016076044017
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 149389.0,
+    "wape": 12.073764264727862,
+    "mape": 21.964710339972576,
+    "bias_pct": -3.996223481392641,
+    "bias_ratio": -0.3309840571483706
+   },
+   {
+    "line_key": "metering.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 461260.0,
+    "wape": 12.223117838123967,
+    "mape": 22.25667136456999,
+    "bias_pct": -4.008241056641966,
+    "bias_ratio": -0.32792296611427907
+   }
+  ]
+ },
+ "metering.email": {
+  "chosen": "ridge_log",
+  "baseline_wape": 26.999147904171995,
+  "chosen_wape": 21.92653185826273,
+  "improvement_pct": 18.788059771047173,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2900411933515054,
+   "decomposition": 0.3528177353555039,
+   "ridge_log": 0.35714107129299066
+  },
+  "accuracy": [
+   {
+    "line_key": "metering.email",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 20697.0,
+    "wape": 30.04783301927816,
+    "mape": 43.84094639197669,
+    "bias_pct": -17.896313475382904,
+    "bias_ratio": -0.5955941469689661
+   },
+   {
+    "line_key": "metering.email",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 61026.0,
+    "wape": 26.999147904171995,
+    "mape": 39.92799211352127,
+    "bias_pct": -17.617900566971457,
+    "bias_ratio": -0.6525354292477166
+   },
+   {
+    "line_key": "metering.email",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 186275.0,
+    "wape": 28.564219567843242,
+    "mape": 41.97888317193601,
+    "bias_pct": -18.516709166554826,
+    "bias_ratio": -0.648248383701699
+   },
+   {
+    "line_key": "metering.email",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 20697.0,
+    "wape": 22.62641497203035,
+    "mape": 40.11586483210435,
+    "bias_pct": -10.731191693164527,
+    "bias_ratio": -0.47427715377932805
+   },
+   {
+    "line_key": "metering.email",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 61026.0,
+    "wape": 22.19521382537461,
+    "mape": 36.871417095514616,
+    "bias_pct": -13.761252736031004,
+    "bias_ratio": -0.6200099194493226
+   },
+   {
+    "line_key": "metering.email",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 186275.0,
+    "wape": 21.962725622527866,
+    "mape": 37.68543406951551,
+    "bias_pct": -12.186173387534808,
+    "bias_ratio": -0.554857060866574
+   },
+   {
+    "line_key": "metering.email",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 20697.0,
+    "wape": 20.470909538097576,
+    "mape": 36.75559979786331,
+    "bias_pct": -10.393269304467962,
+    "bias_ratio": -0.5077092097508159
+   },
+   {
+    "line_key": "metering.email",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 61026.0,
+    "wape": 21.92653185826273,
+    "mape": 36.41837423252558,
+    "bias_pct": -13.376636810486428,
+    "bias_ratio": -0.6100662383342497
+   },
+   {
+    "line_key": "metering.email",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 186275.0,
+    "wape": 21.122870502054937,
+    "mape": 36.23267506766963,
+    "bias_pct": -11.84025434470291,
+    "bias_ratio": -0.5605419179912612
+   }
+  ]
+ },
+ "operations.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 26.062000731902717,
+  "chosen_wape": 16.040985562620474,
+  "improvement_pct": 38.45067488243692,
+  "ensemble_weights": {
+   "seasonal_naive": 0.23902403524817234,
+   "decomposition": 0.3726304633322403,
+   "ridge_log": 0.3883455014195873
+  },
+  "accuracy": [
+   {
+    "line_key": "operations.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 93175.0,
+    "wape": 17.975851891601824,
+    "mape": 16.48578414197018,
+    "bias_pct": -4.592433592701905,
+    "bias_ratio": -0.25547793898143173
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 303319.0,
+    "wape": 26.062000731902717,
+    "mape": 18.064936109929437,
+    "bias_pct": -12.0767245045645,
+    "bias_ratio": -0.4633843974143274
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 857374.0,
+    "wape": 29.519089685481482,
+    "mape": 24.446683758813567,
+    "bias_pct": -6.684364116476591,
+    "bias_ratio": -0.22644208163926524
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 93175.0,
+    "wape": 12.916087754625801,
+    "mape": 12.172937330708029,
+    "bias_pct": -4.7482434862105185,
+    "bias_ratio": -0.367622423787727
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 303319.0,
+    "wape": 16.717486074202114,
+    "mape": 11.23374738013566,
+    "bias_pct": -10.082677166148619,
+    "bias_ratio": -0.6031216129862897
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 857374.0,
+    "wape": 15.006109224560205,
+    "mape": 11.154238403228517,
+    "bias_pct": -7.883124305427586,
+    "bias_ratio": -0.5253276640506808
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 93175.0,
+    "wape": 8.90489877641141,
+    "mape": 9.850954110141918,
+    "bias_pct": 1.2646495697008713,
+    "bias_ratio": 0.1420172875014435
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 303319.0,
+    "wape": 16.040985562620474,
+    "mape": 11.254567239616232,
+    "bias_pct": -5.92281420385336,
+    "bias_ratio": -0.36923006885904847
+   },
+   {
+    "line_key": "operations.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 857374.0,
+    "wape": 14.316733871342265,
+    "mape": 11.07258105875347,
+    "bias_pct": -3.815987640342331,
+    "bias_ratio": -0.2665403767811019
+   }
+  ]
+ },
+ "operations.messaging": {
+  "chosen": "ridge_log",
+  "baseline_wape": 26.601994279972175,
+  "chosen_wape": 17.1807703088165,
+  "improvement_pct": 35.41548002755803,
+  "ensemble_weights": {
+   "seasonal_naive": 0.24881060860305154,
+   "decomposition": 0.36594133395343353,
+   "ridge_log": 0.3852480574435149
+  },
+  "accuracy": [
+   {
+    "line_key": "operations.messaging",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 27827.0,
+    "wape": 18.63837280339239,
+    "mape": 16.04055554297869,
+    "bias_pct": -6.865634096381212,
+    "bias_ratio": -0.3683601658150969
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 90559.0,
+    "wape": 26.601994279972175,
+    "mape": 18.06446358667809,
+    "bias_pct": -14.144922094987797,
+    "bias_ratio": -0.5317241236171935
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 262361.0,
+    "wape": 29.309805954391088,
+    "mape": 23.293883451980555,
+    "bias_pct": -11.096351973044774,
+    "bias_ratio": -0.37858838063656164
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 27827.0,
+    "wape": 12.563343407862138,
+    "mape": 11.395983951963524,
+    "bias_pct": -3.75727743313362,
+    "bias_ratio": -0.2990666824232725
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 90559.0,
+    "wape": 18.08721172694045,
+    "mape": 12.984978520880514,
+    "bias_pct": -9.452611336602004,
+    "bias_ratio": -0.5226129643035347
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 262361.0,
+    "wape": 15.99359055303938,
+    "mape": 12.141992692768708,
+    "bias_pct": -8.830093588499352,
+    "bias_ratio": -0.5521020160680119
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 27827.0,
+    "wape": 8.698917705631398,
+    "mape": 9.326700884108542,
+    "bias_pct": 1.0773076656456062,
+    "bias_ratio": 0.12384387369801098
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 90559.0,
+    "wape": 17.1807703088165,
+    "mape": 12.702566598581328,
+    "bias_pct": -6.259106262321673,
+    "bias_ratio": -0.364308826078057
+   },
+   {
+    "line_key": "operations.messaging",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 262361.0,
+    "wape": 15.429518227857331,
+    "mape": 12.283469982606702,
+    "bias_pct": -4.35029615489505,
+    "bias_ratio": -0.28194633757525733
+   }
+  ]
+ },
+ "quality.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 19.661379809431914,
+  "chosen_wape": 16.5951194105359,
+  "improvement_pct": 15.595346962500939,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2993116102999252,
+   "decomposition": 0.34607333054338607,
+   "ridge_log": 0.3546150591566888
+  },
+  "accuracy": [
+   {
+    "line_key": "quality.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 21095.0,
+    "wape": 16.04645650628111,
+    "mape": 16.788554590400544,
+    "bias_pct": -3.839772457928419,
+    "bias_ratio": -0.23929098966026588
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 66328.0,
+    "wape": 19.661379809431914,
+    "mape": 16.35558056578962,
+    "bias_pct": -8.251417199372813,
+    "bias_ratio": -0.4196764051836515
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 199687.0,
+    "wape": 23.327507549314678,
+    "mape": 21.923259296151222,
+    "bias_pct": -8.574418965681291,
+    "bias_ratio": -0.36756687132368726
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 21095.0,
+    "wape": 12.003970076339051,
+    "mape": 13.372708524765283,
+    "bias_pct": -1.489618258954891,
+    "bias_ratio": -0.12409379975805404
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 66328.0,
+    "wape": 17.004717590458,
+    "mape": 13.715584573912734,
+    "bias_pct": -6.480905039518298,
+    "bias_ratio": -0.3811239442844369
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 199687.0,
+    "wape": 15.144759816498429,
+    "mape": 13.568089868837916,
+    "bias_pct": -4.492559199221878,
+    "bias_ratio": -0.2966411652384057
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 112,
+    "actual_total": 21095.0,
+    "wape": 9.44593016175662,
+    "mape": 11.150089463315496,
+    "bias_pct": 0.6994432603636277,
+    "bias_ratio": 0.0740470497225818
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 336,
+    "actual_total": 66328.0,
+    "wape": 16.5951194105359,
+    "mape": 13.42904193759483,
+    "bias_pct": -4.7780071139774245,
+    "bias_ratio": -0.2879164045631372
+   },
+   {
+    "line_key": "quality.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 1008,
+    "actual_total": 199687.0,
+    "wape": 14.621755892476315,
+    "mape": 12.986317642516484,
+    "bias_pct": -2.7178055834091808,
+    "bias_ratio": -0.18587409086809054
+   }
+  ]
+ },
+ "affordability.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 26.80235064991691,
+  "chosen_wape": 12.389302791842269,
+  "improvement_pct": 53.775312644524796,
+  "ensemble_weights": {
+   "seasonal_naive": 0.19597261452064735,
+   "decomposition": 0.3800707819147104,
+   "ridge_log": 0.42395660356464226
+  },
+  "accuracy": [
+   {
+    "line_key": "affordability.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 63009.0,
+    "wape": 23.405386532082716,
+    "mape": 33.755362583576925,
+    "bias_pct": 2.50202352044946,
+    "bias_ratio": 0.10689947448720123
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 206411.0,
+    "wape": 26.80235064991691,
+    "mape": 33.50217765058907,
+    "bias_pct": -7.241862110061964,
+    "bias_ratio": -0.2701950364224644
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 596821.0,
+    "wape": 30.63791321015849,
+    "mape": 37.908844811323995,
+    "bias_pct": -4.0051372186970635,
+    "bias_ratio": -0.13072486990951773
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 63009.0,
+    "wape": 15.514805573047655,
+    "mape": 26.227305493218665,
+    "bias_pct": -0.9694052622249655,
+    "bias_ratio": -0.06248259171929411
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 206411.0,
+    "wape": 13.819864567600671,
+    "mape": 23.38497861271881,
+    "bias_pct": -6.689096283551958,
+    "bias_ratio": -0.4840203933136865
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 596821.0,
+    "wape": 14.229898023209742,
+    "mape": 24.000946534797674,
+    "bias_pct": -5.88861755487361,
+    "bias_ratio": -0.41382008116073304
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 63009.0,
+    "wape": 13.373624668746839,
+    "mape": 23.352697151811412,
+    "bias_pct": -2.750600220643341,
+    "bias_ratio": -0.20567350204401114
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 206411.0,
+    "wape": 12.389302791842269,
+    "mape": 22.221033117930837,
+    "bias_pct": -5.027405171280981,
+    "bias_ratio": -0.40578596356457397
+   },
+   {
+    "line_key": "affordability.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 596821.0,
+    "wape": 12.405770520142461,
+    "mape": 22.279135181118033,
+    "bias_pct": -4.654109730119256,
+    "bias_ratio": -0.37515684516029646
+   }
+  ]
+ },
+ "affordability.back_office": {
+  "chosen": "ridge_log",
+  "baseline_wape": 34.61683283401273,
+  "chosen_wape": 20.976922468822202,
+  "improvement_pct": 39.40253699867265,
+  "ensemble_weights": {
+   "seasonal_naive": 0.23635646434338328,
+   "decomposition": 0.3736000377329396,
+   "ridge_log": 0.3900434979236772
+  },
+  "accuracy": [
+   {
+    "line_key": "affordability.back_office",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 39077.0,
+    "wape": 26.056247920771806,
+    "mape": 42.05122070177153,
+    "bias_pct": -9.535020600353148,
+    "bias_ratio": -0.36593989393046555
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122166.0,
+    "wape": 34.61683283401273,
+    "mape": 45.818513197694415,
+    "bias_pct": -14.274020594928214,
+    "bias_ratio": -0.4123433435800425
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 358860.0,
+    "wape": 36.44833639859556,
+    "mape": 48.08820448329077,
+    "bias_pct": -12.771136376302735,
+    "bias_ratio": -0.35039010386204733
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 39077.0,
+    "wape": 22.95247441960115,
+    "mape": 39.20108349756512,
+    "bias_pct": -13.673530475553349,
+    "bias_ratio": -0.5957323043077356
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122166.0,
+    "wape": 21.900191084193267,
+    "mape": 36.61543334302602,
+    "bias_pct": -13.775987452509408,
+    "bias_ratio": -0.6290350344227087
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 358860.0,
+    "wape": 22.116506726195905,
+    "mape": 37.322593035780216,
+    "bias_pct": -14.320935320217782,
+    "bias_ratio": -0.6475224816247921
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 39077.0,
+    "wape": 21.214291354773408,
+    "mape": 36.63133283361129,
+    "bias_pct": -14.854972080709688,
+    "bias_ratio": -0.7002341879954989
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 122166.0,
+    "wape": 20.976922468822202,
+    "mape": 35.806544035647185,
+    "bias_pct": -13.519544723023676,
+    "bias_ratio": -0.6444961000889261
+   },
+   {
+    "line_key": "affordability.back_office",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 358860.0,
+    "wape": 20.962577426593874,
+    "mape": 35.929465578064544,
+    "bias_pct": -14.59991186333205,
+    "bias_ratio": -0.6964750357849641
+   }
+  ]
+ },
+ "movehome.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 15.749477939452145,
+  "chosen_wape": 12.635953457346808,
+  "improvement_pct": 19.769064689477844,
+  "ensemble_weights": {
+   "seasonal_naive": 0.29565939292794585,
+   "decomposition": 0.33583014189594823,
+   "ridge_log": 0.368510465176106
+  },
+  "accuracy": [
+   {
+    "line_key": "movehome.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 29660.0,
+    "wape": 16.009777478084963,
+    "mape": 27.79777326145355,
+    "bias_pct": -3.8486176668914367,
+    "bias_ratio": -0.24039170264293985
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 89549.0,
+    "wape": 15.749477939452145,
+    "mape": 25.468775076592838,
+    "bias_pct": -5.769466995723012,
+    "bias_ratio": -0.36632750735633
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 273239.0,
+    "wape": 21.848638005555575,
+    "mape": 31.917084313438348,
+    "bias_pct": -6.852608888189462,
+    "bias_ratio": -0.31364009447394425
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 29660.0,
+    "wape": 15.71092153232708,
+    "mape": 27.734389014300408,
+    "bias_pct": -2.546524997239238,
+    "bias_ratio": -0.16208629086457227
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 89549.0,
+    "wape": 13.865584131972392,
+    "mape": 23.626520278498518,
+    "bias_pct": -3.5981915802350737,
+    "bias_ratio": -0.2595052286284911
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 273239.0,
+    "wape": 14.330194507102187,
+    "mape": 24.787060596515285,
+    "bias_pct": -2.600754391983797,
+    "bias_ratio": -0.18148772444748307
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 29660.0,
+    "wape": 13.933452788095597,
+    "mape": 25.056058060303855,
+    "bias_pct": -2.1919386217692924,
+    "bias_ratio": -0.15731482031805005
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 89549.0,
+    "wape": 12.635953457346808,
+    "mape": 22.581554895825544,
+    "bias_pct": -2.803423072716989,
+    "bias_ratio": -0.2218608261086163
+   },
+   {
+    "line_key": "movehome.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 273239.0,
+    "wape": 13.120363631378929,
+    "mape": 23.237001460405125,
+    "bias_pct": -2.3254759380427927,
+    "bias_ratio": -0.17724172922167622
+   }
+  ]
+ },
+ "movehome.webchat": {
+  "chosen": "ridge_log",
+  "baseline_wape": 15.973315041224495,
+  "chosen_wape": 12.608952777048845,
+  "improvement_pct": 21.062392217850743,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2882257427539981,
+   "decomposition": 0.3466431735305707,
+   "ridge_log": 0.3651310837154311
+  },
+  "accuracy": [
+   {
+    "line_key": "movehome.webchat",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 23761.0,
+    "wape": 15.784268338874627,
+    "mape": 27.483891130870326,
+    "bias_pct": -2.304195951348849,
+    "bias_ratio": -0.14598053592854288
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 74349.0,
+    "wape": 15.973315041224495,
+    "mape": 25.832801972785006,
+    "bias_pct": -7.756661152133855,
+    "bias_ratio": -0.4856012125294712
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 230652.0,
+    "wape": 21.90919653850823,
+    "mape": 31.79560212533715,
+    "bias_pct": -10.303834347848708,
+    "bias_ratio": -0.4702972256302687
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 23761.0,
+    "wape": 15.252153616487979,
+    "mape": 26.943875642654103,
+    "bias_pct": -0.38385409565687945,
+    "bias_ratio": -0.025167206239119118
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 74349.0,
+    "wape": 13.281440234664007,
+    "mape": 23.411104843294943,
+    "bias_pct": -5.336573260938901,
+    "bias_ratio": -0.40180681964073944
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 230652.0,
+    "wape": 13.523812882191976,
+    "mape": 24.14473954901962,
+    "bias_pct": -4.84170124172423,
+    "bias_ratio": -0.35801303108088217
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 23761.0,
+    "wape": 14.041035829898629,
+    "mape": 24.637443117708145,
+    "bias_pct": -0.9896741184361004,
+    "bias_ratio": -0.07048440944283564
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 74349.0,
+    "wape": 12.608952777048845,
+    "mape": 22.79615721317375,
+    "bias_pct": -4.658858199252946,
+    "bias_ratio": -0.36948811543914456
+   },
+   {
+    "line_key": "movehome.webchat",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 230652.0,
+    "wape": 12.758053525047956,
+    "mape": 23.032183303978048,
+    "bias_pct": -3.505519573724775,
+    "bias_ratio": -0.27476915399691415
+   }
+  ]
+ },
+ "welsh.voice": {
+  "chosen": "ridge_log",
+  "baseline_wape": 24.519179399508495,
+  "chosen_wape": 16.205726330080903,
+  "improvement_pct": 33.90591884814155,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2551861488827855,
+   "decomposition": 0.3587185390476403,
+   "ridge_log": 0.3860953120695742
+  },
+  "accuracy": [
+   {
+    "line_key": "welsh.voice",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 6009.0,
+    "wape": 24.75453486437011,
+    "mape": 36.70761565491588,
+    "bias_pct": -2.038608753536362,
+    "bias_ratio": -0.08235294117647057
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 18718.0,
+    "wape": 24.519179399508495,
+    "mape": 32.6285544165191,
+    "bias_pct": -6.803611496954804,
+    "bias_ratio": -0.2774812071031703
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 54442.0,
+    "wape": 27.5899122001396,
+    "mape": 36.68813481449185,
+    "bias_pct": -3.1455493920135194,
+    "bias_ratio": -0.11401085183582436
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 6009.0,
+    "wape": 19.71569289766241,
+    "mape": 32.42680646950238,
+    "bias_pct": -1.4850427668428563,
+    "bias_ratio": -0.07532287982731413
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 18718.0,
+    "wape": 17.44251908847046,
+    "mape": 26.78090012898921,
+    "bias_pct": -7.22569530986353,
+    "bias_ratio": -0.41425755495602296
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 54442.0,
+    "wape": 18.421778761777492,
+    "mape": 28.803277266795558,
+    "bias_pct": -5.5283124363772185,
+    "bias_ratio": -0.30009656004813506
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 6009.0,
+    "wape": 19.041900647817805,
+    "mape": 30.5639959299008,
+    "bias_pct": -0.04930161592363113,
+    "bias_ratio": -0.0025891121288504925
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 18718.0,
+    "wape": 16.205726330080903,
+    "mape": 26.206948971173038,
+    "bias_pct": -5.16720071204064,
+    "bias_ratio": -0.3188503006156123
+   },
+   {
+    "line_key": "welsh.voice",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 54442.0,
+    "wape": 16.896325426428035,
+    "mape": 27.486215470699722,
+    "bias_pct": -3.722534905948354,
+    "bias_ratio": -0.22031624107605247
+   }
+  ]
+ },
+ "complaints.back_office": {
+  "chosen": "ridge_log",
+  "baseline_wape": 26.2431540028076,
+  "chosen_wape": 22.408385505724958,
+  "improvement_pct": 14.612452819780666,
+  "ensemble_weights": {
+   "seasonal_naive": 0.30529853194863255,
+   "decomposition": 0.33715690560566547,
+   "ridge_log": 0.35754456244570193
+  },
+  "accuracy": [
+   {
+    "line_key": "complaints.back_office",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 16732.0,
+    "wape": 26.07279464499163,
+    "mape": 40.358514643730736,
+    "bias_pct": -13.486134353334927,
+    "bias_ratio": -0.5172492836676218
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 50577.0,
+    "wape": 26.2431540028076,
+    "mape": 39.92797279312582,
+    "bias_pct": -15.331079344366017,
+    "bias_ratio": -0.5841934754765313
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 147095.0,
+    "wape": 30.383085760902816,
+    "mape": 43.63568775153922,
+    "bias_pct": -12.156089601957918,
+    "bias_ratio": -0.4000939765506131
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 16732.0,
+    "wape": 23.911995096458195,
+    "mape": 39.09444930169336,
+    "bias_pct": -12.297149090097317,
+    "bias_ratio": -0.5142669626893136
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 50577.0,
+    "wape": 23.763405872901714,
+    "mape": 37.979399452106534,
+    "bias_pct": -16.110434483787728,
+    "bias_ratio": -0.6779514085629892
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 147095.0,
+    "wape": 23.11394916600754,
+    "mape": 37.85254085388929,
+    "bias_pct": -14.094276909069048,
+    "bias_ratio": -0.6097736396252333
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 16732.0,
+    "wape": 21.312369701184327,
+    "mape": 36.09776329179591,
+    "bias_pct": -12.136373758775617,
+    "bias_ratio": -0.56945210358758
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 50577.0,
+    "wape": 22.408385505724958,
+    "mape": 36.87480095727788,
+    "bias_pct": -14.045800889495643,
+    "bias_ratio": -0.6268100343912409
+   },
+   {
+    "line_key": "complaints.back_office",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 147095.0,
+    "wape": 21.62631597165738,
+    "mape": 36.262191398529495,
+    "bias_pct": -13.170661580132863,
+    "bias_ratio": -0.6090108734836681
+   }
+  ]
+ },
+ "billing.back_office": {
+  "chosen": "ridge_log",
+  "baseline_wape": 35.95766706312497,
+  "chosen_wape": 21.020391264016506,
+  "improvement_pct": 41.54128178806913,
+  "ensemble_weights": {
+   "seasonal_naive": 0.2339588373451304,
+   "decomposition": 0.36582910789007383,
+   "ridge_log": 0.40021205476479577
+  },
+  "accuracy": [
+   {
+    "line_key": "billing.back_office",
+    "model": "seasonal_naive",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 57297.0,
+    "wape": 29.196991116463337,
+    "mape": 44.30507189375937,
+    "bias_pct": -10.679442204652949,
+    "bias_ratio": -0.3657720126726044
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "seasonal_naive",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 181608.0,
+    "wape": 35.95766706312497,
+    "mape": 46.85366043818452,
+    "bias_pct": -16.487709792520153,
+    "bias_ratio": -0.45853113227772496
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "seasonal_naive",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 518402.0,
+    "wape": 37.3406159698458,
+    "mape": 49.16258092768629,
+    "bias_pct": -11.901478003557084,
+    "bias_ratio": -0.31872741502625607
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "decomposition",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 57297.0,
+    "wape": 22.16013114072437,
+    "mape": 38.97950228565652,
+    "bias_pct": -10.483954848867265,
+    "bias_ratio": -0.47309985587587844
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "decomposition",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 181608.0,
+    "wape": 22.99602136159125,
+    "mape": 36.604630869210894,
+    "bias_pct": -17.24089739339263,
+    "bias_ratio": -0.749733926677811
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "decomposition",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 518402.0,
+    "wape": 21.932953474850468,
+    "mape": 36.78138616888811,
+    "bias_pct": -14.76283473844485,
+    "bias_ratio": -0.6730892287430751
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "ridge_log",
+    "horizon": "in_week",
+    "n_obs": 110,
+    "actual_total": 57297.0,
+    "wape": 19.888240597129204,
+    "mape": 35.889139013828874,
+    "bias_pct": -10.517037579024056,
+    "bias_ratio": -0.5288068357611356
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "ridge_log",
+    "horizon": "short_term",
+    "n_obs": 327,
+    "actual_total": 181608.0,
+    "wape": 21.020391264016506,
+    "mape": 35.450274319447864,
+    "bias_pct": -13.664971498132934,
+    "bias_ratio": -0.6500816909876052
+   },
+   {
+    "line_key": "billing.back_office",
+    "model": "ridge_log",
+    "horizon": "medium_term",
+    "n_obs": 984,
+    "actual_total": 518402.0,
+    "wape": 20.125100407165313,
+    "mape": 35.1595287100845,
+    "bias_pct": -12.280352004907455,
+    "bias_ratio": -0.61020078193176
+   }
+  ]
+ }
+}

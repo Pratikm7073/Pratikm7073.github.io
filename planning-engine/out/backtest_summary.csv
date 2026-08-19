@@ -1,0 +1,17 @@
+line_key,chosen_model,baseline_wape,chosen_wape,improvement_pct,beats_baseline
+billing.voice,ridge_log,29.53,12.54,57.5,True
+billing.messaging,ridge_log,28.94,12.33,57.4,True
+billing.webchat,ridge_log,28.57,12.77,55.3,True
+affordability.voice,ridge_log,26.8,12.39,53.8,True
+billing.back_office,ridge_log,35.96,21.02,41.5,True
+affordability.back_office,ridge_log,34.62,20.98,39.4,True
+operations.voice,ridge_log,26.06,16.04,38.5,True
+billing.email,ridge_log,34.67,21.8,37.1,True
+operations.messaging,ridge_log,26.6,17.18,35.4,True
+welsh.voice,ridge_log,24.52,16.21,33.9,True
+metering.voice,ridge_log,17.87,12.07,32.4,True
+movehome.webchat,ridge_log,15.97,12.61,21.1,True
+movehome.voice,ridge_log,15.75,12.64,19.8,True
+metering.email,ridge_log,27.0,21.93,18.8,True
+quality.voice,ridge_log,19.66,16.6,15.6,True
+complaints.back_office,ridge_log,26.24,22.41,14.6,True

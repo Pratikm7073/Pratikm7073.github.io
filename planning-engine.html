@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Resource Planning &amp; Forecast Engine</title>
+<meta name="description" content="A multi-channel contact centre demand forecasting and capacity planning engine: Erlang sizing, shrinkage, supply modelling and scenario analysis, running live in the browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Geist+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f8f8; --panel:#ffffff; --panel-2:#eef3f4; --ink:#0d1b1e; --ink-2:#4a5f63;
+  --ink-3:#7b8e92; --line:#dce5e6; --brand:#0e5c63; --brand-2:#2e8b92; --accent:#f0a23c;
+  --bad:#c1443c; --good:#3f8f5c; --shadow:0 1px 2px rgba(13,27,30,.06),0 8px 24px rgba(13,27,30,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0a1214; --panel:#111d20; --panel-2:#16262a; --ink:#e8f1f2; --ink-2:#a7bcc0;
+    --ink-3:#6f8589; --line:#1f3236; --brand:#5cc8d1; --brand-2:#2e8b92; --accent:#f0a23c;
+    --bad:#e8736a; --good:#6ec78d; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0a1214; --panel:#111d20; --panel-2:#16262a; --ink:#e8f1f2; --ink-2:#a7bcc0;
+  --ink-3:#6f8589; --line:#1f3236; --brand:#5cc8d1; --brand-2:#2e8b92; --accent:#f0a23c;
+  --bad:#e8736a; --good:#6ec78d; --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:5rem}
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.25rem}
+code,.mono,.num{font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+/* header */
+header{padding:3.5rem 0 2rem;border-bottom:1px solid var(--line);margin-bottom:2.5rem}
+.eyebrow{font-family:'Geist Mono',monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brand-2);margin-bottom:.9rem}
+h1{font-size:clamp(1.9rem,4.4vw,3rem);font-weight:800;letter-spacing:-.025em;line-height:1.08;max-width:22ch}
+.lede{color:var(--ink-2);font-size:1.03rem;max-width:64ch;margin-top:1rem}
+.disclaimer{margin-top:1.4rem;display:inline-flex;gap:.6rem;align-items:flex-start;background:var(--panel-2);
+  border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.7rem .95rem;
+  font-size:.86rem;color:var(--ink-2);max-width:70ch}
+.links{margin-top:1.5rem;display:flex;gap:.65rem;flex-wrap:wrap}
+.links a{font-size:.85rem;text-decoration:none;color:var(--ink);border:1px solid var(--line);
+  background:var(--panel);border-radius:999px;padding:.45rem 1rem;transition:.15s}
+.links a:hover{border-color:var(--brand-2);color:var(--brand)}
+.links a.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.links a.primary:hover{opacity:.9;color:#fff}
+
+/* sections */
+section{margin:3.25rem 0}
+h2{font-size:1.4rem;font-weight:700;letter-spacing:-.015em;margin-bottom:.4rem}
+h2 .n{font-family:'Geist Mono',monospace;font-size:.75rem;color:var(--brand-2);margin-right:.6rem;
+  font-weight:500;vertical-align:.28em}
+.sub{color:var(--ink-2);font-size:.92rem;max-width:76ch;margin-bottom:1.5rem}
+
+/* kpi */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:.85rem}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem;box-shadow:var(--shadow)}
+.kpi .k{font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);
+  font-family:'Geist Mono',monospace;margin-bottom:.45rem;line-height:1.3}
+.kpi .v{font-size:1.55rem;font-weight:700;letter-spacing:-.03em;font-family:'Geist Mono',monospace;
+  white-space:nowrap;overflow-wrap:normal}
+.kpi .d{font-size:.78rem;color:var(--ink-3);margin-top:.2rem}
+.kpi.warn .v{color:var(--bad)} .kpi.ok .v{color:var(--good)}
+
+/* panels */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.35rem;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.grid-controls{display:grid;grid-template-columns:340px 1fr;gap:1.1rem;align-items:start}
+@media(max-width:900px){.grid2,.grid-controls{grid-template-columns:1fr}}
+
+/* controls */
+.ctrl{margin-bottom:1.15rem}
+.ctrl:last-child{margin-bottom:0}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:.85rem;
+  color:var(--ink-2);margin-bottom:.45rem;gap:.5rem}
+.ctrl label b{font-family:'Geist Mono',monospace;color:var(--ink);font-weight:600;font-size:.9rem}
+input[type=range]{width:100%;accent-color:var(--brand-2);height:1.15rem;cursor:pointer}
+.reset{margin-top:1.2rem;width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  font-family:'Geist Mono',monospace;font-size:.78rem;padding:.55rem;border-radius:7px;cursor:pointer;transition:.15s}
+.reset:hover{border-color:var(--brand-2);color:var(--brand)}
+
+/* charts */
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart-wrap{overflow-x:auto}
+.legend{display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.79rem;color:var(--ink-2);margin-top:.75rem}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:.4rem;vertical-align:-1px}
+.axis{fill:var(--ink-3);font-size:10px;font-family:'Geist Mono',monospace}
+.gridline{stroke:var(--line);stroke-width:1}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.85rem;min-width:640px}
+th{background:var(--panel-2);text-align:left;padding:.7rem .85rem;font-weight:600;font-size:.75rem;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:.62rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.num,th.num{text-align:right;font-family:'Geist Mono',monospace;font-variant-numeric:tabular-nums}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.bar-cell{position:relative;min-width:150px}
+.bar-cell .b{position:absolute;left:.85rem;bottom:.35rem;height:4px;border-radius:2px;background:var(--brand-2);opacity:.55}
+
+/* risk cards */
+.risks{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:.9rem}
+.risk{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--ink-3);
+  border-radius:10px;padding:1.05rem 1.15rem;box-shadow:var(--shadow)}
+.risk.critical{border-left-color:var(--bad)} .risk.high{border-left-color:var(--accent)}
+.risk.medium{border-left-color:var(--brand-2)}
+.risk .rh{display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start;margin-bottom:.5rem}
+.risk .rt{font-weight:700;font-size:.95rem;line-height:1.3}
+.risk .sev{font-family:'Geist Mono',monospace;font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;
+  padding:.2rem .5rem;border-radius:4px;background:var(--panel-2);color:var(--ink-2);white-space:nowrap;flex-shrink:0}
+.risk .rm{font-size:.85rem;color:var(--ink-2);margin-top:.6rem;padding-top:.6rem;border-top:1px dashed var(--line)}
+.risk .rm b{color:var(--ink);font-weight:600}
+.tagrow{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem}
+.tag{font-family:'Geist Mono',monospace;font-size:.66rem;padding:.15rem .45rem;border-radius:4px;
+  background:var(--panel-2);color:var(--ink-3)}
+
+/* notes */
+.notes{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:1.4rem 1.5rem}
+.notes h3{font-size:.95rem;margin:1.3rem 0 .45rem}
+.notes h3:first-child{margin-top:0}
+.notes p,.notes li{font-size:.88rem;color:var(--ink-2);margin-bottom:.5rem}
+.notes ul{padding-left:1.1rem}
+.notes strong{color:var(--ink)}
+footer{margin-top:3.5rem;padding-top:1.6rem;border-top:1px solid var(--line);color:var(--ink-3);font-size:.82rem}
+footer a{color:var(--brand)}
+.loading{text-align:center;padding:5rem 1rem;color:var(--ink-3);font-family:'Geist Mono',monospace;font-size:.9rem}
+.err{border-left:3px solid var(--bad);background:var(--panel);padding:1.2rem;border-radius:8px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Loading planning data…</div></div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════════════
+   Queueing theory, in the browser.
+
+   This is a direct port of erlang.py, and it is here rather than
+   precomputed on purpose: the sliders below change service level target,
+   AHT, shrinkage and occupancy cap, and every one of those changes the
+   answer non-linearly. Shipping precomputed FTE numbers would leave the
+   controls with nothing to act on.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Erlang B by the reciprocal recursion. The textbook form overflows on
+   any realistic contact centre; this never leaves float range. */
+function erlangB(traffic, agents){
+  if(traffic <= 0) return 0;
+  if(agents  <= 0) return 1;
+  let inv = 1;
+  for(let n = 1; n <= agents; n++) inv = 1 + inv * n / traffic;
+  return 1 / inv;
+}
+
+/* Probability of waiting. Returns 1 below stability - if the offered
+   load meets the agent count the queue never clears and no service
+   level is achievable at any percentile. */
+function erlangC(traffic, agents){
+  if(traffic <= 0) return 0;
+  if(agents <= traffic) return 1;
+  const b = erlangB(traffic, agents), rho = traffic / agents;
+  const den = 1 - rho * (1 - b);
+  return den <= 0 ? 1 : Math.min(1, b / den);
+}
+
+function serviceLevel(traffic, agents, aht, targetSecs){
+  if(traffic <= 0) return 1;
+  if(agents <= traffic) return 0;
+  const sl = 1 - erlangC(traffic, agents) * Math.exp(-(agents - traffic) * targetSecs / aht);
+  return Math.min(1, Math.max(0, sl));
+}
+
+/* Service level is monotonic in agent count, so binary search is exact,
+   not approximate. */
+function agentsForSL(traffic, aht, target, secs){
+  let lo = Math.max(1, Math.floor(traffic) + 1);
+  if(serviceLevel(traffic, lo, aht, secs) >= target) return lo;
+  let hi = lo;
+  while(hi < 4000){
+    hi = Math.max(hi * 2, lo + 1);
+    if(serviceLevel(traffic, hi, aht, secs) >= target) break;
+  }
+  while(lo < hi){
+    const mid = Math.floor((lo + hi) / 2);
+    if(serviceLevel(traffic, mid, aht, secs) >= target) hi = mid; else lo = mid + 1;
+  }
+  return lo;
+}
+
+/* Both constraints. The occupancy cap is not a nicety: Erlang will
+   happily report a headcount that hits 80/20 at 97% occupancy, which is
+   arithmetically true and operationally fictional. */
+function staffRequired(contacts, aht, intervalSecs, slTarget, slSecs, maxOcc, concurrency){
+  if(contacts <= 0 || aht <= 0) return {agents:0, sl:1, occ:0, traffic:0, binding:"none"};
+  const traffic = contacts * aht / intervalSecs / Math.max(concurrency, 1e-9);
+  const slDriven  = agentsForSL(traffic, aht, slTarget, slSecs);
+  const occDriven = maxOcc > 0 ? Math.ceil(traffic / maxOcc) : slDriven;
+  const agents = Math.max(slDriven, occDriven);
+  return {
+    agents, traffic,
+    sl:  serviceLevel(traffic, agents, aht, slSecs),
+    occ: agents ? traffic / agents : 0,
+    binding: occDriven > slDriven ? "occupancy"
+           : (slDriven > Math.ceil(traffic) ? "service_level" : "none")
+  };
+}
+
+/* Deferrable channels are a stock worked down against an SLA, not a
+   queue. Running Erlang here can easily double the requirement. */
+function deferrableFte(contacts, aht, availableHours, utilisation){
+  if(contacts <= 0 || availableHours <= 0) return 0;
+  return (contacts * aht / 3600) / (availableHours * Math.max(utilisation, 1e-9));
+}
+
+/* Divide, never multiply. At 27.8% shrinkage the two differ by about 8%
+   of headcount, always in the direction of under-staffing. */
+const grossUp = (onPhone, shrinkage) => onPhone / (1 - shrinkage);
+
+/* ══════════════════════════════════════════════════════════════════
+   Formatting + tiny SVG chart helpers
+   ══════════════════════════════════════════════════════════════════ */
+const NS = "http://www.w3.org/2000/svg";
+const fmt  = (n, d=0) => n==null||isNaN(n) ? "–" : n.toLocaleString("en-GB",{minimumFractionDigits:d,maximumFractionDigits:d});
+const gbp  = n => n==null||isNaN(n) ? "–" : "£" + Math.round(n).toLocaleString("en-GB");
+const gbpK = n => n==null||isNaN(n) ? "–" : (Math.abs(n)>=1e6 ? "£"+(n/1e6).toFixed(2)+"m" : "£"+Math.round(n/1000)+"k");
+const pct  = (n, d=1) => n==null||isNaN(n) ? "–" : (n*100).toFixed(d)+"%";
+const iv   = i => String(Math.floor(i/2)).padStart(2,"0")+":"+(i%2?"30":"00");
+const dmy  = s => new Date(s+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short"});
+const dmyy = s => new Date(s+"T00:00:00").toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+
+function el(tag, attrs, kids){
+  const n = document.createElementNS(NS, tag);
+  for(const k in (attrs||{})) n.setAttribute(k, attrs[k]);
+  (kids||[]).forEach(c => n.appendChild(c));
+  return n;
+}
+function svg(w, h){
+  const s = el("svg", {viewBox:`0 0 ${w} ${h}`, class:"chart", preserveAspectRatio:"xMidYMid meet"});
+  s.setAttribute("role","img");
+  return s;
+}
+function path(d, stroke, width, fill){
+  return el("path", {d, fill: fill||"none", stroke: stroke||"none",
+    "stroke-width": width||2, "stroke-linejoin":"round", "stroke-linecap":"round"});
+}
+function text(x, y, str, cls, anchor){
+  const t = el("text", {x, y, class: cls||"axis", "text-anchor": anchor||"middle"});
+  t.textContent = str;
+  return t;
+}
+function line(x1,y1,x2,y2,cls){ return el("line",{x1,y1,x2,y2,class:cls||"gridline"}); }
+
+/* Build an SVG path from an array of [x,y] points already in pixels. */
+const toPath  = pts => pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+const toArea  = (pts, base) => toPath(pts) + ` L${pts[pts.length-1][0].toFixed(1)} ${base} L${pts[0][0].toFixed(1)} ${base} Z`;
+
+function niceMax(v){
+  if(v <= 0) return 1;
+  const mag = Math.pow(10, Math.floor(Math.log10(v)));
+  return Math.ceil(v / mag * 2) / 2 * mag;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   State
+   ══════════════════════════════════════════════════════════════════ */
+let DATA = null;
+const DEFAULTS = {volume:1, aht:1, slTarget:null, slSecs:null, shrinkage:null, occupancy:null};
+const S = Object.assign({}, DEFAULTS);
+
+function resetState(){
+  S.volume = 1; S.aht = 1;
+  S.slTarget  = DATA.config.channels.find(c=>c.key==="voice").slTarget;
+  S.slSecs    = DATA.config.channels.find(c=>c.key==="voice").slSeconds;
+  S.shrinkage = DATA.config.shrinkage.total;
+  S.occupancy = DATA.config.channels.find(c=>c.key==="voice").maxOccupancy;
+}
+
+/* Size the sample day under the current slider settings. This is the
+   whole point of the page: it is the same calculation the Python engine
+   runs, re-run on every input event. */
+function sizeDay(){
+  const chan = {}; DATA.config.channels.forEach(c => chan[c.key] = c);
+  const onPhone = new Float64Array(48);
+  const contacts = new Float64Array(48);
+  let interactiveContacts = 0, weightedSl = 0, weightedOcc = 0, occWeight = 0;
+  const byChannel = {};
+
+  DATA.intraday.forEach(lineRow => {
+    const c = chan[lineRow.channel];
+    const aht = lineRow.ahtSeconds * S.aht;
+    const vols = lineRow.contacts.map(v => v * S.volume);
+    const open = [];
+    vols.forEach((v,i) => { if(lineRow.contacts[i] > 0) open.push(i); });
+    if(!open.length) return;
+
+    byChannel[lineRow.channel] = byChannel[lineRow.channel] || new Float64Array(48);
+
+    if(c.kind === "interactive"){
+      open.forEach(i => {
+        const r = staffRequired(vols[i], aht, 1800, S.slTarget, S.slSecs, S.occupancy, c.concurrency);
+        onPhone[i] += r.agents;
+        byChannel[lineRow.channel][i] += r.agents;
+        contacts[i] += vols[i];
+        interactiveContacts += vols[i];
+        weightedSl += r.sl * vols[i];
+        weightedOcc += r.occ * r.agents; occWeight += r.agents;
+      });
+    } else {
+      const hours = open.length * 0.5;
+      const total = vols.reduce((a,b)=>a+b,0);
+      const fte = deferrableFte(total, aht, hours, c.utilisation);
+      open.forEach(i => {
+        onPhone[i] += fte;
+        byChannel[lineRow.channel][i] += fte;
+        contacts[i] += vols[i];
+      });
+    }
+  });
+
+  const rostered = Array.from(onPhone, v => grossUp(v, S.shrinkage));
+  const rosteredHours = rostered.reduce((a,b)=>a+b,0) * 0.5;
+  const cost = DATA.config.cost;
+  return {
+    contacts: Array.from(contacts),
+    onPhone: Array.from(onPhone),
+    rostered,
+    byChannel,
+    peak: Math.max(...rostered),
+    rosteredHours,
+    dayCost: rosteredHours * cost.hourly,
+    achievedSl: interactiveContacts > 0 ? weightedSl / interactiveContacts : 1,
+    occupancy: occWeight > 0 ? weightedOcc / occWeight : 0,
+    totalContacts: contacts.reduce((a,b)=>a+b,0)
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Charts
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Weekly required FTE against projected supply, with the gap shaded. */
+function chartSupplyDemand(){
+  const W = 1000, H = 336, P = {t:26, r:16, b:44, l:52};
+  const w = DATA.weekly;
+  const s = svg(W, H);
+  const maxY = niceMax(Math.max(...w.map(d => Math.max(d.required_fte, d.supply_fte))) * 1.06);
+  const x = i => P.l + i * (W - P.l - P.r) / Math.max(w.length - 1, 1);
+  const y = v => H - P.b - (v / maxY) * (H - P.t - P.b);
+
+  for(let g = 0; g <= 4; g++){
+    const v = maxY * g / 4;
+    s.appendChild(line(P.l, y(v), W - P.r, y(v)));
+    s.appendChild(text(P.l - 8, y(v) + 3.5, fmt(v), "axis", "end"));
+  }
+
+  const req = w.map((d,i) => [x(i), y(d.required_fte)]);
+  const sup = w.map((d,i) => [x(i), y(d.supply_fte)]);
+
+  /* Shade shortfall and surplus separately - the eye should find the
+     weeks that break without reading a number. */
+  w.forEach((d,i) => {
+    if(i === 0) return;
+    const prev = w[i-1];
+    const short = d.gap_fte < 0 || prev.gap_fte < 0;
+    const pts = [[x(i-1), y(prev.required_fte)], [x(i), y(d.required_fte)],
+                 [x(i), y(d.supply_fte)], [x(i-1), y(prev.supply_fte)]];
+    s.appendChild(el("path", {d: toPath(pts)+" Z", fill: short ? "var(--bad)" : "var(--good)",
+      opacity: short ? .17 : .09, stroke:"none"}));
+  });
+
+  s.appendChild(path(toPath(sup), "var(--brand-2)", 2.2));
+  s.appendChild(el("path",{d:toPath(sup), stroke:"var(--brand-2)","stroke-width":2.2,
+    "stroke-dasharray":"5 4", fill:"none"}));
+  s.appendChild(path(toPath(req), "var(--brand)", 2.6));
+
+  w.forEach((d,i) => {
+    if(i % 3 === 0 || i === w.length - 1)
+      s.appendChild(text(x(i), H - P.b + 17, dmy(d.week_start), "axis"));
+    if(d.gap_fte < -0.5){
+      s.appendChild(el("circle",{cx:x(i), cy:y(d.required_fte), r:3.4, fill:"var(--bad)"}));
+    }
+  });
+  s.appendChild(text(P.l - 8, 11, "FTE", "axis", "end"));
+  return s;
+}
+
+/* Live intraday requirement, recomputed on every slider move. */
+function chartIntraday(sized){
+  const W = 1000, H = 306, P = {t:26, r:16, b:40, l:52};
+  const s = svg(W, H);
+  const open = [];
+  sized.contacts.forEach((v,i) => { if(v > 0 || sized.rostered[i] > 0) open.push(i); });
+  if(!open.length) return s;
+  const first = Math.max(0, open[0] - 1), last = Math.min(47, open[open.length-1] + 1);
+  const maxY = niceMax(Math.max(...sized.rostered) * 1.12);
+  const x = i => P.l + (i - first) * (W - P.l - P.r) / Math.max(last - first, 1);
+  const y = v => H - P.b - (v / maxY) * (H - P.t - P.b);
+
+  for(let g = 0; g <= 4; g++){
+    const v = maxY * g / 4;
+    s.appendChild(line(P.l, y(v), W - P.r, y(v)));
+    s.appendChild(text(P.l - 8, y(v) + 3.5, fmt(v), "axis", "end"));
+  }
+
+  const idx = [];
+  for(let i = first; i <= last; i++) idx.push(i);
+  const rost = idx.map(i => [x(i), y(sized.rostered[i])]);
+  const phone = idx.map(i => [x(i), y(sized.onPhone[i])]);
+
+  s.appendChild(el("path",{d:toArea(rost, H-P.b), fill:"var(--brand)", opacity:.14, stroke:"none"}));
+  s.appendChild(el("path",{d:toArea(phone, H-P.b), fill:"var(--brand-2)", opacity:.22, stroke:"none"}));
+  s.appendChild(path(toPath(rost), "var(--brand)", 2.4));
+  s.appendChild(path(toPath(phone), "var(--brand-2)", 2));
+
+  idx.forEach(i => { if(i % 4 === 0) s.appendChild(text(x(i), H - P.b + 16, iv(i), "axis")); });
+  s.appendChild(text(P.l - 8, 11, "FTE", "axis", "end"));
+  return s;
+}
+
+/* Forecast accuracy: naive baseline against the selected model. */
+function chartAccuracy(){
+  const rows = DATA.accuracy.slice().sort((a,b) => b.improvementPct - a.improvementPct);
+  const W = 1000, rowH = 26, P = {t:26, r:60, b:26, l:248};
+  const H = P.t + rows.length * rowH + P.b;
+  const s = svg(W, H);
+  const maxX = niceMax(Math.max(...rows.map(r => r.baselineWape)) * 1.05);
+  const x = v => P.l + (v / maxX) * (W - P.l - P.r);
+
+  for(let g = 0; g <= 4; g++){
+    const v = maxX * g / 4;
+    s.appendChild(line(x(v), P.t - 8, x(v), H - P.b));
+    s.appendChild(text(x(v), P.t - 13, fmt(v) + "%", "axis"));
+  }
+
+  rows.forEach((r,i) => {
+    const yTop = P.t + i * rowH;
+    s.appendChild(text(P.l - 10, yTop + 15, r.label.length > 31 ? r.label.slice(0,30)+"…" : r.label, "axis", "end"));
+    s.appendChild(el("rect",{x:P.l, y:yTop+5, width:Math.max(x(r.baselineWape)-P.l,0), height:7,
+      rx:3, fill:"var(--ink-3)", opacity:.42}));
+    s.appendChild(el("rect",{x:P.l, y:yTop+13, width:Math.max(x(r.chosenWape)-P.l,0), height:7,
+      rx:3, fill:"var(--brand)"}));
+    s.appendChild(text(W - P.r + 8, yTop + 16, "−" + r.improvementPct.toFixed(0) + "%", "axis", "start"));
+  });
+  return s;
+}
+
+/* Shrinkage build-up: components, then the compounded total against the
+   naive sum. */
+function chartShrinkage(){
+  const comps = DATA.config.shrinkage.components;
+  const entries = Object.entries(comps).sort((a,b) => b[1] - a[1]);
+  const W = 1000, rowH = 27, P = {t:14, r:80, b:14, l:170};
+  const H = P.t + (entries.length + 2) * rowH + P.b;
+  const s = svg(W, H);
+  const naive = entries.reduce((a,b) => a + b[1], 0);
+  const maxX = Math.max(naive, DATA.config.shrinkage.total) * 1.05;
+  const x = v => P.l + (v / maxX) * (W - P.l - P.r);
+
+  entries.forEach(([k,v],i) => {
+    const yTop = P.t + i * rowH;
+    s.appendChild(text(P.l - 10, yTop + 15, k, "axis", "end"));
+    s.appendChild(el("rect",{x:P.l, y:yTop+6, width:Math.max(x(v)-P.l,1), height:12, rx:3,
+      fill:"var(--brand-2)", opacity:.75}));
+    s.appendChild(text(x(v) + 7, yTop + 16, pct(v,1), "axis", "start"));
+  });
+
+  const yA = P.t + entries.length * rowH + 6;
+  s.appendChild(text(P.l - 10, yA + 15, "Naive sum (wrong)", "axis", "end"));
+  s.appendChild(el("rect",{x:P.l, y:yA+6, width:Math.max(x(naive)-P.l,1), height:12, rx:3,
+    fill:"var(--bad)", opacity:.5}));
+  s.appendChild(text(x(naive) + 7, yA + 16, pct(naive,1), "axis", "start"));
+
+  const yB = yA + rowH;
+  s.appendChild(text(P.l - 10, yB + 15, "Compounded (correct)", "axis", "end"));
+  s.appendChild(el("rect",{x:P.l, y:yB+6, width:Math.max(x(DATA.config.shrinkage.total)-P.l,1),
+    height:12, rx:3, fill:"var(--good)"}));
+  s.appendChild(text(x(DATA.config.shrinkage.total) + 7, yB + 16, pct(DATA.config.shrinkage.total,1), "axis", "start"));
+  return s;
+}
+
+/* Demand history and forecast, weekly, all channels combined. */
+function chartDemand(){
+  const hist = {}, fc = {};
+  DATA.history.forEach(r => hist[r.week_start] = (hist[r.week_start]||0) + r.contacts);
+  DATA.forecastWeekly.forEach(r => fc[r.week_start] = (fc[r.week_start]||0) + r.forecast);
+  const hk = Object.keys(hist).sort(), fk = Object.keys(fc).sort();
+  /* Drop the final history week: it is usually a part-week and dips
+     hard, which reads as a collapse in demand rather than a boundary. */
+  hk.pop();
+  const all = hk.concat(fk);
+  const W = 1000, H = 306, P = {t:26, r:16, b:42, l:60};
+  const s = svg(W, H);
+  const maxY = niceMax(Math.max(...hk.map(k=>hist[k]), ...fk.map(k=>fc[k])) * 1.08);
+  const x = i => P.l + i * (W - P.l - P.r) / Math.max(all.length - 1, 1);
+  const y = v => H - P.b - (v / maxY) * (H - P.t - P.b);
+
+  for(let g = 0; g <= 4; g++){
+    const v = maxY * g / 4;
+    s.appendChild(line(P.l, y(v), W - P.r, y(v)));
+    s.appendChild(text(P.l - 8, y(v) + 3.5, fmt(v/1000) + "k", "axis", "end"));
+  }
+
+  const hp = hk.map((k,i) => [x(i), y(hist[k])]);
+  const fp = fk.map((k,i) => [x(hk.length + i), y(fc[k])]);
+  s.appendChild(el("path",{d:toArea(hp, H-P.b), fill:"var(--ink-3)", opacity:.13, stroke:"none"}));
+  s.appendChild(path(toPath(hp), "var(--ink-3)", 1.8));
+  if(fp.length){
+    s.appendChild(el("path",{d:toArea(fp, H-P.b), fill:"var(--brand)", opacity:.16, stroke:"none"}));
+    s.appendChild(path(toPath([hp[hp.length-1]].concat(fp)), "var(--brand)", 2.4));
+    const bx = x(hk.length - 1);
+    s.appendChild(el("line",{x1:bx, y1:P.t, x2:bx, y2:H-P.b, stroke:"var(--ink-3)",
+      "stroke-width":1, "stroke-dasharray":"4 4", opacity:.65}));
+    s.appendChild(text(bx + 5, 11, "forecast →", "axis", "start"));
+  }
+  all.forEach((k,i) => { if(i % 13 === 0) s.appendChild(text(x(i), H - P.b + 16, dmy(k), "axis")); });
+  s.appendChild(text(P.l - 8, 11, "contacts", "axis", "end"));
+  return s;
+}
+</script>
+<script src="planning-engine-app.js"></script>
+</body>
+</html>

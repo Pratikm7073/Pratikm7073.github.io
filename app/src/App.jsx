@@ -18,8 +18,25 @@ const inView = { once: true, amount: 0.25 };
 
 /* ── project data (drives cards AND the summary modal) ── */
 const PROJECTS = {
+  planning: {
+    num: '01', title: 'Retail Resource Planning & Forecast Engine', type: 'Python · WFM · Erlang',
+    modalType: 'Python · Multi-Channel WFM · Erlang C/A',
+    blurb: 'A multi-channel contact-centre planning engine for a water retailer: forecasts contacts across 16 service lines, sizes every half hour with queueing theory, models advisor supply against attrition and the training pipeline, then prices the gap and proposes mitigations.',
+    desc: 'An end-to-end workforce planning engine covering the full cycle a Planning & Performance team runs: demand forecasting by queue and channel, Erlang-based capacity sizing, shrinkage, supply and recruitment modelling, scenario analysis, real-time in-day analysis, and an early-warning risk register. Built on synthetic data to a documented schema, so a real extract drops straight in.',
+    points: [
+      'Rolling-origin backtest across 16 service lines: 35.8% mean WAPE reduction against a seasonal-naive baseline, winning on every line',
+      'Detects structural breaks (a self-serve portal launch) by refitting at candidate dates and scoring on BIC — found on both affected lines, zero false positives across the other 14',
+      'Exact Erlang A birth-death model quantifies what Erlang C costs: 858 advisors against 718 for the same 5% abandonment target — 19.5% more, because Erlang C assumes nobody ever hangs up',
+      'Shrinkage compounded rather than summed, supply modelled through a 14-week recruitment pipeline, and a risk register that separates recoverable gaps from those inside the lead time',
+      '130 unit tests, an Excel planning pack with live formulas, and a browser demo that re-runs the whole Erlang calculation client-side',
+    ],
+    tags: ['Python', 'Erlang C', 'Forecasting', 'WFM'],
+    modalTags: ['Python', 'NumPy', 'Pandas', 'Erlang C/A', 'Ridge Regression', 'Backtesting', 'openpyxl'],
+    img: 'planning-engine-preview.png', impact: '↯ WAPE −35.8% vs baseline',
+    links: [['Live Demo ↗', '/planning-engine.html'], ['GitHub ↗', 'https://github.com/Pratikm7073/Pratikm7073.github.io/tree/main/planning-engine']],
+  },
   soar: {
-    num: '01', title: 'Cloud-Native SOAR Engine', type: 'MSc Dissertation · 2026',
+    num: '02', title: 'Cloud-Native SOAR Engine', type: 'MSc Dissertation · 2026',
     modalType: 'MSc Dissertation · Microsoft Sentinel',
     blurb: '"Zero-Touch" automated containment with Microsoft Sentinel & Azure Logic Apps to mitigate high-velocity ransomware.',
     desc: 'A "zero-touch" security orchestration engine that detects and contains high-velocity ransomware without a human in the loop, built on Microsoft Sentinel and Azure Logic Apps.',
@@ -33,7 +50,7 @@ const PROJECTS = {
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/Azure-Sentinel-SOAR-Automation']],
   },
   wazuh: {
-    num: '02', title: 'Enterprise SIEM & Incident Response Lab', type: 'Wazuh · Home Lab',
+    num: '03', title: 'Enterprise SIEM & Incident Response Lab', type: 'Wazuh · Home Lab',
     modalType: 'Wazuh · Multi-OS Home Lab',
     blurb: 'Multi-OS SIEM lab ingesting Windows and Linux endpoint logs. Detected simulated SSH brute-force (MITRE ATT&CK T1110) and fired an Active Response that auto-banned the attacker’s IP at the firewall.',
     desc: 'A local SIEM environment simulating real-world cyber threats: a Wazuh manager aggregating endpoint logs from Windows 10 and Ubuntu VMs over encrypted tunnels, with automated active response.',
@@ -47,7 +64,7 @@ const PROJECTS = {
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/Wazuh-SIEM-Home-Lab']],
   },
   wfm: {
-    num: '03', title: 'AI-Enhanced WFM Capacity Planning Engine', type: 'Python · ML Forecasting',
+    num: '04', title: 'AI-Enhanced WFM Capacity Planning Engine', type: 'Python · ML Forecasting',
     modalType: 'Python · ML Forecasting · Power BI',
     blurb: 'Random Forest demand forecaster over 12 months of multi-site contact-centre data, cutting forecast error from ~15.5% to ~4.6% MAPE against the traditional method, plus an Erlang C capacity model and an interactive dashboard.',
     desc: 'An end-to-end workforce management engine: machine-learning demand forecasting, Erlang C capacity modelling, and stakeholder-ready dashboards across a multi-site, multi-channel contact-centre operation.',
@@ -62,7 +79,7 @@ const PROJECTS = {
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/ai-wfm-capacity-planning-engine'], ['Live Dashboard ↗', 'https://pratikm7073.github.io/WFM_Dashboard.html']],
   },
   jarvis: {
-    num: '04', title: 'Jarvis-AI, Offline Voice Assistant', type: 'Local LLM · Zero-Trust',
+    num: '05', title: 'Jarvis-AI, Offline Voice Assistant', type: 'Local LLM · Zero-Trust',
     modalType: 'Local LLM · Zero-Trust Architecture',
     blurb: 'Fully offline voice assistant: Vosk speech recognition, Microsoft Phi-3 reasoning via Ollama, and native text-to-speech. Not a single byte leaves the machine. Voice kill-switch included.',
     desc: 'A completely offline, zero-trust voice assistant: it listens, reasons with a locally hosted LLM, and speaks back, without sending a single byte to the cloud.',
@@ -76,7 +93,7 @@ const PROJECTS = {
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/Jarvis-AI']],
   },
   vendor: {
-    num: '05', title: 'Vendor Risk & Governance Pipeline', type: 'Independent · ML',
+    num: '06', title: 'Vendor Risk & Governance Pipeline', type: 'Independent · ML',
     modalType: 'Independent · ML Analytics',
     blurb: 'Analysed a 167MB dataset to surface compliance risks & vendor fraud, with custom behavioural tripwires flagging high-risk accounts.',
     desc: 'A data pipeline that surfaces compliance risks and vendor fraud in e-commerce marketplace data, with behavioural tripwires that flag high-risk accounts the moment they deviate.',
@@ -90,7 +107,7 @@ const PROJECTS = {
     links: [['GitHub ↗', 'https://github.com/Pratikm7073/ecommerce-vendor-risk-pipeline']],
   },
   ids: {
-    num: '06', title: 'Secure Web App + ML IDS', type: 'Academic · 2026',
+    num: '07', title: 'Secure Web App + ML IDS', type: 'Academic · 2026',
     modalType: 'Academic · 2026',
     blurb: 'Strict RBAC with MFA via Microsoft Authenticator, paired with an ML-powered intrusion detection system mapping live attack vectors.',
     desc: 'A hardened web application with strict role-based access control and multi-factor authentication, paired with a machine-learning IDS that maps live attack vectors.',
@@ -184,7 +201,7 @@ function ProjectModal() {
   );
 }
 
-const SKILLS_A = ['Python', 'PyTorch', 'scikit-learn', 'Pandas', 'NumPy', 'TensorFlow', 'Random Forest', 'Feature Engineering', 'Power BI', 'Erlang C'];
+const SKILLS_A = ['Python', 'PyTorch', 'scikit-learn', 'Pandas', 'NumPy', 'TensorFlow', 'Random Forest', 'Feature Engineering', 'Power BI', 'Erlang C', 'Capacity Planning', 'Demand Modelling', 'WFM / WFO'];
 const SKILLS_B = ['Microsoft Sentinel', 'KQL', 'Azure', 'SOAR', 'Wazuh', 'MITRE ATT&CK', 'RBAC', 'MFA', 'ML-IDS', 'Zero-Trust', 'Ollama', 'Phi-3'];
 
 /* ── P·R·A·T·I·K terminal (Contact easter egg) ── */
@@ -209,7 +226,7 @@ function Terminal() {
     switch (cmd) {
       case 'help': out('commands: whoami · projects · stack · contact · clear · sudo hire-me'); break;
       case 'whoami': out('Pratik More. AI and security engineer, 4.5+ yrs, MSc Cybersecurity (UK). Turns messy data and noisy alerts into automated decisions.'); break;
-      case 'projects': out('01 SOAR Engine · 02 Wazuh SIEM Lab · 03 WFM Forecasting · 04 Jarvis-AI · 05 Vendor Risk · 06 Secure Web+IDS. Scroll up to explore, or pinch one with gesture control.'); break;
+      case 'projects': out('01 Retail Planning & Forecast Engine · 02 SOAR Engine · 03 Wazuh SIEM Lab · 04 WFM Forecasting · 05 Jarvis-AI · 06 Vendor Risk · 07 Secure Web+IDS. Scroll up to explore, or pinch one with gesture control.'); break;
       case 'stack': out('Python · PyTorch · scikit-learn · Pandas · Sentinel · KQL · Azure · SOAR · Wazuh · RBAC/MFA · Ollama/Phi-3'); break;
       case 'contact': out('mail: morepratik77@gmail.com · github.com/Pratikm7073 · linkedin.com/in/pratik-more-969749249'); break;
       case 'clear': setLines([]); return;
